@@ -41,7 +41,7 @@ par = {
 
 parlist = [ # list containing information of each parameter
     #first node X param
-    {'name' : 'K_ARAX', 'lower_limit':-6,'upper_limit':5}, #in log
+    {'name' : 'K_ARAX', 'lower_limit':-6.0,'upper_limit':5.0}, #in log
     {'name' : 'n_ARAX','lower_limit':1.0,'upper_limit':2.0},
     {'name' : 'K_XY','lower_limit':0.01,'upper_limit':1.0},
     {'name' : 'n_XY','lower_limit':1.0,'upper_limit':2.0},
@@ -53,7 +53,7 @@ parlist = [ # list containing information of each parameter
 
 
     #Seconde node Y param
-    {'name' : 'K_ARAY', 'lower_limit':-6,'upper_limit':5}, #in log
+    {'name' : 'K_ARAY', 'lower_limit':-6.0,'upper_limit':5.0}, #in log
     {'name' : 'n_ARAY','lower_limit':1.0,'upper_limit':2.0},
     {'name' : 'K_YZ','lower_limit':0.01,'upper_limit':1.0},
     {'name' : 'n_YZ','lower_limit':1.0,'upper_limit':2.0},
@@ -82,11 +82,11 @@ def Distance(pars, y_data):
 '''   
 
 def Flow(X,Y,Z,ARA,par):
-    flow_x= par['alpha_X'] +( np.power((par['beta_X']-par['alpha_X']) *ARA,par['n_ARAX'])) / ( np.power(par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))
+    flow_x= par['alpha_X'] +( np.power((par['beta_X']-par['alpha_X']) *ARA,par['n_ARAX'])) / ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))
     flow_x= flow_x / ( 1 + np.power(Z/par['K_ZX'],par['n_ZX']))
     flow_x = flow_x - X*par['delta_X']
 
-    flow_y= par['alpha_Y'] +( np.power((par['beta_Y']-par['alpha_Y']) *ARA,par['n_ARAY'])) / ( np.power(par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
+    flow_y= par['alpha_Y'] +( np.power((par['beta_Y']-par['alpha_Y']) *ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
     flow_y= flow_y / ( 1 + np.power(X/par['K_XY'],par['n_XY']))
     flow_y = flow_y - Y*par['delta_Y']
 
@@ -129,18 +129,16 @@ def distance(x,pars,totaltime=100, dt=0.1):
     min_list=argrelextrema(X[transient:,0], np.less)
     minValues=X[transient:,0][min_list]
     if len(maxValues)>0:
-        d1= 1/len(maxValues) + 2
+        d_final= 1/len(maxValues) + 2
     else:
-        d1 = 100
+        d_final = 100
     if len(maxValues)>4:
         d2=abs((maxValues[1:] - maxValues[0:-1])/maxValues[0:-1])
         #d2=abs((X[:,0][max_list][-1] - X[:,0][max_list][-2])/ X[:,0][max_list][-2])
-        d3=2*(minValues[1:]/(minValues[1:]+maxValues[1:]))
-        d4= d2+d3
-        d5= np.sum(d4)
-    else:
-        d5=d1
-    return d5
+        d3=2*(np.sum(minValues[1:])/(np.sum(minValues[1:])+np.sum(maxValues[1:])))
+        d_final= np.sum(d2)+d3
+ 
+    return d_final
 
 def model(x,pars,totaltime=100, dt=0.1):
     Xi=np.ones(len(ARA))*0.5
@@ -150,12 +148,7 @@ def model(x,pars,totaltime=100, dt=0.1):
     return X,Y,Z
 
 
-
-
-
-
-
-def Plot():
+def plot(par):
     Xi=np.ones(len(ARA))*0.5
     Yi=np.zeros(len(ARA))
     Zi=np.zeros(len(ARA))
