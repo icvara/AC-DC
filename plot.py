@@ -37,8 +37,8 @@ p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
 p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
 
 
-#p_final=abc_smc.pars_to_dict(p_min)
-#meq.plot(p_final)
+p_final=abc_smc.pars_to_dict(p)
+meq.plot(p_final)
 
 
 sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
