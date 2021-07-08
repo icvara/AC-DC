@@ -9,9 +9,9 @@ from scipy.signal import argrelextrema
 
 
 par = {
-    'K_ARAX':10e5,#0.01,
+    'K_ARAX':5,#0.01,
     'n_ARAX':2,
-    'K_ARAY':10e5,
+    'K_ARAY':5,
     'n_ARAY':2,
     
     'K_ZX':0.01, 
@@ -41,33 +41,33 @@ par = {
 
 parlist = [ # list containing information of each parameter
     #first node X param
-    {'name' : 'K_ARAX', 'lower_limit':-6.0,'upper_limit':5.0}, #in log
+    {'name' : 'K_ARAX', 'lower_limit':4.0,'upper_limit':5.0}, #in log
     {'name' : 'n_ARAX','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'K_XY','lower_limit':0.01,'upper_limit':1.0},
+    {'name' : 'K_XY','lower_limit':0.01,'upper_limit':0.5},
     {'name' : 'n_XY','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'K_XZ','lower_limit':0.01,'upper_limit':1.0},
+    {'name' : 'K_XZ','lower_limit':0.01,'upper_limit':0.5},
     {'name' : 'n_XZ','lower_limit':1.0,'upper_limit':2.0},
     {'name' : 'beta_X','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'alpha_X','lower_limit':0.0,'upper_limit':0.8},
-    {'name' : 'delta_X','lower_limit':0.0,'upper_limit':1.5},
+    {'name' : 'alpha_X','lower_limit':0.0,'upper_limit':0.5},
+    {'name' : 'delta_X','lower_limit':0.0,'upper_limit':1.0},
 
 
     #Seconde node Y param
-    {'name' : 'K_ARAY', 'lower_limit':-6.0,'upper_limit':5.0}, #in log
+    {'name' : 'K_ARAY', 'lower_limit':4.0,'upper_limit':5.0}, #in log
     {'name' : 'n_ARAY','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'K_YZ','lower_limit':0.01,'upper_limit':1.0},
+    {'name' : 'K_YZ','lower_limit':0.01,'upper_limit':0.5},
     {'name' : 'n_YZ','lower_limit':1.0,'upper_limit':2.0},
     {'name' : 'beta_Y','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'alpha_Y','lower_limit':0.0,'upper_limit':0.8},
-    {'name' : 'delta_Y','lower_limit':0.0,'upper_limit':1.5},
+    {'name' : 'alpha_Y','lower_limit':0.0,'upper_limit':0.5},
+    {'name' : 'delta_Y','lower_limit':0.0,'upper_limit':1.0},
 
 
     #third node Z param
-    {'name' : 'K_ZX','lower_limit':0.01,'upper_limit':1.0},
+    {'name' : 'K_ZX','lower_limit':0.01,'upper_limit':0.5},
     {'name' : 'n_ZX','lower_limit':1.0,'upper_limit':2.0},
     {'name' : 'beta_Z','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'alpha_Z','lower_limit':0.0,'upper_limit':0.8},
-    {'name' : 'delta_Z','lower_limit':0.0,'upper_limit':1.5},
+    {'name' : 'alpha_Z','lower_limit':0.0,'upper_limit':0.5},
+    {'name' : 'delta_Z','lower_limit':0.0,'upper_limit':1.0},
 ]
 
 
@@ -128,15 +128,20 @@ def distance(x,pars,totaltime=100, dt=0.1):
     # for local minima
     min_list=argrelextrema(X[transient:,0], np.less)
     minValues=X[transient:,0][min_list]
+    
     if len(maxValues)>0:
         d_final= 1/len(maxValues) + 2
     else:
-        d_final = 100
+        d_final = 10e10
     if len(maxValues)>4:
-        d2=abs((maxValues[1:] - maxValues[0:-1])/maxValues[0:-1])
-        #d2=abs((X[:,0][max_list][-1] - X[:,0][max_list][-2])/ X[:,0][max_list][-2])
-        d3=2*(np.sum(minValues[1:])/(np.sum(minValues[1:])+np.sum(maxValues[1:])))
-        d_final= np.sum(d2)+d3
+        #all time point
+        #d2=abs((maxValues[1:] - maxValues[0:-1])/maxValues[0:-1])
+        #d3=2*(np.sum(minValues[1:])/(np.sum(minValues[1:])+np.sum(maxValues[1:])))
+        #d_final= np.sum(d2)+d3
+        #last time point
+        d2=abs((maxValues[-1] - maxValues[-2])/maxValues[-2])
+        d3=2*(min(minValues))/(min(minValues)+max(maxValues))
+        d_final= d2+d3
  
     return d_final
 
@@ -148,12 +153,10 @@ def model(x,pars,totaltime=100, dt=0.1):
     return X,Y,Z
 
 
-def plot(par):
-    Xi=np.ones(len(ARA))*0.5
-    Yi=np.zeros(len(ARA))
-    Zi=np.zeros(len(ARA))
+def plot(ARA,par):
 
-    X,Y,Z = Integration(Xi,Yi,Zi,100,0.1,ARA,par)
+
+    X,Y,Z = model(ARA,par)
 
 
     df_X=pd.DataFrame(X,columns=ARA)
@@ -177,5 +180,8 @@ def plot(par):
     ax = fig.gca(projection='3d')
     ax.plot(X[:,0],Y[:,0],Z[:,0],'-o')
     plt.show()
+
+
+
 
 
