@@ -140,7 +140,7 @@ def distance(x,pars,totaltime=100, dt=0.1):
         #d_final= np.sum(d2)+d3
         #last time point
         d2=abs((maxValues[-1] - maxValues[-2])/maxValues[-2])
-        d3=2*(min(minValues))/(min(minValues)+max(maxValues))
+        d3=2*(max(maxValues))/(min(minValues)+max(maxValues))
         d_final= d2+d3
  
     return d_final
