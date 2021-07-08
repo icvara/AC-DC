@@ -4,7 +4,7 @@
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 30
-#SBATCH --array 1-8
+
 
 
 env | grep SLURM
