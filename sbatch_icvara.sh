@@ -17,6 +17,5 @@ source $DIR/myfirstvenv/bin/activate
 
 python3 abc_smc.py 
 
-python3 plot.py 
 
 deactivate
