@@ -1,6 +1,6 @@
 SLURM_MEM_PER_CPU=8192
 SLURM_NODEID=0
-SLURM_TASK_PID=4159521
+SLURM_TASK_PID=4164551
 SLURM_PRIO_PROCESS=0
 SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
 SLURM_ARRAY_TASK_COUNT=8
@@ -19,13 +19,13 @@ SLURM_NTASKS=1
 SLURM_JOB_CPUS_PER_NODE=30
 SLURM_TOPOLOGY_ADDR=core.edge1.dna017
 SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
-SLURM_JOB_NAME=sbatch_icvara.sh
-SLURM_JOBID=317684
+SLURM_JOB_NAME=sbatch_plot.sh
+SLURM_JOBID=318624
 SLURM_CONF=/etc/slurm/slurm.conf
 SLURM_NODE_ALIASES=(null)
 SLURM_JOB_QOS=cpu-normal
 SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
-SLURM_ARRAY_JOB_ID=317679
+SLURM_ARRAY_JOB_ID=318619
 SLURM_CPUS_ON_NODE=30
 SLURM_JOB_NUM_NODES=1
 SLURM_JOB_UID=69294
@@ -36,19 +36,6 @@ SLURM_ARRAY_TASK_MIN=1
 SLURM_SUBMIT_HOST=login.curnagl
 SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
 SLURM_GTIDS=0
-SLURM_JOB_ID=317684
+SLURM_JOB_ID=318624
 SLURM_ARRAY_TASK_MAX=8
 SLURM_LOCALID=0
-SMC step with target distance: 10000
->>>> Loop processing time: 42.722 sec on 20 CPU cores.
-acceptance rate: 0.13753266400770184
-min accepted distance:  0.2682059465906472
-median accepted distance:  2.5
-median evaluated distance:  100000000000.0
-SMC step with target distance: 2.5
->>>> Loop processing time: 1026.893 sec on 20 CPU cores.
-acceptance rate: 0.3325573661456601
-min accepted distance:  0.3761257314620905
-median accepted distance:  2.25
-median evaluated distance:  100000000000.0
-SMC step with target distance: 2.25

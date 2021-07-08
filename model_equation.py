@@ -165,11 +165,11 @@ def plot(ARA,par):
 
 
     plt.subplot(1,3,1)
-    sns.heatmap(df_X, cmap="Reds")#, vmin=0, vmax=1)
+    sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=0.2)
     plt.subplot(1,3,2)
-    sns.heatmap(df_Y, cmap ='Blues')#, vmin=0, vmax=1)
+    sns.heatmap(df_Y, cmap ='Blues', vmin=0, vmax=0.2)
     plt.subplot(1,3,3)
-    sns.heatmap(df_Z, cmap ='Greens')#, vmin=0, vmax=1)
+    sns.heatmap(df_Z, cmap ='Greens', vmin=0, vmax=0.2)
     plt.savefig('heatmap'+'.pdf', bbox_inches='tight')
     #plt.show()
     plt.close()
@@ -178,7 +178,7 @@ def plot(ARA,par):
 
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    ax.plot(X[:,0],Y[:,0],Z[:,0],'-o')
+    ax.plot(X[:,0],Y[:,0],Z[:,0],'-')
     plt.savefig('1'+'.pdf', bbox_inches='tight')
     #plt.show()
 

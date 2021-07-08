@@ -156,7 +156,7 @@ def GeneratePars(x_data, ncpus,
 
 #final_dist =100
 def Sequential_ABC(x_data, ncpus,
-                   initial_dist = 10000, final_dist =0.1, Npars = 1000, prior_label = None,
+                   initial_dist = 2.0, final_dist =0.1, Npars = 1000, prior_label = None,
                    adaptative_kernel = True):
 
 ## Sequence of acceptance threshold start with initial_dis and keeps on reducing until
@@ -223,7 +223,7 @@ def main(argv):
     if os.path.isdir('smc_') is False: ## if 'smc' folder does not exist:
         os.mkdir('smc_') ## create it, the output will go there
         
-    Sequential_ABC(x_data, ncpus=20)
+    Sequential_ABC(x_data, ncpus=30)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
