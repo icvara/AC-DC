@@ -41,30 +41,30 @@ par = {
 
 parlist = [ # list containing information of each parameter
     #first node X param
-    {'name' : 'K_ARAX', 'lower_limit':4.0,'upper_limit':5.0}, #in log
-    {'name' : 'n_ARAX','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'K_XY','lower_limit':0.01,'upper_limit':0.5},
-    {'name' : 'n_XY','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'K_XZ','lower_limit':0.01,'upper_limit':0.5},
-    {'name' : 'n_XZ','lower_limit':1.0,'upper_limit':2.0},
+    {'name' : 'K_ARAX', 'lower_limit':4.5,'upper_limit':5.0}, #in log
+    {'name' : 'n_ARAX','lower_limit':1.8,'upper_limit':2.0},
+    {'name' : 'K_XY','lower_limit':0.01,'upper_limit':0.02},
+    {'name' : 'n_XY','lower_limit':1.8,'upper_limit':2.0},
+    {'name' : 'K_XZ','lower_limit':90.0,'upper_limit':100.0},
+    {'name' : 'n_XZ','lower_limit':1.8,'upper_limit':2.0},
     {'name' : 'beta_X','lower_limit':1.0,'upper_limit':2.0},
     {'name' : 'alpha_X','lower_limit':0.0,'upper_limit':0.5},
     {'name' : 'delta_X','lower_limit':0.0,'upper_limit':1.0},
 
 
     #Seconde node Y param
-    {'name' : 'K_ARAY', 'lower_limit':4.0,'upper_limit':5.0}, #in log
+    {'name' : 'K_ARAY', 'lower_limit':4.5,'upper_limit':5.0}, #in log
     {'name' : 'n_ARAY','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'K_YZ','lower_limit':0.01,'upper_limit':0.5},
-    {'name' : 'n_YZ','lower_limit':1.0,'upper_limit':2.0},
+    {'name' : 'K_YZ','lower_limit':0.01,'upper_limit':0.02},
+    {'name' : 'n_YZ','lower_limit':1.8,'upper_limit':2.0},
     {'name' : 'beta_Y','lower_limit':1.0,'upper_limit':2.0},
     {'name' : 'alpha_Y','lower_limit':0.0,'upper_limit':0.5},
     {'name' : 'delta_Y','lower_limit':0.0,'upper_limit':1.0},
 
 
     #third node Z param
-    {'name' : 'K_ZX','lower_limit':0.01,'upper_limit':0.5},
-    {'name' : 'n_ZX','lower_limit':1.0,'upper_limit':2.0},
+    {'name' : 'K_ZX','lower_limit':0.01,'upper_limit':0.02},
+    {'name' : 'n_ZX','lower_limit':1.8,'upper_limit':2.0},
     {'name' : 'beta_Z','lower_limit':1.0,'upper_limit':2.0},
     {'name' : 'alpha_Z','lower_limit':0.0,'upper_limit':0.5},
     {'name' : 'delta_Z','lower_limit':0.0,'upper_limit':1.0},
@@ -74,7 +74,7 @@ parlist = [ # list containing information of each parameter
 #ARA =np.arange(0,0.2,0.005)
 ARA=np.array([0.000e+00, 3.125e-06, 6.250e-06, 1.250e-05, 2.500e-05, 5.000e-05,
        1.000e-04, 2.000e-04, 2.000e-01])
-#ARA = np.array([0])
+ARA = np.array([0])
 
 '''
 def Distance(pars, y_data):
@@ -170,8 +170,8 @@ def plot(ARA,par):
     sns.heatmap(df_Y, cmap ='Blues')#, vmin=0, vmax=1)
     plt.subplot(1,3,3)
     sns.heatmap(df_Z, cmap ='Greens')#, vmin=0, vmax=1)
-    plt.savefig('1'+'.pdf', bbox_inches='tight')
-    plt.show()
+    plt.savefig('heatmap'+'.pdf', bbox_inches='tight')
+    #plt.show()
     plt.close()
 
 
@@ -179,7 +179,8 @@ def plot(ARA,par):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     ax.plot(X[:,0],Y[:,0],Z[:,0],'-o')
-    plt.show()
+    plt.savefig('1'+'.pdf', bbox_inches='tight')
+    #plt.show()
 
 
 

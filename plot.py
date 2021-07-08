@@ -10,7 +10,7 @@ import statistics
 
 from collections import Counter
 
-number="3"
+number="1"
 
 
 
@@ -38,7 +38,7 @@ p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0]
 
 
 p_final=abc_smc.pars_to_dict(p)
-meq.plot(p_final)
+meq.plot(meq.ARA,p_final)
 
 
 sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
