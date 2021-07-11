@@ -12,9 +12,16 @@ from collections import Counter
 
 ##par from abc smc
 number="final"
+version=""
 
+<<<<<<< HEAD
 path = 'smc_'+'/pars_' + number + '.out'
 dist_path = 'smc_'+'/distances_' + number + '.out'
+=======
+
+path = 'smc_'+version+'/pars_' + number + '.out'
+dist_path = 'smc_'+version+'/distances_' + number + '.out'
+>>>>>>> d02312206050282356c7137257addac1156ffbe8
 
 raw_output= np.loadtxt(path)
 dist_output= np.loadtxt(dist_path)
@@ -113,6 +120,7 @@ def plot(ARA,par,name):
     #plt.show()
 
 
+<<<<<<< HEAD
 
 def par_plot(df):
     sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
@@ -125,6 +133,22 @@ def par_plot(df):
                                               'K_ARAY','n_ARAY','K_YZ','n_YZ',
                                               'K_ZX','n_ZX']], kind='kde')
     plt.savefig('K_par_plot.pdf', bbox_inches='tight')
+=======
+sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
+                                          'K_ARAY','n_ARAY','K_YZ','n_YZ', 'beta_Y','alpha_Y','delta_Y',
+                                          'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
+plt.savefig(version+'_par_plot.pdf', bbox_inches='tight')
+
+plt.close()
+sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ',
+                                          'K_ARAY','n_ARAY','K_YZ','n_YZ',
+                                          'K_ZX','n_ZX']], kind='kde')
+plt.savefig(version+'_K_par_plot.pdf', bbox_inches='tight')
+
+plt.close()
+sns.pairplot(df[['beta_X','alpha_X','delta_X', 'beta_Y','alpha_Y','delta_Y', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
+plt.savefig(version+'_beta_par_plot.pdf', bbox_inches='tight')
+>>>>>>> d02312206050282356c7137257addac1156ffbe8
 
     plt.close()
     sns.pairplot(df[['beta_X','alpha_X','delta_X', 'beta_Y','alpha_Y','delta_Y', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
