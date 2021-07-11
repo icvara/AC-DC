@@ -146,41 +146,13 @@ def distance(x,pars,totaltime=100, dt=0.1):
     return d_final
 
 def model(x,pars,totaltime=100, dt=0.1):
-    Xi=np.ones(len(ARA))*0.5
-    Yi=np.zeros(len(ARA))
-    Zi=np.zeros(len(ARA))
+    Xi=np.ones(len(x))*0.5
+    Yi=np.zeros(len(x))
+    Zi=np.zeros(len(x))
     X,Y,Z = Integration(Xi,Yi,Zi,totaltime,dt,x,pars)
     return X,Y,Z
 
 
-def plot(ARA,par):
-
-
-    X,Y,Z = model(ARA,par)
-
-
-    df_X=pd.DataFrame(X,columns=ARA)
-    df_Y=pd.DataFrame(Y,columns=ARA)
-    df_Z=pd.DataFrame(Z,columns=ARA)
-
-
-    plt.subplot(1,3,1)
-    sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=0.2)
-    plt.subplot(1,3,2)
-    sns.heatmap(df_Y, cmap ='Blues', vmin=0, vmax=0.2)
-    plt.subplot(1,3,3)
-    sns.heatmap(df_Z, cmap ='Greens', vmin=0, vmax=0.2)
-    plt.savefig('heatmap'+'.pdf', bbox_inches='tight')
-    #plt.show()
-    plt.close()
-
-
-
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.plot(X[:,0],Y[:,0],Z[:,0],'-')
-    plt.savefig('1'+'.pdf', bbox_inches='tight')
-    #plt.show()
 
 
 
