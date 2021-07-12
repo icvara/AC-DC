@@ -1,0 +1,146 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=1059651
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=30
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna025
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna025
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna025
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=30
+SLURM_TOPOLOGY_ADDR=core.edge2.dna025
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_icvara.sh
+SLURM_JOBID=324960
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=30
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=324960
+SLURM_LOCALID=0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 112.261 sec on 30 CPU cores.
+acceptance rate: 0.03546979746745646
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+Reducing kernel width to :  0.7
+SMC step with target distance: 2.5
+>>>> Loop processing time: 251.628 sec on 30 CPU cores.
+acceptance rate: 0.24354603019970775
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 123.454 sec on 30 CPU cores.
+acceptance rate: 0.2678093197643278
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 130.535 sec on 30 CPU cores.
+acceptance rate: 0.2683843263553409
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 114.947 sec on 30 CPU cores.
+acceptance rate: 0.27785495971103086
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 119.394 sec on 30 CPU cores.
+acceptance rate: 0.2818489289740699
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 108.279 sec on 30 CPU cores.
+acceptance rate: 0.2745744096650192
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 115.200 sec on 30 CPU cores.
+acceptance rate: 0.27932960893854747
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 100.038 sec on 30 CPU cores.
+acceptance rate: 0.30039050765995795
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 134.981 sec on 30 CPU cores.
+acceptance rate: 0.2826455624646693
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 101.453 sec on 30 CPU cores.
+acceptance rate: 0.2820078962210942
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 113.009 sec on 30 CPU cores.
+acceptance rate: 0.3024803387779794
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 115.176 sec on 30 CPU cores.
+acceptance rate: 0.29895366218236175
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 102.336 sec on 30 CPU cores.
+acceptance rate: 0.2936857562408223
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 124.810 sec on 30 CPU cores.
+acceptance rate: 0.2855511136493432
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 108.576 sec on 30 CPU cores.
+acceptance rate: 0.28901734104046245
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 112.196 sec on 30 CPU cores.
+acceptance rate: 0.27925160569673274
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 103.909 sec on 30 CPU cores.
+acceptance rate: 0.29472443265546716
+min accepted distance:  2.3333333333333335
+median accepted distance:  2.5
+median evaluated distance:  3.0
+SMC step with target distance: 2.5
+slurmstepd: error: *** JOB 324960 ON dna025 CANCELLED AT 2021-07-09T11:28:41 ***

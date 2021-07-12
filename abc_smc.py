@@ -156,7 +156,7 @@ def GeneratePars(x_data, ncpus,
 
 #final_dist =100
 def Sequential_ABC(x_data, ncpus,
-                   initial_dist = 2.0, final_dist =0.1, Npars = 1000, prior_label = None,
+                   initial_dist = 2.5, final_dist =0.1, Npars = 1000, prior_label = None,
                    adaptative_kernel = True):
 
 ## Sequence of acceptance threshold start with initial_dis and keeps on reducing until

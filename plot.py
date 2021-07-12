@@ -92,7 +92,7 @@ def plot(ARA,par,name):
     sns.heatmap(df_Y, cmap ='Blues', vmin=0, vmax=0.2)
     plt.subplot(1,3,3)
     sns.heatmap(df_Z, cmap ='Greens', vmin=0, vmax=0.2)
-    plt.savefig(name+'_heatmap'+'.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_heatmap'+'.pdf', bbox_inches='tight')
     #plt.show()
     plt.close()
 
@@ -101,7 +101,7 @@ def plot(ARA,par,name):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     ax.plot(X[:,-1],Y[:,-1],Z[:,-1],'-')
-    plt.savefig(name+'_3D'+'.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_3D'+'.pdf', bbox_inches='tight')
     plt.close()
 
 
@@ -110,7 +110,7 @@ def plot(ARA,par,name):
     plt.plot(Z[:,-1],'-g')
     plt.ylim(0,1)
     plt.plot([20/0.1, 20/0.1], [0, 1], 'k--', lw=1)
-    plt.savefig(name+'_time'+'.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_time'+'.pdf', bbox_inches='tight')
     plt.close()
     #plt.show()
 
@@ -120,17 +120,17 @@ def par_plot(df):
     sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
                                               'K_ARAY','n_ARAY','K_YZ','n_YZ', 'beta_Y','alpha_Y','delta_Y',
                                               'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
-    plt.savefig('par_plot.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+'par_plot.pdf', bbox_inches='tight')
 
     plt.close()
     sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ',
                                               'K_ARAY','n_ARAY','K_YZ','n_YZ',
                                               'K_ZX','n_ZX']], kind='kde')
-    plt.savefig('K_par_plot.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+'K_par_plot.pdf', bbox_inches='tight')
 
     plt.close()
     sns.pairplot(df[['beta_X','alpha_X','delta_X', 'beta_Y','alpha_Y','delta_Y', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
-    plt.savefig('beta_par_plot.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+'beta_par_plot.pdf', bbox_inches='tight')
 
 
 

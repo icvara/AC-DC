@@ -42,28 +42,28 @@ par = {
 parlist = [ # list containing information of each parameter
     #first node X param
     {'name' : 'K_ARAX', 'lower_limit':4.5,'upper_limit':5.0}, #in log
-    {'name' : 'n_ARAX','lower_limit':1.8,'upper_limit':2.0},
-    {'name' : 'K_XY','lower_limit':0.01,'upper_limit':0.02},
+    {'name' : 'n_ARAX','lower_limit':1.0,'upper_limit':2.0},
+    {'name' : 'K_XY','lower_limit':0.01,'upper_limit':0.5},
     {'name' : 'n_XY','lower_limit':1.8,'upper_limit':2.0},
     {'name' : 'K_XZ','lower_limit':90.0,'upper_limit':100.0},
-    {'name' : 'n_XZ','lower_limit':1.8,'upper_limit':2.0},
-    {'name' : 'beta_X','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'alpha_X','lower_limit':0.0,'upper_limit':0.5},
+    {'name' : 'n_XZ','lower_limit':1.0,'upper_limit':2.0},
+    {'name' : 'beta_X','lower_limit':0.95,'upper_limit':1.05},
+    {'name' : 'alpha_X','lower_limit':0.5,'upper_limit':1.5},
     {'name' : 'delta_X','lower_limit':0.0,'upper_limit':1.0},
 
 
     #Seconde node Y param
     {'name' : 'K_ARAY', 'lower_limit':4.5,'upper_limit':5.0}, #in log
     {'name' : 'n_ARAY','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'K_YZ','lower_limit':0.01,'upper_limit':0.02},
-    {'name' : 'n_YZ','lower_limit':1.8,'upper_limit':2.0},
-    {'name' : 'beta_Y','lower_limit':1.0,'upper_limit':2.0},
-    {'name' : 'alpha_Y','lower_limit':0.0,'upper_limit':0.5},
+    {'name' : 'K_YZ','lower_limit':0.01,'upper_limit':0.5},
+    {'name' : 'n_YZ','lower_limit':1.0,'upper_limit':2.0},
+    {'name' : 'beta_Y','lower_limit':0.95,'upper_limit':1.05},
+    {'name' : 'alpha_Y','lower_limit':0.5,'upper_limit':1.5},
     {'name' : 'delta_Y','lower_limit':0.0,'upper_limit':1.0},
 
 
     #third node Z param
-    {'name' : 'K_ZX','lower_limit':0.01,'upper_limit':0.02},
+    {'name' : 'K_ZX','lower_limit':0.01,'upper_limit':0.5},
     {'name' : 'n_ZX','lower_limit':1.8,'upper_limit':2.0},
     {'name' : 'beta_Z','lower_limit':1.0,'upper_limit':2.0},
     {'name' : 'alpha_Z','lower_limit':0.0,'upper_limit':0.5},
@@ -139,8 +139,8 @@ def distance(x,pars,totaltime=100, dt=0.1):
         #d3=2*(np.sum(minValues[1:])/(np.sum(minValues[1:])+np.sum(maxValues[1:])))
         #d_final= np.sum(d2)+d3
         #last time point
-        d2=abs((maxValues[-1] - maxValues[-2])/maxValues[-2])
-        d3=2*(1+min(minValues))/(min(minValues)+max(maxValues))
+        d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2]))
+        d3=2*(min(minValues))/(min(minValues)+max(maxValues))
         d_final= d2+d3
  
     return d_final
