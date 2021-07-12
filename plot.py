@@ -135,4 +135,4 @@ ARA=meq.ARA
 p, pdf= load(n)
 
 plot(ARA,p,nv)
-par_plot(pdf,nv)
+#par_plot(pdf,nv)
