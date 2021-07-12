@@ -1,0 +1,67 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=4068569
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=30
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna021
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna021
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna021
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=30
+SLURM_TOPOLOGY_ADDR=core.edge1.dna021
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_icvara.sh
+SLURM_JOBID=362650
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=30
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=362650
+SLURM_LOCALID=0
+SMC step with target distance: 2.5
+>>>> Loop processing time: 9.108 sec on 30 CPU cores.
+acceptance rate: 0.4623208506703652
+min accepted distance:  1.4641546527373053
+median accepted distance:  2.25
+median evaluated distance:  3.0
+SMC step with target distance: 2.25
+>>>> Loop processing time: 576.883 sec on 30 CPU cores.
+acceptance rate: 0.4163197335553705
+min accepted distance:  1.2795868487131385
+median accepted distance:  1.9737357243998421
+median evaluated distance:  2.3333333333333335
+SMC step with target distance: 1.9737357243998421
+>>>> Loop processing time: 468.922 sec on 30 CPU cores.
+acceptance rate: 0.29146021568055963
+min accepted distance:  1.3663508500659793
+median accepted distance:  1.9267791066612174
+median evaluated distance:  2.25
+SMC step with target distance: 1.9267791066612174
+>>>> Loop processing time: 453.852 sec on 30 CPU cores.
+acceptance rate: 0.21616947686986598
+min accepted distance:  1.2546989628479217
+median accepted distance:  1.8764700677521955
+median evaluated distance:  1.9856302529621703
+SMC step with target distance: 1.8764700677521955
+>>>> Loop processing time: 547.774 sec on 30 CPU cores.
+acceptance rate: 0.1763979537837361
+min accepted distance:  1.244574850147254
+median accepted distance:  1.8180358268209285
+median evaluated distance:  1.9706199717989012
+SMC step with target distance: 1.8180358268209285
+slurmstepd: error: *** JOB 362650 ON dna021 CANCELLED AT 2021-07-12T12:26:08 DUE TO TIME LIMIT ***

@@ -11,7 +11,8 @@ import statistics
 from collections import Counter
 
 ##par from abc smc
-n="final"
+n="5"#"final"
+nv="newPrange"
 
 def load(number= n):
 
@@ -25,10 +26,6 @@ def load(number= n):
                                               'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z'])
     df['dist']=dist_output
 
-
-
-    # print(df[df['dist']==min(df['dist'])])
-
     p_min=df[df['dist']==min(df['dist'])]
 
     p=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
@@ -38,6 +35,7 @@ def load(number= n):
     p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
 
     p_final=abc_smc.pars_to_dict(p)
+    return p_final, df
 
 ## predefined par
 par = {
@@ -116,23 +114,25 @@ def plot(ARA,par,name):
 
 
 
-def par_plot(df):
+def par_plot(df,name):
     sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
                                               'K_ARAY','n_ARAY','K_YZ','n_YZ', 'beta_Y','alpha_Y','delta_Y',
                                               'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
-    plt.savefig("plot/"+'par_plot.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_par_plot.pdf', bbox_inches='tight')
 
     plt.close()
     sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ',
                                               'K_ARAY','n_ARAY','K_YZ','n_YZ',
                                               'K_ZX','n_ZX']], kind='kde')
-    plt.savefig("plot/"+'K_par_plot.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_K_par_plot.pdf', bbox_inches='tight')
 
     plt.close()
     sns.pairplot(df[['beta_X','alpha_X','delta_X', 'beta_Y','alpha_Y','delta_Y', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
-    plt.savefig("plot/"+'beta_par_plot.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_beta_par_plot.pdf', bbox_inches='tight')
 
 
+ARA=meq.ARA
+p, pdf= load(n)
 
-
-plot(ARA,par,"rep")
+plot(ARA,p,nv)
+par_plot(pdf,nv)
