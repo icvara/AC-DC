@@ -73,7 +73,7 @@ parlist_REP = [ # list containing information of each parameter
 #list for ACDC
 parlist = [ # list containing information of each parameter
     #first node X param
-    {'name' : 'K_ARAX', 'lower_limit':-4,'upper_limit':0.0}, #in log
+    {'name' : 'K_ARAX', 'lower_limit':-5.0,'upper_limit':0.0}, #in log
     {'name' : 'n_ARAX','lower_limit':1.5,'upper_limit':2.5},
     {'name' : 'K_XY','lower_limit':0.001,'upper_limit':0.02},
     {'name' : 'n_XY','lower_limit':1.5,'upper_limit':2.5},
@@ -85,7 +85,7 @@ parlist = [ # list containing information of each parameter
 
 
     #Seconde node Y param
-    {'name' : 'K_ARAY', 'lower_limit':-4,'upper_limit':0.0}, #in log
+    {'name' : 'K_ARAY', 'lower_limit':-5.0,'upper_limit':0.0}, #in log
     {'name' : 'n_ARAY','lower_limit':1.5,'upper_limit':2.5},
     {'name' : 'K_YZ','lower_limit':0.001,'upper_limit':0.02},
     {'name' : 'n_YZ','lower_limit':1.5,'upper_limit':2.5},
@@ -196,14 +196,17 @@ def distance(x,pars,totaltime=100, dt=0.1):
 
         if i>oscillation_ara[0] and i<oscillation_ara[1]:
         
-            if len(maxValues)>1:  #if there is more than one peak
+            if len(maxValues)>0 and len(maxValues)<4:
+                d_final= 1/len(maxValues) + 2
+        
+            if len(maxValues)>=4:  #if there is more than one peak
                 #here the distance is only calculated on the last two peaks
                 d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2]))
                 d3=2*(min(minValues))/(min(minValues)+max(maxValues))
                 d4=2*(minValues[-1])/(minValues[-1]+maxValues[-1])
                 d= d2+d3
             else:
-                d=3 #this number can be tuned to help the algorythm to find good parameter....
+                d=1000 #this number can be tuned to help the algorythm to find good parameter....
             
         else:
             d= len(minValues) + 2*(max(X[transient:,i])-min(X[transient:,i]))/(max(X[transient:,i])+min(X[transient:,i]))
