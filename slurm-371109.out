@@ -1,6 +1,6 @@
 SLURM_MEM_PER_CPU=8192
 SLURM_NODEID=0
-SLURM_TASK_PID=66315
+SLURM_TASK_PID=72211
 SLURM_PRIO_PROCESS=0
 SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
 SLURM_CPUS_PER_TASK=30
@@ -17,7 +17,7 @@ SLURM_JOB_CPUS_PER_NODE=30
 SLURM_TOPOLOGY_ADDR=core.edge2.dna027
 SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
 SLURM_JOB_NAME=sbatch_icvara.sh
-SLURM_JOBID=371089
+SLURM_JOBID=371109
 SLURM_CONF=/etc/slurm/slurm.conf
 SLURM_NODE_ALIASES=(null)
 SLURM_JOB_QOS=cpu-normal
@@ -31,7 +31,19 @@ SLURM_NPROCS=1
 SLURM_SUBMIT_HOST=login.curnagl
 SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
 SLURM_GTIDS=0
-SLURM_JOB_ID=371089
+SLURM_JOB_ID=371109
 SLURM_LOCALID=0
-SMC step with target distance: 12.0
-slurmstepd: error: *** JOB 371089 ON dna027 CANCELLED AT 2021-07-13T21:40:58 ***
+SMC step with target distance: 1000.0
+>>>> Loop processing time: 5.360 sec on 30 CPU cores.
+acceptance rate: 1.0
+min accepted distance:  4.048407273607591
+median accepted distance:  12.873343893826418
+median evaluated distance:  12.873343893826418
+SMC step with target distance: 12.873343893826418
+>>>> Loop processing time: 683.549 sec on 30 CPU cores.
+acceptance rate: 0.5611672278338945
+min accepted distance:  4.040236030924541
+median accepted distance:  12.586416995211977
+median evaluated distance:  12.804782456113312
+SMC step with target distance: 12.586416995211977
+slurmstepd: error: *** JOB 371109 ON dna027 CANCELLED AT 2021-07-13T23:59:52 ***

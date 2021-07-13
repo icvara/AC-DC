@@ -11,7 +11,7 @@ import statistics
 from collections import Counter
 
 
-n="2"#"final"
+n="1"#"final"
 filename="AC-DC"
 
 ##par from abc smc
