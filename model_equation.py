@@ -38,8 +38,8 @@ par = {
     'delta_Y':1,
 }
 
-
-parlist = [ # list containing information of each parameter
+#list for rep
+parlist_REP = [ # list containing information of each parameter
     #first node X param
     {'name' : 'K_ARAX', 'lower_limit':4.5,'upper_limit':5.0}, #in log
     {'name' : 'n_ARAX','lower_limit':1.0,'upper_limit':2.0},
@@ -70,11 +70,41 @@ parlist = [ # list containing information of each parameter
     {'name' : 'delta_Z','lower_limit':0.5,'upper_limit':1.0},
 ]
 
+#list for ACDC
+parlist = [ # list containing information of each parameter
+    #first node X param
+    {'name' : 'K_ARAX', 'lower_limit':-4,'upper_limit':0.0}, #in log
+    {'name' : 'n_ARAX','lower_limit':1.5,'upper_limit':2.5},
+    {'name' : 'K_XY','lower_limit':0.001,'upper_limit':0.02},
+    {'name' : 'n_XY','lower_limit':1.5,'upper_limit':2.5},
+    {'name' : 'K_XZ','lower_limit':0.01,'upper_limit':1},
+    {'name' : 'n_XZ','lower_limit':1.5,'upper_limit':2.5},
+    {'name' : 'beta_X','lower_limit':1.0,'upper_limit':1.05},
+    {'name' : 'alpha_X','lower_limit':0.0,'upper_limit':1.0},
+    {'name' : 'delta_X','lower_limit':0.5,'upper_limit':1.0},
 
-#ARA =np.arange(0,0.2,0.005)
-ARA=np.array([0.000e+00, 3.125e-06, 6.250e-06, 1.250e-05, 2.500e-05, 5.000e-05,
-       1.000e-04, 2.000e-04, 2.000e-01])
-ARA = np.array([0])
+
+    #Seconde node Y param
+    {'name' : 'K_ARAY', 'lower_limit':-4,'upper_limit':0.0}, #in log
+    {'name' : 'n_ARAY','lower_limit':1.5,'upper_limit':2.5},
+    {'name' : 'K_YZ','lower_limit':0.001,'upper_limit':0.02},
+    {'name' : 'n_YZ','lower_limit':1.5,'upper_limit':2.5},
+    {'name' : 'beta_Y','lower_limit':1.0,'upper_limit':1.05},
+    {'name' : 'alpha_Y','lower_limit':0.0,'upper_limit':1.0},
+    {'name' : 'delta_Y','lower_limit':0.5,'upper_limit':1.0},
+
+
+    #third node Z param
+    {'name' : 'K_ZX','lower_limit':0.001,'upper_limit':0.02},
+    {'name' : 'n_ZX','lower_limit':1.5,'upper_limit':2.5},
+    {'name' : 'beta_Z','lower_limit':1.0,'upper_limit':1.05},
+    {'name' : 'alpha_Z','lower_limit':0.0,'upper_limit':1.0},
+    {'name' : 'delta_Z','lower_limit':0.5,'upper_limit':1.0},
+]
+
+
+ARA=np.logspace(-4.5,-2.,10,base=8) #for ACDC
+#ARA = np.array([0]) #for rep
 
 '''
 def Distance(pars, y_data):
@@ -116,7 +146,7 @@ def Integration(Xi,Yi,Zi, totaltime=100, dt=0.1, ch=ARA , pars=par ):
         ti=ti+dt
 
     return X,Y,Z
-
+'''
 def distance(x,pars,totaltime=100, dt=0.1):
     
     X,Y,Z = model(x,pars,totaltime,dt)
@@ -140,9 +170,50 @@ def distance(x,pars,totaltime=100, dt=0.1):
         #d_final= np.sum(d2)+d3
         #last time point
         d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2]))
-        d3=2*(min(minValues))/(min(minValues)+max(maxValues))
+        d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1])
         d_final= d2+d3
  
+    return d_final
+'''
+
+def distance(x,pars,totaltime=100, dt=0.1):
+
+    X,Y,Z = model(x,pars,totaltime,dt)
+    
+    # transient time / dt
+    transient = int(20/0.1)
+ 
+    #range where oscillation is expected
+    oscillation_ara=[1,6]
+
+    d_final=0
+
+    for i in range(0,(len(x)-1)):
+        # for local maxima
+        max_list=argrelextrema(X[transient:,i], np.greater)
+        maxValues=X[transient:,i][max_list]
+        # for local minima
+        min_list=argrelextrema(X[transient:,i], np.less)
+        minValues=X[transient:,i][min_list]
+
+
+        if i>oscillation_ara[0] and i<oscillation_ara[1]:
+        
+            if len(maxValues)>1:  #if there is more than one peak
+                #here the distance is only calculated on the last two peaks
+                d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2]))
+                d3=2*(min(minValues))/(min(minValues)+max(maxValues))
+                d4=2*(minValues[-1])/(minValues[-1]+maxValues[-1])
+                d= d2+d3
+            else:
+                d=3 #this number can be tuned to help the algorythm to find good parameter....
+            
+        else:
+            d= len(minValues) + 2*(max(X[transient:,i])-min(X[transient:,i]))/(max(X[transient:,i])+min(X[transient:,i]))
+        
+    
+        d_final=d_final+d
+        
     return d_final
 
 def model(x,pars,totaltime=100, dt=0.1):

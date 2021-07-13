@@ -15,7 +15,7 @@ n="final"#"final"
 nv="Prange3"
 filename=""
 
-def load(number= n):
+def load(number= n,filename=filename, nv=nv):
 
     path = 'smc_'+filename+'/pars_' + number + '.out'
     dist_path = 'smc_'+filename+'/distances_' + number + '.out'
@@ -138,8 +138,9 @@ def par_plot(df,name):
     plt.savefig("plot/"+name+'_beta_par_plot.pdf', bbox_inches='tight')
     '''
 
-ARA=meq.ARA
-p, pdf= load(n)
+if __name__ == "__main__":
+    ARA=meq.ARA
+    p, pdf= load(n)
 
-plot(ARA,p,nv)
-par_plot(pdf,nv)
+    plot(ARA,p,nv)
+    par_plot(pdf,nv)

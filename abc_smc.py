@@ -16,6 +16,7 @@ import model_equation
 
 parlist=model_equation.parlist
 x_data= model_equation.ARA
+version="AC-DC"
  
 
 def pars_to_dict(pars):
@@ -180,9 +181,9 @@ def Sequential_ABC(x_data, ncpus,
         weights = np.loadtxt('smc_'+'/weights_{}_{}_{}_{}.out'.format(model_equation.model,sto,gamma,prior_label))
         accepted_distances = np.loadtxt('smc_'+'/distances_{}_{}_{}_{}.out'.format(model_equation.model,sto,gamma,prior_label))
         '''
-        pars = np.loadtxt('smc_'+'/pars_{}.out'.format(prior_label))
-        weights = np.loadtxt('smc_'+'/weights_{}.out'.format(prior_label))
-        accepted_distances = np.loadtxt('smc_'+'/distances_{}.out'.format(prior_label))
+        pars = np.loadtxt('smc_'+version+'/pars_{}.out'.format(prior_label))
+        weights = np.loadtxt('smc_'+version+'/weights_{}.out'.format(prior_label))
+        accepted_distances = np.loadtxt('smc_'+version+'/distances_{}.out'.format(prior_label))
         distance = np.median(accepted_distances)
         idistance = prior_label
 
@@ -211,9 +212,9 @@ def Sequential_ABC(x_data, ncpus,
             last_round = True
         else:
             distance = proposed_dist
-        np.savetxt('smc_'+'/pars_{}.out'.format(label), pars)
-        np.savetxt('smc_'+'/weights_{}.out'.format(label), weights)
-        np.savetxt('smc_'+'/distances_{}.out'.format(label), accepted_distances)
+        np.savetxt('smc_'+version+'/pars_{}.out'.format(label), pars)
+        np.savetxt('smc_'+version+'/weights_{}.out'.format(label), weights)
+        np.savetxt('smc_'+version+'/distances_{}.out'.format(label), accepted_distances)
 
         if acceptance < 0.1 and kernelfactor>0.1 and adaptative_kernel:
             kernelfactor = kernelfactor * 0.7
@@ -225,10 +226,10 @@ def Sequential_ABC(x_data, ncpus,
 
 def main(argv):
 
-    if os.path.isdir('smc_') is False: ## if 'smc' folder does not exist:
-        os.mkdir('smc_') ## create it, the output will go there
+    if os.path.isdir('smc_'+version) is False: ## if 'smc' folder does not exist:
+        os.mkdir('smc_'+version) ## create it, the output will go there
         
-    Sequential_ABC(x_data, ncpus=30,prior_label = 11)
+    Sequential_ABC(x_data, ncpus=30,prior_label = None)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
