@@ -156,7 +156,7 @@ def GeneratePars(x_data, ncpus,
 
 #final_dist =100
 def Sequential_ABC(x_data, ncpus,
-                   initial_dist = 2.0, final_dist =0.1, Npars = 1000, prior_label = None,
+                   initial_dist = 2.5, final_dist =0.1, Npars = 1000, prior_label = None,
                    adaptative_kernel = True):
 
 ## Sequence of acceptance threshold start with initial_dis and keeps on reducing until
@@ -175,9 +175,14 @@ def Sequential_ABC(x_data, ncpus,
         weights = None
         idistance = 0
     else: # a file with the label is used to load the posterior, use always numerical (not 'final')
+        '''
         pars = np.loadtxt('smc_'+'/pars_{}_{}_{}_{}.out'.format(model_equation.model,sto,gamma,prior_label))
         weights = np.loadtxt('smc_'+'/weights_{}_{}_{}_{}.out'.format(model_equation.model,sto,gamma,prior_label))
         accepted_distances = np.loadtxt('smc_'+'/distances_{}_{}_{}_{}.out'.format(model_equation.model,sto,gamma,prior_label))
+        '''
+        pars = np.loadtxt('smc_'+'/pars_{}.out'.format(prior_label))
+        weights = np.loadtxt('smc_'+'/weights_{}.out'.format(prior_label))
+        accepted_distances = np.loadtxt('smc_'+'/distances_{}.out'.format(prior_label))
         distance = np.median(accepted_distances)
         idistance = prior_label
 
@@ -223,7 +228,7 @@ def main(argv):
     if os.path.isdir('smc_') is False: ## if 'smc' folder does not exist:
         os.mkdir('smc_') ## create it, the output will go there
         
-    Sequential_ABC(x_data, ncpus=30)
+    Sequential_ABC(x_data, ncpus=30,prior_label = 11)
 
 if __name__ == "__main__":
    main(sys.argv[1:])

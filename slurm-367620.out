@@ -1,0 +1,59 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=1526603
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=30
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna033
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna033
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna033
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=30
+SLURM_TOPOLOGY_ADDR=core.edge2.dna033
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_icvara.sh
+SLURM_JOBID=367620
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=30
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=367620
+SLURM_LOCALID=0
+SMC step with target distance: 0.14926873512561362
+>>>> Loop processing time: 756.465 sec on 30 CPU cores.
+acceptance rate: 0.17337031900138697
+min accepted distance:  0.052331970286004684
+median accepted distance:  0.1268546197961191
+median evaluated distance:  0.20630462164527194
+SMC step with target distance: 0.1268546197961191
+>>>> Loop processing time: 729.084 sec on 30 CPU cores.
+acceptance rate: 0.15590894917368256
+min accepted distance:  0.03445983768079553
+median accepted distance:  0.1116692489438903
+median evaluated distance:  0.17864254677860036
+SMC step with target distance: 0.1116692489438903
+>>>> Loop processing time: 796.515 sec on 30 CPU cores.
+acceptance rate: 0.15775358889414734
+min accepted distance:  0.04760221067207192
+median accepted distance:  0.09801916224482042
+median evaluated distance:  0.15620327052313204
+SMC step with target distance: 0.1
+>>>> Loop processing time: 784.070 sec on 30 CPU cores.
+acceptance rate: 0.15620118712902217
+min accepted distance:  0.05021482574282951
+median accepted distance:  0.08872541800199955
+median evaluated distance:  0.13916587124408597

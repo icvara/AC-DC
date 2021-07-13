@@ -11,13 +11,14 @@ import statistics
 from collections import Counter
 
 ##par from abc smc
-n="5"#"final"
-nv="newPrange"
+n="final"#"final"
+nv="Prange3"
+filename=""
 
 def load(number= n):
 
-    path = 'smc_'+'/pars_' + number + '.out'
-    dist_path = 'smc_'+'/distances_' + number + '.out'
+    path = 'smc_'+filename+'/pars_' + number + '.out'
+    dist_path = 'smc_'+filename+'/distances_' + number + '.out'
 
     raw_output= np.loadtxt(path)
     dist_output= np.loadtxt(dist_path)
@@ -99,6 +100,7 @@ def plot(ARA,par,name):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     ax.plot(X[:,-1],Y[:,-1],Z[:,-1],'-')
+    ax.view_init(30, 75)
     plt.savefig("plot/"+name+'_3D'+'.pdf', bbox_inches='tight')
     plt.close()
 
@@ -118,21 +120,26 @@ def par_plot(df,name):
     sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
                                               'K_ARAY','n_ARAY','K_YZ','n_YZ', 'beta_Y','alpha_Y','delta_Y',
                                               'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
+    plt.savefig("plot/"+name+'_Full_par_plot.pdf', bbox_inches='tight')
+    
+    sns.pairplot(df[['K_XY','n_XY','alpha_X','delta_X',
+                      'K_YZ','n_YZ','alpha_Y','delta_Y',
+                      'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
     plt.savefig("plot/"+name+'_par_plot.pdf', bbox_inches='tight')
-
+    '''
     plt.close()
     sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ',
                                               'K_ARAY','n_ARAY','K_YZ','n_YZ',
                                               'K_ZX','n_ZX']], kind='kde')
     plt.savefig("plot/"+name+'_K_par_plot.pdf', bbox_inches='tight')
-
+    
     plt.close()
     sns.pairplot(df[['beta_X','alpha_X','delta_X', 'beta_Y','alpha_Y','delta_Y', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
     plt.savefig("plot/"+name+'_beta_par_plot.pdf', bbox_inches='tight')
-
+    '''
 
 ARA=meq.ARA
 p, pdf= load(n)
 
 plot(ARA,p,nv)
-#par_plot(pdf,nv)
+par_plot(pdf,nv)
