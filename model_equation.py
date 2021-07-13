@@ -106,10 +106,7 @@ parlist = [ # list containing information of each parameter
 ARA=np.logspace(-4.5,-2.,10,base=8) #for ACDC
 #ARA = np.array([0]) #for rep
 
-'''
-def Distance(pars, y_data):
-    model_X,model_Y,model_Z = Intergration(Xi,Yi,Zi,100,0.1,ARA,pars)
-'''   
+
 
 def Flow(X,Y,Z,ARA,par):
     flow_x= par['alpha_X'] +( np.power((par['beta_X']-par['alpha_X']) *ARA,par['n_ARAX'])) / ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))
@@ -215,6 +212,7 @@ def distance(x,pars,totaltime=100, dt=0.1):
         d_final=d_final+d
         
     return d_final
+
 
 def model(x,pars,totaltime=100, dt=0.1):
     Xi=np.ones(len(x))*0.5

@@ -10,12 +10,12 @@ import statistics
 
 from collections import Counter
 
-##par from abc smc
-n="final"#"final"
-nv="Prange3"
-filename=""
 
-def load(number= n,filename=filename, nv=nv):
+n="final"#"final"
+filename="AC-DC"
+
+##par from abc smc
+def load(number= n,filename=filename):
 
     path = 'smc_'+filename+'/pars_' + number + '.out'
     dist_path = 'smc_'+filename+'/distances_' + number + '.out'
@@ -38,39 +38,6 @@ def load(number= n,filename=filename, nv=nv):
     p_final=abc_smc.pars_to_dict(p)
     return p_final, df
 
-## predefined par
-par = {
-    'K_ARAX':-4, #5
-    'n_ARAX':2,
-    'K_ARAY':-4,#5,
-    'n_ARAY':2,
-    
-    'K_ZX':0.01, 
-    'K_XY':0.01,
-    'K_YZ':0.01,
-    
-    'K_XZ':1e10,#0.05,#4.05, #1e10
-    
-    'n_ZX':2,
-    'n_XZ':2,
-    'n_XY':2,
-    'n_YZ':2,
-
-    'beta_Z':1,
-    'beta_Y':1,
-    'beta_X':1,
-
-    'alpha_Z':0,
-    'alpha_Y':0,
-    'alpha_X':0,    
-
-    'delta_X':1,
-    'delta_Z':1,
-    'delta_Y':1,
-}
-
-ARA=np.array([0.000e+00, 3.125e-06, 6.250e-06, 1.250e-05, 2.500e-05, 5.000e-05,
-       1.000e-04, 2.000e-04, 2.000e-01])
 
 ##plotting part
 
@@ -140,7 +107,7 @@ def par_plot(df,name):
 
 if __name__ == "__main__":
     ARA=meq.ARA
-    p, pdf= load(n)
+    p, pdf= load(n,filename)
 
-    plot(ARA,p,nv)
-    par_plot(pdf,nv)
+    plot(ARA,p,filename)
+    par_plot(pdf,filename)
