@@ -11,8 +11,8 @@ import statistics
 from collections import Counter
 
 
-n="final"#"final"
-filename=""#"AC-DC"
+n="7"#"final"
+filename="AC-DC_2ind"
 
 ##par from abc smc
 def load(number= n,filename=filename):
@@ -58,17 +58,17 @@ def plot(ARA,par,name):
     sns.heatmap(df_Y, cmap ='Blues', vmin=0, vmax=0.2)
     plt.subplot(1,3,3)
     sns.heatmap(df_Z, cmap ='Greens', vmin=0, vmax=0.2)
-    plt.savefig("plot/"+name+'_heatmap'+'.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_'+n+'_heatmap'+'.pdf', bbox_inches='tight')
     #plt.show()
     plt.close()
 
 
-
+    '''
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     ax.plot(X[:,-1],Y[:,-1],Z[:,-1],'-')
     ax.view_init(30, 75)
-    plt.savefig("plot/"+name+'_3D'+'.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_'+n+'_3D'+'.pdf', bbox_inches='tight')
     plt.close()
 
 
@@ -77,9 +77,10 @@ def plot(ARA,par,name):
     plt.plot(Z[:,-1],'-g')
     plt.ylim(0,1)
     plt.plot([20/0.1, 20/0.1], [0, 1], 'k--', lw=1)
-    plt.savefig("plot/"+name+'_time'+'.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_'+n+'_time'+'.pdf', bbox_inches='tight')
     plt.close()
     #plt.show()
+    '''
 
 
 
@@ -98,7 +99,7 @@ def par_plot(df,name,parlist):
         g.axes[-1,i].set_xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
         g.axes[i,0].set_ylim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
 
-    plt.savefig("plot/"+name+'_Full_par_plot.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_'+n+'_Full_par_plot.pdf', bbox_inches='tight')
 
 
     '''                                        

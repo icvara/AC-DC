@@ -16,7 +16,7 @@ import model_equation
 
 parlist=model_equation.parlist
 x_data= model_equation.ARA
-version="AC-DC"
+version="AC-DC_2ind"
  
 
 def pars_to_dict(pars):
@@ -157,7 +157,7 @@ def GeneratePars(x_data, ncpus,
 
 #final_dist =100
 def Sequential_ABC(x_data, ncpus,
-                   initial_dist = 1000.0, final_dist =2.0, Npars = 1000, prior_label = None,
+                   initial_dist = 20.0, final_dist =2.0, Npars = 1000, prior_label = None,
                    adaptative_kernel = True):
 
 ## Sequence of acceptance threshold start with initial_dis and keeps on reducing until
