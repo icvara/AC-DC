@@ -87,7 +87,7 @@ par2 = {
     'alpha_Y':1,
     'delta_Y':1,
     
-    'K_ZX':0.01, 
+    'K_ZX':1.01, 
     'n_ZX':2,
     'beta_Z':1,
     'alpha_Z':0,
@@ -114,7 +114,7 @@ par3 = {
     'alpha_Y':0,
     'delta_Y':1,
     
-    'K_ZX':0.01, 
+    'K_ZX':1.01, 
     'n_ZX':2,
     'beta_Z':1,
     'alpha_Z':0,

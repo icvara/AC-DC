@@ -81,7 +81,7 @@ parlist = [ # list containing information of each parameter
     {'name' : 'n_XZ','lower_limit':1.5,'upper_limit':2.5},
     {'name' : 'beta_X','lower_limit':1.0,'upper_limit':1.05},
     {'name' : 'alpha_X','lower_limit':0.0,'upper_limit':0.5},
-    {'name' : 'delta_X','lower_limit':0.5,'upper_limit':1.0},
+    {'name' : 'delta_X','lower_limit':0.95,'upper_limit':1.0},
 
 
     #Seconde node Y param
@@ -91,7 +91,7 @@ parlist = [ # list containing information of each parameter
     {'name' : 'n_YZ','lower_limit':1.5,'upper_limit':2.5},
     {'name' : 'beta_Y','lower_limit':1.0,'upper_limit':1.05},
     {'name' : 'alpha_Y','lower_limit':0.0,'upper_limit':0.5},
-    {'name' : 'delta_Y','lower_limit':0.5,'upper_limit':1.0},
+    {'name' : 'delta_Y','lower_limit':0.95,'upper_limit':1.0},
 
 
     #third node Z param
@@ -99,7 +99,7 @@ parlist = [ # list containing information of each parameter
     {'name' : 'n_ZX','lower_limit':1.5,'upper_limit':2.5},
     {'name' : 'beta_Z','lower_limit':1.0,'upper_limit':1.05},
     {'name' : 'alpha_Z','lower_limit':0.0,'upper_limit':0.5},
-    {'name' : 'delta_Z','lower_limit':0.5,'upper_limit':1.0},
+    {'name' : 'delta_Z','lower_limit':0.95,'upper_limit':1.0},
 ]
 
 
@@ -181,7 +181,7 @@ def distance(x,pars,totaltime=100, dt=0.1):
     transient = int(20/0.1)
  
     #range where oscillation is expected
-    oscillation_ara=[1,6]
+    oscillation_ara=[1,7]
 
     d_final=0
 
@@ -210,15 +210,15 @@ def distance(x,pars,totaltime=100, dt=0.1):
                 #this number can be tuned to help the algorythm to find good parameter....
             
         else:
-            d1= len(minValues) #remove it to try to less penalize oscillation
+            d1= len(minValues)/(2+len(minValues))
             d2=  2*(max(X[transient:,i])-min(X[transient:,i]))/(max(X[transient:,i])+min(X[transient:,i]))
-            d= d2
+            d= d1+d2
            
         #print(d)
         d_final=d_final+d
         
     
-    d= 2*X[-1,-0]/(X[-1,-1]+X[-1,-0]) #try to valorise increase behaviour compare to dead one
+    d= 4*X[-1,0]/(X[-1,-1]+X[-1,0]) #try to valorise increase behaviour compare to dead one
    # print("diff   ", d)
     d_final=d_final+d
         
@@ -226,7 +226,7 @@ def distance(x,pars,totaltime=100, dt=0.1):
 
 
 def model(x,pars,totaltime=100, dt=0.1):
-    Xi=np.ones(len(x))*0.5
+    Xi=np.ones(len(x))*0.1
     Yi=np.zeros(len(x))
     Zi=np.zeros(len(x))
     X,Y,Z = Integration(Xi,Yi,Zi,totaltime,dt,x,pars)

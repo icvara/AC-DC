@@ -11,8 +11,8 @@ import statistics
 from collections import Counter
 
 
-n="1"#"final"
-filename="AC-DC"
+n="final"#"final"
+filename=""#"AC-DC"
 
 ##par from abc smc
 def load(number= n,filename=filename):
@@ -83,31 +83,53 @@ def plot(ARA,par,name):
 
 
 
-def par_plot(df,name):
-    sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
+def par_plot(df,name,parlist):
+    listpar = ['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
                                               'K_ARAY','n_ARAY','K_YZ','n_YZ', 'beta_Y','alpha_Y','delta_Y',
-                                              'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
+                                              'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z']
+    namelist=[]
+    for i,par in enumerate(parlist):
+        namelist.append(parlist[i]['name'])
+        
+    g=sns.pairplot(df[namelist], kind='kde', corner=True)
+
+    for i,par in enumerate(namelist): 
+       # g.axes[i,0].set_xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+        g.axes[-1,i].set_xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+        g.axes[i,0].set_ylim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+
     plt.savefig("plot/"+name+'_Full_par_plot.pdf', bbox_inches='tight')
+
+
+    '''                                        
+    
+
+    
     
     sns.pairplot(df[['K_XY','n_XY','alpha_X','delta_X',
                       'K_YZ','n_YZ','alpha_Y','delta_Y',
                       'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
     plt.savefig("plot/"+name+'_par_plot.pdf', bbox_inches='tight')
-    '''
+    
     plt.close()
-    sns.pairplot(df[['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ',
-                                              'K_ARAY','n_ARAY','K_YZ','n_YZ',
-                                              'K_ZX','n_ZX']], kind='kde')
+    
     plt.savefig("plot/"+name+'_K_par_plot.pdf', bbox_inches='tight')
     
     plt.close()
+  
     sns.pairplot(df[['beta_X','alpha_X','delta_X', 'beta_Y','alpha_Y','delta_Y', 'beta_Z','alpha_Z','delta_Z']], kind='kde')
+    
     plt.savefig("plot/"+name+'_beta_par_plot.pdf', bbox_inches='tight')
+    
+    g = sns.pairplot(df[['K_ARAX','n_ARAX','K_XY']], kind='kde')
+
+    
     '''
+    #plt.show()
 
 if __name__ == "__main__":
     ARA=meq.ARA
     p, pdf= load(n,filename)
 
     plot(ARA,p,filename)
-    par_plot(pdf,filename)
+    par_plot(pdf,filename,meq.parlist)
