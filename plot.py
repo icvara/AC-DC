@@ -27,37 +27,76 @@ def load(number= n,filename=filename):
                                               'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z'])
     df['dist']=dist_output
 
-    p_min=df[df['dist']==min(df['dist'])]
+    distlist= sorted(df['dist'])
 
-    p=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
-    p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
-    p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
-    p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
-    p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
+    p_0=df[df['dist']==min(df['dist'])]
+    p_25=df[df['dist']==distlist[250]]
+    p_50=df[df['dist']==distlist[500]]
+    p_75=df[df['dist']==distlist[750]]
+    p_100=df[df['dist']==max(df['dist'])]
+    #print(min(df['dist']),distlist[250],distlist[500],distlist[750],max(df['dist']))
 
-    p_final=abc_smc.pars_to_dict(p)
-    return p_final, df
+    p_min=p_0
+    p0=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
+            p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
+            p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
+            p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
+            p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
+    p_min=p_25
+    p25=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
+            p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
+            p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
+            p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
+            p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
+    p_min=p_50
+    p50=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
+            p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
+            p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
+            p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
+            p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
+    p_min=p_75
+    p75=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
+            p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
+            p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
+            p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
+            p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
+    p_min=p_100
+    p100=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
+            p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
+            p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
+            p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
+            p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
+    
+    p0=abc_smc.pars_to_dict(p0)
+    p25=abc_smc.pars_to_dict(p25)
+    p50=abc_smc.pars_to_dict(p50)
+    p75=abc_smc.pars_to_dict(p75)
+    p100=abc_smc.pars_to_dict(p100)
+    
+    return p0,p25,p50,p75,p100, df
 
 
 ##plotting part
 
-def plot(ARA,par,name):
+def plot(ARA,p,name):
+    for i,par in enumerate(p):
+        
+
+        X,Y,Z = meq.model(ARA,par)
 
 
-    X,Y,Z = meq.model(ARA,par)
+        df_X=pd.DataFrame(X,columns=ARA)
+        df_Y=pd.DataFrame(Y,columns=ARA)
+        df_Z=pd.DataFrame(Z,columns=ARA)
 
 
-    df_X=pd.DataFrame(X,columns=ARA)
-    df_Y=pd.DataFrame(Y,columns=ARA)
-    df_Z=pd.DataFrame(Z,columns=ARA)
+        plt.subplot(len(p),3,(1+i*3))
+        sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=0.2)
+        plt.subplot(len(p),3,(2+i*3))
+        sns.heatmap(df_Y, cmap ='Blues', vmin=0, vmax=0.2)
+        plt.subplot(len(p),3,(3+i*3))
+        sns.heatmap(df_Z, cmap ='Greens', vmin=0, vmax=0.2)
 
-
-    plt.subplot(1,3,1)
-    sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=0.2)
-    plt.subplot(1,3,2)
-    sns.heatmap(df_Y, cmap ='Blues', vmin=0, vmax=0.2)
-    plt.subplot(1,3,3)
-    sns.heatmap(df_Z, cmap ='Greens', vmin=0, vmax=0.2)
     plt.savefig("plot/"+name+'_'+n+'_heatmap'+'.pdf', bbox_inches='tight')
     #plt.show()
     plt.close()
@@ -130,7 +169,7 @@ def par_plot(df,name,parlist):
 
 if __name__ == "__main__":
     ARA=meq.ARA
-    p, pdf= load(n,filename)
+    p0,p25,p50,p75,p100, pdf= load(n,filename)
 
-    plot(ARA,p,filename)
+    plot(ARA,[p0],filename)
     par_plot(pdf,filename,meq.parlist)
