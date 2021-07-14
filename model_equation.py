@@ -103,7 +103,7 @@ parlist = [ # list containing information of each parameter
 ]
 
 
-ARA=np.logspace(-4.5,-2.,10,base=8) #for ACDC
+ARA=np.logspace(-4.5,-2.,8,base=10) #for ACDC
 #ARA = np.array([0]) #for rep
 
 

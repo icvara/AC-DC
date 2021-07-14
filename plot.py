@@ -79,6 +79,7 @@ def load(number= n,filename=filename):
 ##plotting part
 
 def plot(ARA,p,name):
+    #ARA=np.logspace(-4.5,-2.,1000,base=10)
     for i,par in enumerate(p):
         
 
