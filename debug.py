@@ -6,6 +6,7 @@ import numpy as np
 from scipy.signal import argrelextrema
 import seaborn as sns
 import pandas as pd
+import cProfile
 
 n="final"#"final"
 nv="Prange3"
@@ -13,7 +14,7 @@ filename=""
 
 
 par0 = {
-    'K_ARAX':-3.0,#0.01,
+    'K_ARAX':-3.5,#0.01,
     'n_ARAX':2,
     'K_XY':0.01,
     'n_XY':2,
@@ -23,7 +24,7 @@ par0 = {
     'alpha_X':0,
     'delta_X':1,
     
-    'K_ARAY':-3.0,
+    'K_ARAY':-3.5,
     'n_ARAY':2,
     'K_YZ':0.01,
     'n_YZ':2,
@@ -129,8 +130,9 @@ ARA=np.array([0.000e+00, 3.125e-06, 6.250e-06, 1.250e-05, 2.500e-05, 5.000e-05,
        1.000e-04, 2.000e-04, 2.000e-01])
 
 ARA=np.array([0,4.8828125e-05,0.0001953125,0.00078125,0.003125,0.0125,0.05,0.2])
-ARA=np.logspace(-4.,-2.,10,base=8)
-ARA=np.logspace(-4.5,-2.,10,base=8)
+
+
+ARA=np.logspace(-4.5,-2.,8,base=10)
 
 
 #p, pdf= plot.load(n,filename)
@@ -215,22 +217,28 @@ plt.show()
 
 
 
+def plot():
 
-X,Y,Z=meq.model(ARA,par0)
-df_X=pd.DataFrame(X,columns=ARA)
-plt.subplot(2,2,1)
-sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
-X,Y,Z=meq.model(ARA,par1)
-df_X=pd.DataFrame(X,columns=ARA)
-plt.subplot(2,2,2)
-sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
-X,Y,Z=meq.model(ARA,par2)
-df_X=pd.DataFrame(X,columns=ARA)
-plt.subplot(2,2,3)
-sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
-X,Y,Z=meq.model(ARA,par3)
-df_X=pd.DataFrame(X,columns=ARA)
-plt.subplot(2,2,4)
-sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
+    X,Y,Z=meq.model(ARA,par0)
+    df_X=pd.DataFrame(X,columns=ARA)
+    plt.subplot(2,2,1)
+    sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
+    X,Y,Z=meq.model(ARA,par1)
+    df_X=pd.DataFrame(X,columns=ARA)
+    plt.subplot(2,2,2)
+    sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
+    X,Y,Z=meq.model(ARA,par2)
+    df_X=pd.DataFrame(X,columns=ARA)
+    plt.subplot(2,2,3)
+    sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
+    X,Y,Z=meq.model(ARA,par3)
+    df_X=pd.DataFrame(X,columns=ARA)
+    plt.subplot(2,2,4)
+    sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
 
-plt.show()
+    plt.show()
+'''
+if __name__ == '__main__':
+    cProfile.run('plot()')
+'''
+plot()

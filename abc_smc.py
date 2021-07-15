@@ -1,3 +1,4 @@
+
 import numpy as np
 from scipy.stats import norm, uniform, multivariate_normal
 from scipy.optimize import minimize
@@ -16,7 +17,7 @@ import model_equation
 
 parlist=model_equation.parlist
 x_data= model_equation.ARA
-version="AC-DC_2ind_dist"
+version="AC-DC_1"
  
 
 def pars_to_dict(pars):

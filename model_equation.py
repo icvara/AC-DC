@@ -181,7 +181,7 @@ def distance(x,pars,totaltime=100, dt=0.1):
     transient = int(20/0.1)
  
     #range where oscillation is expected
-    oscillation_ara=[1,7]
+    oscillation_ara=[1,6]
 
     d_final=0
 
@@ -205,7 +205,7 @@ def distance(x,pars,totaltime=100, dt=0.1):
                 d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1])
                 d= d2+d3
             else:
-                d=3
+                d=4
                 #d=abs(max(X[transient:,i])-max(X[transient:,(i+1)]))/max(X[transient:,i])
                 #this number can be tuned to help the algorythm to find good parameter....
             
