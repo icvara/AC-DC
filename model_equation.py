@@ -8,36 +8,6 @@ from scipy.signal import argrelextrema
 
 
 
-par = {
-    'K_ARAX':5,#0.01,
-    'n_ARAX':2,
-    'K_ARAY':5,
-    'n_ARAY':2,
-    
-    'K_ZX':0.01, 
-    'K_XY':0.01,
-    'K_YZ':0.01,
-    
-    'K_XZ':1e10,#4.05
-    
-    'n_ZX':2,
-    'n_XZ':2,
-    'n_XY':2,
-    'n_YZ':2,
-
-    'beta_Z':1,
-    'beta_Y':1,
-    'beta_X':1,
-
-    'alpha_Z':0,
-    'alpha_Y':1,
-    'alpha_X':1,    
-
-    'delta_X':1,
-    'delta_Z':1,
-    'delta_Y':1,
-}
-
 #list for rep
 parlist_REP = [ # list containing information of each parameter
     #first node X param
@@ -73,33 +43,33 @@ parlist_REP = [ # list containing information of each parameter
 #list for ACDC
 parlist = [ # list containing information of each parameter
     #first node X param
-    {'name' : 'K_ARAX', 'lower_limit':-5.0,'upper_limit':-2.0}, #in log
-    {'name' : 'n_ARAX','lower_limit':1.5,'upper_limit':2.5},
-    {'name' : 'K_XY','lower_limit':0.001,'upper_limit':0.2},
-    {'name' : 'n_XY','lower_limit':1.5,'upper_limit':2.5},
-    {'name' : 'K_XZ','lower_limit':0.001,'upper_limit':0.2},
-    {'name' : 'n_XZ','lower_limit':1.5,'upper_limit':2.5},
-    {'name' : 'beta_X','lower_limit':1.0,'upper_limit':1.05},
-    {'name' : 'alpha_X','lower_limit':0.0,'upper_limit':0.2},
-    {'name' : 'delta_X','lower_limit':0.95,'upper_limit':1.0},
+    {'name' : 'K_ARAX', 'lower_limit':-5.0,'upper_limit':0.0}, #in log
+    {'name' : 'n_ARAX','lower_limit':0.5,'upper_limit':2.0},
+    {'name' : 'K_XY','lower_limit':-3.0,'upper_limit':0.0},
+    {'name' : 'n_XY','lower_limit':0.5,'upper_limit':2.0},
+    {'name' : 'K_XZ','lower_limit':-3.0,'upper_limit':0.0},
+    {'name' : 'n_XZ','lower_limit':0.5,'upper_limit':2.0},
+    {'name' : 'beta_X','lower_limit':-1.0,'upper_limit':0.0},
+    {'name' : 'alpha_X','lower_limit':-6.0,'upper_limit':0.0},
+    {'name' : 'delta_X','lower_limit':0.99,'upper_limit':1.0},
 
 
     #Seconde node Y param
-    {'name' : 'K_ARAY', 'lower_limit':-5.0,'upper_limit':-2.0}, #in log
-    {'name' : 'n_ARAY','lower_limit':1.5,'upper_limit':2.5},
-    {'name' : 'K_YZ','lower_limit':0.001,'upper_limit':0.2},
-    {'name' : 'n_YZ','lower_limit':1.5,'upper_limit':2.5},
-    {'name' : 'beta_Y','lower_limit':1.0,'upper_limit':1.05},
-    {'name' : 'alpha_Y','lower_limit':0.0,'upper_limit':0.2},
-    {'name' : 'delta_Y','lower_limit':0.95,'upper_limit':1.0},
+    {'name' : 'K_ARAY', 'lower_limit':-5.0,'upper_limit':0.0}, #in log
+    {'name' : 'n_ARAY','lower_limit':0.5,'upper_limit':2.0},
+    {'name' : 'K_YZ','lower_limit':-3.0,'upper_limit':0.0},
+    {'name' : 'n_YZ','lower_limit':0.5,'upper_limit':2.0},
+    {'name' : 'beta_Y','lower_limit':-1.0,'upper_limit':0.0},
+    {'name' : 'alpha_Y','lower_limit':-6.0,'upper_limit':0.0},
+    {'name' : 'delta_Y','lower_limit':0.99,'upper_limit':1.0},
 
 
     #third node Z param
-    {'name' : 'K_ZX','lower_limit':0.001,'upper_limit':0.2},
-    {'name' : 'n_ZX','lower_limit':1.5,'upper_limit':2.5},
-    {'name' : 'beta_Z','lower_limit':1.0,'upper_limit':1.05},
-    {'name' : 'alpha_Z','lower_limit':0.0,'upper_limit':0.5},
-    {'name' : 'delta_Z','lower_limit':0.95,'upper_limit':1.0},
+    {'name' : 'K_ZX','lower_limit':-3.0,'upper_limit':0.0},
+    {'name' : 'n_ZX','lower_limit':0.5,'upper_limit':2.0},
+    {'name' : 'beta_Z','lower_limit':-4.0,'upper_limit':0.0},
+    {'name' : 'alpha_Z','lower_limit':-6.0,'upper_limit':0.0},
+    {'name' : 'delta_Z','lower_limit':0.99,'upper_limit':1.0},
 ]
 
 
@@ -109,23 +79,30 @@ ARA=np.logspace(-4.5,-2.,8,base=10) #for ACDC
 
 
 def Flow(X,Y,Z,ARA,par):
-    flow_x= par['alpha_X'] +( np.power((par['beta_X']-par['alpha_X']) *ARA,par['n_ARAX'])) / ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))
-    flow_x= flow_x / ( 1 + np.power(Z/par['K_ZX'],par['n_ZX']))
+   # flow_x= 10**par['alpha_X'] +( np.power((10**par['beta_X']-10**par['alpha_X']) *ARA,par['n_ARAX'])) / ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))
+    maxrate_x = (10**par['beta_X']-10**par['alpha_X'])
+    if maxrate_x < 0 :
+       maxrate_x=0  
+    flow_x = 10**par['alpha_X'] + (np.power(maxrate_x *ARA,par['n_ARAX']))/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))
+    flow_x = flow_x / ( 1 + np.power((Z/10**par['K_ZX']),par['n_ZX']))
     flow_x = flow_x - X*par['delta_X']
 
-    flow_y= par['alpha_Y'] +( np.power((par['beta_Y']-par['alpha_Y']) *ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
-    flow_y= flow_y / ( 1 + np.power(X/par['K_XY'],par['n_XY']))
+    maxrate_y = (10**par['beta_Y']-10**par['alpha_Y'])
+    if maxrate_y < 0 :
+      maxrate_y=0  
+    flow_y = 10**par['alpha_Y'] +( np.power(maxrate_y *ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
+    flow_y = flow_y / ( 1 + np.power(X/10**par['K_XY'],par['n_XY']))
     flow_y = flow_y - Y*par['delta_Y']
 
-    flow_z= par['alpha_Z'] + (par['beta_Z']-par['alpha_Z'])/( 1 + np.power(Y/par['K_YZ'],par['n_YZ']))
-    flow_z= flow_z /( 1 + np.power(X/par['K_XZ'],par['n_XZ']))
+    flow_z = 10**par['alpha_Z'] + (10**par['beta_Z']-10**par['alpha_Z'])/( 1 + np.power(Y/10**par['K_YZ'],par['n_YZ']))
+    flow_z = flow_z /( 1 + np.power(X/10**par['K_XZ'],par['n_XZ']))
     flow_z = flow_z - Z*par['delta_Z']
 
     return flow_x,flow_y,flow_z
 
 
 
-def Integration(Xi,Yi,Zi, totaltime=100, dt=0.1, ch=ARA , pars=par ):
+def Integration(Xi,Yi,Zi, totaltime, dt, ch , pars ):
     X=Xi
     Y=Yi
     Z=Zi

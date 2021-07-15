@@ -17,7 +17,7 @@ import model_equation
 
 parlist=model_equation.parlist
 x_data= model_equation.ARA
-version="AC-DC_1"
+version="AC-DC_3"
  
 
 def pars_to_dict(pars):
@@ -158,7 +158,7 @@ def GeneratePars(x_data, ncpus,
 
 #final_dist =100
 def Sequential_ABC(x_data, ncpus,
-                   initial_dist = 20.0, final_dist =5.0, Npars = 1000, prior_label = None,
+                   initial_dist = 20.0, final_dist =4.0, Npars = 1000, prior_label = None,
                    adaptative_kernel = True):
 
 ## Sequence of acceptance threshold start with initial_dis and keeps on reducing until
@@ -230,7 +230,7 @@ def main(argv):
     if os.path.isdir('smc_'+version) is False: ## if 'smc' folder does not exist:
         os.mkdir('smc_'+version) ## create it, the output will go there
         
-    Sequential_ABC(x_data, ncpus=12,prior_label = None)
+    Sequential_ABC(x_data, ncpus=30,prior_label = None,Npars=10000)
 
 if __name__ == "__main__":
    main(sys.argv[1:])

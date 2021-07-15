@@ -123,7 +123,7 @@ par3 = {
 
 }
 
-par=par2
+
 
 ARA=meq.ARA
 ARA=np.array([0.000e+00, 3.125e-06, 6.250e-06, 1.250e-05, 2.500e-05, 5.000e-05,
@@ -134,59 +134,6 @@ ARA=np.array([0,4.8828125e-05,0.0001953125,0.00078125,0.003125,0.0125,0.05,0.2])
 
 ARA=np.logspace(-4.5,-2.,8,base=10)
 
-
-#p, pdf= plot.load(n,filename)
-p2=meq.par
-
-
-
-X,Y,Z=meq.model(ARA,par)
-
-i=9
-d=[]
-
-
-def distance(X,ARA,i):
-    # transient time / dt
-    transient = int(20/0.1) 
-    # for local maxima
-    max_list=argrelextrema(X[transient:,i], np.greater)
-    maxValues=X[transient:,i][max_list]
-    # for local minima
-    min_list=argrelextrema(X[transient:,i], np.less)
-    minValues=X[transient:,i][min_list]
-
-    #range where oscillation is expected
-    oscillation_ara=[1,6]
-
-    if i>oscillation_ara[0] and i<oscillation_ara[1]:
-    
-        if len(maxValues)>1:
-            '''
-            d_final= 1/len(maxValues) + 2
-
-        if len(maxValues)>4:
-            #all time point
-            #d2=abs((maxValues[1:] - maxValues[0:-1])/maxValues[0:-1])
-            #d3=2*(np.sum(minValues[1:])/(np.sum(minValues[1:])+np.sum(maxValues[1:])))
-            #d_final= np.sum(d2)+d3
-            '''
-            #last time point
-            d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2]))
-            d3=2*(min(minValues))/(min(minValues)+max(maxValues))
-            d4=2*(minValues[-1])/(minValues[-1]+maxValues[-1])
-            d_final= d2+d3
-        else:
-            d_final=3
-        
-    else:
-        d_final = 10e10
-        d_final= len(minValues) + 2*(max(X[transient:,i])-min(X[transient:,i]))/(max(X[transient:,i])+min(X[transient:,i]))
-    return d_final
-
-d=0
-for i in range(0,(len(ARA)-1)):
-    d=d+distance(X,ARA,i)
 
 #print(d)
 print("AC-DC " , meq.distance(ARA,par0))
@@ -241,4 +188,4 @@ def plot():
 if __name__ == '__main__':
     cProfile.run('plot()')
 '''
-plot()
+#plot()

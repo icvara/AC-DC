@@ -11,8 +11,8 @@ import statistics
 from collections import Counter
 
 #['1','2','3','4','5','6','7','8','9','10','11',
-n=['final']
-filename="AC-DC_2ind_dist"
+n=['6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22']
+filename="AC-DC_1"
 
 ##par from abc smc
 def load(number= n,filename=filename):
