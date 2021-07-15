@@ -16,9 +16,9 @@ filename=""
 par0 = {
     'K_ARAX':-3.5,#0.01,
     'n_ARAX':2,
-    'K_XY':0.01,
+    'K_XY':-2,
     'n_XY':2,
-    'K_XZ':0.05,#4.05
+    'K_XZ':-1.25,#4.05
     'n_XZ':2,
     'beta_X':1,
     'alpha_X':0,
@@ -26,13 +26,13 @@ par0 = {
     
     'K_ARAY':-3.5,
     'n_ARAY':2,
-    'K_YZ':0.01,
+    'K_YZ':-2,
     'n_YZ':2,
     'beta_Y':1,
     'alpha_Y':0,
     'delta_Y':1,
     
-    'K_ZX':0.01, 
+    'K_ZX':-2, 
     'n_ZX':2,
     'beta_Z':1,
     'alpha_Z':0,
@@ -44,7 +44,7 @@ par0 = {
 par1 = {
     'K_ARAX':0.0,#0.01,
     'n_ARAX':2,
-    'K_XY':0.01,#
+    'K_XY':-2,#
     'n_XY':2,
     'K_XZ':5,#4.05
     'n_XZ':2,
@@ -54,13 +54,13 @@ par1 = {
     
     'K_ARAY':0.0,
     'n_ARAY':2,
-    'K_YZ':0.01,#0.01,
+    'K_YZ':-2,#0.01,
     'n_YZ':2,
     'beta_Y':1,
     'alpha_Y':1,
     'delta_Y':1,
     
-    'K_ZX':0.01, 
+    'K_ZX':-2, 
     'n_ZX':2,
     'beta_Z':1,
     'alpha_Z':0,
@@ -72,7 +72,7 @@ par1 = {
 par2 = {
     'K_ARAX':-3.0,#0.01,
     'n_ARAX':2,
-    'K_XY':0.01,
+    'K_XY':-2,
     'n_XY':2,
     'K_XZ':0.05,#4.05
     'n_XZ':2,
@@ -82,13 +82,13 @@ par2 = {
     
     'K_ARAY':-3.0,
     'n_ARAY':2,
-    'K_YZ':1,#0.01,
+    'K_YZ':2,#0.01,
     'n_YZ':2,
     'beta_Y':1,
     'alpha_Y':1,
     'delta_Y':1,
     
-    'K_ZX':1.01, 
+    'K_ZX':2, 
     'n_ZX':2,
     'beta_Z':1,
     'alpha_Z':0,
@@ -188,4 +188,4 @@ def plot():
 if __name__ == '__main__':
     cProfile.run('plot()')
 '''
-#plot()
+plot()

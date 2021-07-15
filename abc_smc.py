@@ -230,7 +230,7 @@ def main(argv):
     if os.path.isdir('smc_'+version) is False: ## if 'smc' folder does not exist:
         os.mkdir('smc_'+version) ## create it, the output will go there
         
-    Sequential_ABC(x_data, ncpus=30,prior_label = None,Npars=10000)
+    Sequential_ABC(x_data, ncpus=30,final_dist =5.0,prior_label = None,Npars=1000)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
