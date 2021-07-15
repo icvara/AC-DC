@@ -218,7 +218,7 @@ def distance(x,pars,totaltime=100, dt=0.1):
         d_final=d_final+d
         
     
-    d= 4*X[-1,0]/(X[-1,-1]+X[-1,0]) #try to valorise increase behaviour compare to dead one
+    d= 10*X[-1,0]/(X[-1,-1]+X[-1,0]) #try to valorise increase behaviour compare to dead one
    # print("diff   ", d)
     d_final=d_final+d
         

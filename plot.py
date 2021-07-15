@@ -10,12 +10,13 @@ import statistics
 
 from collections import Counter
 
-
-n="7"#"final"
-filename="AC-DC_2ind"
+#['1','2','3','4','5','6','7','8','9','10','11',
+n=['final']
+filename="AC-DC_2ind_dist"
 
 ##par from abc smc
 def load(number= n,filename=filename):
+
 
     path = 'smc_'+filename+'/pars_' + number + '.out'
     dist_path = 'smc_'+filename+'/distances_' + number + '.out'
@@ -78,7 +79,7 @@ def load(number= n,filename=filename):
 
 ##plotting part
 
-def plot(ARA,p,name):
+def plot(ARA,p,name,nb):
     #ARA=np.logspace(-4.5,-2.,1000,base=10)
     for i,par in enumerate(p):
         
@@ -98,7 +99,7 @@ def plot(ARA,p,name):
         plt.subplot(len(p),3,(3+i*3))
         sns.heatmap(df_Z, cmap ='Greens', vmin=0, vmax=0.2)
 
-    plt.savefig("plot/"+name+'_'+n+'_heatmap'+'.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_'+nb+'_heatmap'+'.pdf', bbox_inches='tight')
     #plt.show()
     plt.close()
 
@@ -124,7 +125,7 @@ def plot(ARA,p,name):
 
 
 
-def par_plot(df,name,parlist):
+def par_plot(df,name,nb,parlist):
     listpar = ['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
                                               'K_ARAY','n_ARAY','K_YZ','n_YZ', 'beta_Y','alpha_Y','delta_Y',
                                               'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z']
@@ -139,7 +140,8 @@ def par_plot(df,name,parlist):
         g.axes[-1,i].set_xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
         g.axes[i,0].set_ylim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
 
-    plt.savefig("plot/"+name+'_'+n+'_Full_par_plot.pdf', bbox_inches='tight')
+    plt.savefig("plot/"+name+'_'+nb+'_Full_par_plot.pdf', bbox_inches='tight')
+    plt.close()
 
 
     '''                                        
@@ -170,7 +172,8 @@ def par_plot(df,name,parlist):
 
 if __name__ == "__main__":
     ARA=meq.ARA
-    p0,p25,p50,p75,p100, pdf= load(n,filename)
+    for i in n:
+      p0,p25,p50,p75,p100, pdf= load(i,filename)
 
-    plot(ARA,[p0],filename)
-    par_plot(pdf,filename,meq.parlist)
+      plot(ARA,[p0],filename,i)
+      par_plot(pdf,filename,i,meq.parlist)
