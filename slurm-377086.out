@@ -42,3 +42,10 @@ min accepted distance:  8.656513702183783
 median accepted distance:  16.754196873294667
 median evaluated distance:  17.458136298965673
 SMC step with target distance: 16.754196873294667
+>>>> Loop processing time: 12904.248 sec on 30 CPU cores.
+acceptance rate: 0.46302727230633883
+min accepted distance:  7.7136909472292405
+median accepted distance:  16.151009954142637
+median evaluated distance:  16.906291785881
+SMC step with target distance: 16.151009954142637
+slurmstepd: error: *** JOB 377086 ON dna054 CANCELLED AT 2021-07-16T06:45:41 DUE TO TIME LIMIT ***
