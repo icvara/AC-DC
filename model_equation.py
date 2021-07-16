@@ -1,3 +1,4 @@
+
 ## equation for Represilator
 import numpy as np
 import matplotlib.pyplot as plt
@@ -150,7 +151,7 @@ def distance(x,pars,totaltime=100, dt=0.1):
     return d_final
 '''
 
-def distance(x,pars,totaltime=100, dt=0.1):
+def distance(x,pars,totaltime=120, dt=0.1):
 
     X,Y,Z = model(x,pars,totaltime,dt)
     
@@ -162,7 +163,7 @@ def distance(x,pars,totaltime=100, dt=0.1):
 
     d_final=0
 
-    for i in range(0,(len(x)-1)):
+    for i in range(0,len(x)):
         # for local maxima
         max_list=argrelextrema(X[transient:,i], np.greater)
         maxValues=X[transient:,i][max_list]
@@ -173,8 +174,8 @@ def distance(x,pars,totaltime=100, dt=0.1):
 
         if i>oscillation_ara[0] and i<oscillation_ara[1]:
         
-            if len(maxValues)>0 and len(maxValues)<4:
-                d= 1/len(maxValues) + 2
+            if len(maxValues)>0 and len(maxValues)<2:
+                d= 1/len(maxValues) + 4
         
             if len(maxValues)>=4:  #if there is more than one peak
                 #here the distance is only calculated on the last two peaks
@@ -191,7 +192,7 @@ def distance(x,pars,totaltime=100, dt=0.1):
             d2=  2*(max(X[transient:,i])-min(X[transient:,i]))/(max(X[transient:,i])+min(X[transient:,i]))
             d= d1+d2
            
-        #print(d)
+        print(d)
         d_final=d_final+d
         
     

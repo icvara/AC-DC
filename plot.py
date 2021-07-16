@@ -99,8 +99,8 @@ def plot(ARA,p,name,nb):
         plt.subplot(len(p),3,(3+i*3))
         sns.heatmap(df_Z, cmap ='Greens', vmin=0, vmax=0.2)
 
-    plt.savefig("plot/"+name+'_'+nb+'_heatmap'+'.pdf', bbox_inches='tight')
-    #plt.show()
+    #plt.savefig("plot/"+name+'_'+nb+'_heatmap'+'.pdf', bbox_inches='tight')
+    plt.show()
     plt.close()
 
 
@@ -175,5 +175,5 @@ if __name__ == "__main__":
     for i in n:
       p0,p25,p50,p75,p100, pdf= load(i,filename)
 
-      plot(ARA,[p0],filename,i)
-      par_plot(pdf,filename,i,meq.parlist)
+      plot(ARA,[p0,p25,p50,p75,p100],filename,i)
+     # par_plot(pdf,filename,i,meq.parlist)

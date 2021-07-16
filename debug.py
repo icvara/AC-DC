@@ -124,6 +124,7 @@ par3 = {
 }
 
 
+p0,p25,p50,p75,p100, pdf= plot.load("22","AC-DC_2")
 
 ARA=meq.ARA
 ARA=np.array([0.000e+00, 3.125e-06, 6.250e-06, 1.250e-05, 2.500e-05, 5.000e-05,
@@ -140,6 +141,14 @@ print("AC-DC " , meq.distance(ARA,par0))
 print("oscill " ,meq.distance(ARA,par1))
 print("increase " ,meq.distance(ARA,par2))
 print("dead " ,meq.distance(ARA,par3))
+
+print("0 " , meq.distance(ARA,p0))
+print("25 " ,meq.distance(ARA,p25))
+print("50 " ,meq.distance(ARA,p50))
+print("75 " ,meq.distance(ARA,p75))
+print("100 " ,meq.distance(ARA,p100))
+
+
 
 '''
 i=4
@@ -166,21 +175,25 @@ plt.show()
 
 def plot():
 
-    X,Y,Z=meq.model(ARA,par0)
+    X,Y,Z=meq.model(ARA,par0,120)
     df_X=pd.DataFrame(X,columns=ARA)
-    plt.subplot(2,2,1)
+    plt.subplot(2,3,1)
     sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
-    X,Y,Z=meq.model(ARA,par1)
+    X,Y,Z=meq.model(ARA,par1,120)
     df_X=pd.DataFrame(X,columns=ARA)
-    plt.subplot(2,2,2)
+    plt.subplot(2,3,2)
     sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
-    X,Y,Z=meq.model(ARA,par2)
+    X,Y,Z=meq.model(ARA,par2,120)
     df_X=pd.DataFrame(X,columns=ARA)
-    plt.subplot(2,2,3)
+    plt.subplot(2,3,3)
     sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
-    X,Y,Z=meq.model(ARA,par3)
+    X,Y,Z=meq.model(ARA,par3,120)
     df_X=pd.DataFrame(X,columns=ARA)
-    plt.subplot(2,2,4)
+    plt.subplot(2,3,4)
+    sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
+    X,Y,Z=meq.model(ARA,p0,120)
+    df_X=pd.DataFrame(X,columns=ARA)
+    plt.subplot(2,3,5)
     sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=1)
 
     plt.show()
