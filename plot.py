@@ -99,8 +99,8 @@ def plot(ARA,p,name,nb):
         plt.subplot(len(p),3,(3+i*3))
         sns.heatmap(df_Z, cmap ='Greens', vmin=0, vmax=0.2)
 
-    #plt.savefig("plot/"+name+'_'+nb+'_heatmap'+'.pdf', bbox_inches='tight')
-    plt.show()
+    plt.savefig('smc_'+name+"/plot/"+nb+'_heatmap'+'.pdf', bbox_inches='tight')
+   # plt.show()
     plt.close()
 
 
@@ -140,7 +140,7 @@ def par_plot(df,name,nb,parlist):
         g.axes[-1,i].set_xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
         g.axes[i,0].set_ylim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
 
-    plt.savefig("plot/"+name+'_'+nb+'_Full_par_plot.pdf', bbox_inches='tight')
+    plt.savefig('smc_'+name+"/plot/"+nb+'_Full_par_plot.pdf', bbox_inches='tight')
     plt.close()
 
 
@@ -171,6 +171,10 @@ def par_plot(df,name,nb,parlist):
     #plt.show()
 
 if __name__ == "__main__":
+    
+    if os.path.isdir('smc_'+filename+'/plot') is False: ## if 'smc' folder does not exist:
+        os.mkdir('smc_'+filename+'/plot') ## create it, the output will go there
+    
     ARA=meq.ARA
     for i in n:
       p0,p25,p50,p75,p100, pdf= load(i,filename)
