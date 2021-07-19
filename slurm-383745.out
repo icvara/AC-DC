@@ -1,0 +1,57 @@
+slurmstepd: error: TMPDIR [/tmp/383745] is not writeable
+slurmstepd: error: Setting TMPDIR to /tmp
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=3214053
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=25
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna013
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna013
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna013
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=25
+SLURM_TOPOLOGY_ADDR=core.edge1.dna013
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_icvara.sh
+SLURM_JOBID=383745
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=25
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=nobody
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=383745
+SLURM_LOCALID=0
+SMC step with target distance: 20.0
+>>>> Loop processing time: 31.342 sec on 25 CPU cores.
+acceptance rate: 0.20785699438786115
+min accepted distance:  11.235375159848523
+median accepted distance:  18.813602968825506
+median evaluated distance:  20.990492139290396
+SMC step with target distance: 18.813602968825506
+>>>> Loop processing time: 1515.374 sec on 25 CPU cores.
+acceptance rate: 0.23815194093831865
+min accepted distance:  9.291064404443356
+median accepted distance:  17.67235118866323
+median evaluated distance:  20.141168584686767
+SMC step with target distance: 17.67235118866323
+>>>> Loop processing time: 849.600 sec on 25 CPU cores.
+acceptance rate: 0.19297568506368198
+min accepted distance:  12.092086573051946
+median accepted distance:  16.894124987726066
+median evaluated distance:  19.49444250448244
+SMC step with target distance: 16.894124987726066
+slurmstepd: error: *** JOB 383745 ON dna013 CANCELLED AT 2021-07-19T01:17:08 DUE TO TIME LIMIT ***

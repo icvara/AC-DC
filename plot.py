@@ -7,12 +7,18 @@ import numpy as np
 import abc_smc
 import model_equation as meq
 import statistics
-
+import os
 from collections import Counter
+import sys
 
-#['1','2','3','4','5','6','7','8','9','10','11',
-n=['1','2','3','4','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23']
-filename="AC-DC_2"
+filename="AC-DC_6"
+n=['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','final']
+
+sys.path.insert(0, '/users/ibarbier/AC-DC/smc_'+filename)
+import par as pr
+  
+
+
 
 ##par from abc smc
 def load(number= n,filename=filename):
@@ -180,4 +186,4 @@ if __name__ == "__main__":
       p0,p25,p50,p75,p100, pdf= load(i,filename)
 
       plot(ARA,[p0,p25,p50,p75,p100],filename,i)
-     # par_plot(pdf,filename,i,meq.parlist)
+      par_plot(pdf,filename,i,meq.parlist)
