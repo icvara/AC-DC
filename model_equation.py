@@ -174,10 +174,10 @@ def distance(x,pars,totaltime=120, dt=0.1):
 
         if i>oscillation_ara[0] and i<oscillation_ara[1]:
         
-            if len(maxValues)>0 and len(maxValues)<2:
-                d= 1/len(maxValues) + 2
+            if len(maxValues)>0 and len(maxValues)<4:
+                d= 1/len(maxValues) + 3
         
-            if len(maxValues)>=2:  #if there is more than one peak
+            if len(maxValues)>=4:  #if there is more than one peak
                 #here the distance is only calculated on the last two peaks
                 d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2]))
                 d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1])
@@ -187,10 +187,12 @@ def distance(x,pars,totaltime=120, dt=0.1):
                 #d=abs(max(X[transient:,i])-max(X[transient:,(i+1)]))/max(X[transient:,i])
                 #this number can be tuned to help the algorythm to find good parameter....
             
-        else:
+        if i<oscillation_ara[0] and i>oscillation_ara[1]:  #notice than 2 inducer concentration are not precised here. no leave some place at transition dynamics
             d1= len(minValues)/(2+len(minValues))
             d2=  2*(max(X[transient:,i])-min(X[transient:,i]))/(max(X[transient:,i])+min(X[transient:,i]))
             d= d1+d2
+        else:
+            d=0
            
      #   print(d)
         d_final=d_final+d
