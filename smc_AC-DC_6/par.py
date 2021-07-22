@@ -1,3 +1,4 @@
+import numpy as np
 #list for ACDC
 parlist = [ # list containing information of each parameter
     #first node X param
