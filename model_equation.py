@@ -90,45 +90,17 @@ def Integration(Xi,Yi,Zi, totaltime, dt, ch , pars ):
         ti=ti+dt
 
     return X,Y,Z
-'''
-def distance(x,pars,totaltime=100, dt=0.1):
-    
-    X,Y,Z = model(x,pars,totaltime,dt)
-    
-    transient = int(20/0.1) # transient time / dt
-    # for local maxima
-    max_list=argrelextrema(X[transient:,0], np.greater)
-    maxValues=X[transient:,0][max_list]
-    # for local minima
-    min_list=argrelextrema(X[transient:,0], np.less)
-    minValues=X[transient:,0][min_list]
-    
-    if len(maxValues)>0:
-        d_final= 1/len(maxValues) + 2
-    else:
-        d_final = 10e10
-    if len(maxValues)>4:
-        #all time point
-        #d2=abs((maxValues[1:] - maxValues[0:-1])/maxValues[0:-1])
-        #d3=2*(np.sum(minValues[1:])/(np.sum(minValues[1:])+np.sum(maxValues[1:])))
-        #d_final= np.sum(d2)+d3
-        #last time point
-        d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2]))
-        d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1])
-        d_final= d2+d3
- 
-    return d_final
-'''
+
 
 def distance(x,pars,totaltime=120, dt=0.1):
 
     X,Y,Z = model(x,pars,totaltime,dt)
     
     # transient time / dt
-    transient = int(20/0.1)
+    transient = int(20/dt)
  
     #range where oscillation is expected
-    oscillation_ara=[1,6]
+    oscillation_ara=[2,5]
 
     d_final=0
 
@@ -141,22 +113,20 @@ def distance(x,pars,totaltime=120, dt=0.1):
         minValues=X[transient:,i][min_list]
 
 
-        if i>oscillation_ara[0] and i<oscillation_ara[1]:
-           
-
+        if i>oscillation_ara[0] and i<oscillation_ara[1]:           
         
-            if len(maxValues)>0 and len(maxValues)<4:
-                d= 1/len(maxValues) + 3
+            if len(maxValues)>0 and len(maxValues)<2:
+                d= 1/len(maxValues) + 1
         
-            if len(maxValues)>=4:  #if there is more than one peak
+            if len(maxValues)>=2:  #if there is more than one peak
                 #here the distance is only calculated on the last two peaks
-                d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2]))
-                d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1])
+                #d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2])) #stability of oscillation
+                d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[0]-minValues[0]))/(maxValues[-1]-minValues[-1])) #stability of oscillation first and last peaks
+                d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1]) #Amplitude of oscillation
                 d= d2+d3
-               
 
             else:
-                d=4
+                d=3
                 #d=abs(max(X[transient:,i])-max(X[transient:,(i+1)]))/max(X[transient:,i])
                 #this number can be tuned to help the algorythm to find good parameter....
             
