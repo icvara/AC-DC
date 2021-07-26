@@ -139,7 +139,7 @@ def distance(x,pars,totaltime=120, dt=0.1):
             
         if i==oscillation_ara[0] or i==oscillation_ara[1]: 
             d=0
-        print(d) 
+      
         d_final=d_final+d
         
     
@@ -151,7 +151,7 @@ def distance(x,pars,totaltime=120, dt=0.1):
 
 
 def model(x,pars,totaltime=100, dt=0.1):
-    Xi=np.ones(len(x))*0.1
+    Xi=np.ones(len(x))#*0.1
     Yi=np.zeros(len(x))
     Zi=np.zeros(len(x))
     X,Y,Z = Integration(Xi,Yi,Zi,totaltime,dt,x,pars)
