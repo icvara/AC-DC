@@ -17,7 +17,7 @@ import model_equation
 
 parlist=model_equation.parlist
 x_data= model_equation.ARA
-version="AC-DC_10"
+version="AC-DC_12"
  
 
 def pars_to_dict(pars):
@@ -230,7 +230,7 @@ def main(argv):
     if os.path.isdir('smc_'+version) is False: ## if 'smc' folder does not exist:
         os.mkdir('smc_'+version) ## create it, the output will go there
         
-    Sequential_ABC(x_data, ncpus=25,final_dist =2.5,prior_label = None,Npars=1000)
+    Sequential_ABC(x_data, ncpus=40,initial_dist = 15.0, final_dist =4.0,prior_label = None,Npars=1000)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
