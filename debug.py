@@ -126,6 +126,7 @@ par3 = {
 p0,p25,p50,p75,p100, pdf= pl.load("final","AC-DC_9")
 
 ARA=meq.ARA
+'''
 ARA=np.array([0.000e+00, 3.125e-06, 6.250e-06, 1.250e-05, 2.500e-05, 5.000e-05,
        1.000e-04, 2.000e-04, 2.000e-01])
 
@@ -133,13 +134,13 @@ ARA=np.array([0,4.8828125e-05,0.0001953125,0.00078125,0.003125,0.0125,0.05,0.2])
 
 
 ARA=np.logspace(-4.5,-2.,8,base=10)
-
+'''
 
 #print(d)
 print("AC-DC " , meq.distance(ARA,par0))
-#print("oscill " ,meq.distance(ARA,par1))
-#print("increase " ,meq.distance(ARA,par2))
-#print("dead " ,meq.distance(ARA,par3))
+print("oscill " ,meq.distance(ARA,par1))
+print("increase " ,meq.distance(ARA,par2))
+print("dead " ,meq.distance(ARA,par3))
 
 print("0 " , meq.distance(ARA,p0))
 #print("25 " ,meq.distance(ARA,p25))
@@ -173,5 +174,5 @@ if __name__ == '__main__':
 '''
 #plot(ARA,[par0,par1,par2,par3],filename,n)
 #plot(ARA,[p0,p25,p50,p75,p100],filename,n)
-plot(ARA,[p0,par0],filename,n)
+#plot(ARA,[p0,par0],filename,n)
 
