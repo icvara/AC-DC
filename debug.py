@@ -9,7 +9,7 @@ import pandas as pd
 import cProfile
 
 n="1"#"final"
-filename="AC-DC_11"
+filename="AC-DC_12"
 
 
 par0 = {
@@ -123,7 +123,7 @@ par3 = {
 }
 
 
-p0,p25,p50,p75,p100, pdf= pl.load("final","AC-DC_9")
+pList, pdf= pl.load(n,filename)
 
 ARA=meq.ARA
 '''
@@ -138,15 +138,18 @@ ARA=np.logspace(-4.5,-2.,8,base=10)
 
 #print(d)
 print("AC-DC " , meq.distance(ARA,par0))
-print("oscill " ,meq.distance(ARA,par1))
-print("increase " ,meq.distance(ARA,par2))
-print("dead " ,meq.distance(ARA,par3))
+#print("oscill " ,meq.distance(ARA,par1))
+#print("increase " ,meq.distance(ARA,par2))
+#print("dead " ,meq.distance(ARA,par3))
 
-print("0 " , meq.distance(ARA,p0))
+print("0 " , meq.distance(ARA,pList[0]))
 #print("25 " ,meq.distance(ARA,p25))
 #print("50 " ,meq.distance(ARA,p50))
 #print("75 " ,meq.distance(ARA,p75))
-#print("100 " ,meq.distance(ARA,p100))
+print("991 " ,meq.distance(ARA,pList[990]))
+print("996 " ,meq.distance(ARA,pList[995]))
+
+print("1000 " ,meq.distance(ARA,pList[999]))
 
 
 def plot(ARA,p,name,nb):
@@ -174,5 +177,5 @@ if __name__ == '__main__':
 '''
 #plot(ARA,[par0,par1,par2,par3],filename,n)
 #plot(ARA,[p0,p25,p50,p75,p100],filename,n)
-#plot(ARA,[p0,par0],filename,n)
+plot(ARA,[pList[990],pList[995],pList[999]],filename,n)
 

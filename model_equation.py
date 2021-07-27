@@ -103,7 +103,7 @@ def distance(x,pars,totaltime=120, dt=0.1):
     oscillation_ara=[2,7]
 
     d_final=0
-
+    print("---------------------")
     for i in range(0,len(x)):
         # for local maxima
         max_list=argrelextrema(X[transient:,i], np.greater)
@@ -115,18 +115,17 @@ def distance(x,pars,totaltime=120, dt=0.1):
 
         if i>oscillation_ara[0] and i<oscillation_ara[1]:           
            
-            if len(maxValues)>0 and len(maxValues)<4:
+            if len(maxValues)>0 and len(maxValues)<3:
                 d= 1/len(maxValues) + 1
            
-            if len(maxValues)>=4:  #if there is more than one peak
+            if len(maxValues)>=3:  #if there is more than one peak
                # print("max: " + str(len(maxValues)) + "   min:" + str(len(minValues)))
 
                 #here the distance is only calculated on the last two peaks
-                #d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2])) #stability of oscillation
-                d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-1]-minValues[-1])) 
+                d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2])) 
                 d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1]) #Amplitude of oscillation
                 d= d2+d3
-               # print(d,d2,d3)
+
             else:
                 d=5
                 #d=abs(max(X[transient:,i])-max(X[transient:,(i+1)]))/max(X[transient:,i])
@@ -141,7 +140,7 @@ def distance(x,pars,totaltime=120, dt=0.1):
             
         if i==oscillation_ara[0] or i==oscillation_ara[1]: 
             d=0
-      
+        print(d)
         d_final=d_final+d
         
     
