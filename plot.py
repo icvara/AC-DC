@@ -11,9 +11,10 @@ import os
 from collections import Counter
 import sys
 
-filename="AC-DC_10"
-n=['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19']#,'20','21','22','23','24','final']
-#n=['10']
+filename="AC-DC_12"
+n=['1','2','3','4','5','6']#
+n=['7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24']
+#n=['1']
 
 sys.path.insert(0, '/users/ibarbier/AC-DC/smc_'+filename)
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/smc_'+filename)
@@ -149,7 +150,7 @@ def par_plot(df,name,nb,parlist):
                 plt.hist(df[par1])
                 plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
             else:
-                plt.scatter(df[par1],df[par2], c=(df['dist']-mindist)/maxdist, s=0.001, cmap='viridis')
+                plt.scatter(df[par1],df[par2], c=df['dist'], s=0.001, cmap='viridis', vmin=mindist, vmax=maxdist)
                 plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
                 plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
             if i > 0 and j < len(namelist)-1 :

@@ -114,19 +114,21 @@ def distance(x,pars,totaltime=120, dt=0.1):
 
 
         if i>oscillation_ara[0] and i<oscillation_ara[1]:           
-            '''
-            if len(maxValues)>0 and len(maxValues)<2:
+           
+            if len(maxValues)>0 and len(maxValues)<4:
                 d= 1/len(maxValues) + 1
-            '''
-            if len(maxValues)>=2:  #if there is more than one peak
+           
+            if len(maxValues)>=4:  #if there is more than one peak
+               # print("max: " + str(len(maxValues)) + "   min:" + str(len(minValues)))
+
                 #here the distance is only calculated on the last two peaks
                 #d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2])) #stability of oscillation
-                d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[0]-minValues[0]))/(maxValues[-1]-minValues[-1])) #stability of oscillation first and last peaks
+                d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-1]-minValues[-1])) 
                 d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1]) #Amplitude of oscillation
                 d= d2+d3
-
+               # print(d,d2,d3)
             else:
-                d=3
+                d=5
                 #d=abs(max(X[transient:,i])-max(X[transient:,(i+1)]))/max(X[transient:,i])
                 #this number can be tuned to help the algorythm to find good parameter....
             
@@ -143,7 +145,7 @@ def distance(x,pars,totaltime=120, dt=0.1):
         d_final=d_final+d
         
     
-   # d= 10*X[-1,0]/(X[-1,-1]+X[-1,0]) #try to valorise increase behaviour compare to dead one
+    d= 10*X[-1,0]/(X[-1,-1]+X[-1,0]) #try to valorise increase behaviour compare to dead one
    # print("diff   ", d)
     d_final=d_final+d
         

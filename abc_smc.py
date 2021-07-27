@@ -17,7 +17,7 @@ import model_equation
 
 parlist=model_equation.parlist
 x_data= model_equation.ARA
-version="AC-DC_11"
+version="AC-DC_13"
  
 
 def pars_to_dict(pars):
