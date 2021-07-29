@@ -1,0 +1,103 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=841699
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=40
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna054
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna054
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna054
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=40
+SLURM_TOPOLOGY_ADDR=core.edge3.dna054
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_icvara.sh
+SLURM_JOBID=549905
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=40
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=549905
+SLURM_LOCALID=0
+SMC step with target distance: 200.0
+>>>> Loop processing time: 4.125 sec on 40 CPU cores.
+acceptance rate: 1.0
+min accepted distance:  12.754262204873044
+median accepted distance:  24.509235408811115
+median evaluated distance:  24.509235408811115
+SMC step with target distance: 24.509235408811115
+>>>> Loop processing time: 554.404 sec on 40 CPU cores.
+acceptance rate: 0.5045408678102926
+min accepted distance:  11.276767329446919
+median accepted distance:  23.20710562646738
+median evaluated distance:  24.488403986544895
+SMC step with target distance: 23.20710562646738
+>>>> Loop processing time: 410.699 sec on 40 CPU cores.
+acceptance rate: 0.35599857600569595
+min accepted distance:  10.615339484740826
+median accepted distance:  22.02848597777082
+median evaluated distance:  23.830726941665173
+SMC step with target distance: 22.02848597777082
+>>>> Loop processing time: 453.709 sec on 40 CPU cores.
+acceptance rate: 0.3141690229343387
+min accepted distance:  9.442694651519464
+median accepted distance:  20.94040411721675
+median evaluated distance:  22.929085813086587
+SMC step with target distance: 20.94040411721675
+>>>> Loop processing time: 860.563 sec on 40 CPU cores.
+acceptance rate: 0.17815784785319794
+min accepted distance:  9.646466129911007
+median accepted distance:  20.157835109020127
+median evaluated distance:  22.669646475263935
+SMC step with target distance: 20.157835109020127
+>>>> Loop processing time: 1401.002 sec on 40 CPU cores.
+acceptance rate: 0.0948316737790422
+min accepted distance:  8.521441576091181
+median accepted distance:  16.198708321300295
+median evaluated distance:  23.359136844270587
+Reducing kernel width to :  0.7
+SMC step with target distance: 16.198708321300295
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib64/python3.6/multiprocessing/pool.py", line 119, in worker
+    result = (True, func(*args, **kwds))
+  File "/usr/lib64/python3.6/multiprocessing/pool.py", line 44, in mapstar
+    return list(map(*args))
+  File "abc_smc.py", line 86, in GeneratePar
+    d = model_equation.distance(x_data,p)
+  File "/users/ibarbier/AC-DC/model_equation.py", line 125, in distance
+    d2=abs((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2])  #maybe issue still here ?
+IndexError: index -2 is out of bounds for axis 0 with size 1
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "abc_smc.py", line 236, in <module>
+    main(sys.argv[1:])
+  File "abc_smc.py", line 233, in main
+    Sequential_ABC(x_data, ncpus=40,initial_dist = 200.0, final_dist =2.0,prior_label = None,Npars=1000)
+  File "abc_smc.py", line 204, in Sequential_ABC
+    Npars = Npars, kernelfactor = kernelfactor)
+  File "abc_smc.py", line 139, in GeneratePars
+    iterable=range(Npars), chunksize=10)
+  File "/usr/lib64/python3.6/multiprocessing/pool.py", line 266, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+  File "/usr/lib64/python3.6/multiprocessing/pool.py", line 644, in get
+    raise self._value
+IndexError: index -2 is out of bounds for axis 0 with size 1

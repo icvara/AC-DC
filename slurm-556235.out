@@ -1,0 +1,63 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=1367758
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=40
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna038
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna038
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna038
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=40
+SLURM_TOPOLOGY_ADDR=core.edge2.dna038
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_icvara.sh
+SLURM_JOBID=556235
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=40
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=556235
+SLURM_LOCALID=0
+SMC step with target distance: 20.0
+>>>> Loop processing time: 102.179 sec on 40 CPU cores.
+acceptance rate: 0.043817369205152924
+min accepted distance:  7.879126894897875
+median accepted distance:  11.98011734172349
+median evaluated distance:  20.000034317408698
+Reducing kernel width to :  0.7
+SMC step with target distance: 11.98011734172349
+>>>> Loop processing time: 314.064 sec on 40 CPU cores.
+acceptance rate: 0.14905351021016544
+min accepted distance:  9.334158446868862
+median accepted distance:  11.665608164062334
+median evaluated distance:  20.000020707696503
+SMC step with target distance: 11.665608164062334
+>>>> Loop processing time: 274.457 sec on 40 CPU cores.
+acceptance rate: 0.10478885046631038
+min accepted distance:  7.961394371842989
+median accepted distance:  11.3342446918574
+median evaluated distance:  20.000022849637602
+SMC step with target distance: 11.3342446918574
+>>>> Loop processing time: 567.428 sec on 40 CPU cores.
+acceptance rate: 0.05759041695461875
+min accepted distance:  7.994231046504761
+median accepted distance:  11.331671797712513
+median evaluated distance:  20.00005105531384
+Reducing kernel width to :  0.48999999999999994
+SMC step with target distance: 11.331671797712513
+slurmstepd: error: *** JOB 556235 ON dna038 CANCELLED AT 2021-07-28T02:41:06 ***

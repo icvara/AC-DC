@@ -103,7 +103,7 @@ def distance(x,pars,totaltime=120, dt=0.1):
     oscillation_ara=[2,7]
 
     d_final=0
-    print("---------------------")
+   # print("---------------------")
     for i in range(0,len(x)):
         # for local maxima
         max_list=argrelextrema(X[transient:,i], np.greater)
@@ -115,32 +115,37 @@ def distance(x,pars,totaltime=120, dt=0.1):
 
         if i>oscillation_ara[0] and i<oscillation_ara[1]:           
            
-            if len(maxValues)>0 and len(maxValues)<3:
+            if len(maxValues)>0 and len(maxValues)<2 and len(minValues)<2:
                 d= 1/len(maxValues) + 1
            
-            if len(maxValues)>=3:  #if there is more than one peak
+            if len(maxValues)>=3 and len(minValues)>=3:  #if there is more than one peak
                # print("max: " + str(len(maxValues)) + "   min:" + str(len(minValues)))
 
                 #here the distance is only calculated on the last two peaks
-                d2=abs(((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2])) 
-                d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1]) #Amplitude of oscillation
+                #d2=abs((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2])  #maybe issue still here ? 
+                #d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1]) #Amplitude of oscillation
+                
+                d2=abs((maxValues[-2]-minValues[-2]) - (maxValues[-3]-minValues[-3]))/(maxValues[-2]-minValues[-2])  #maybe issue still here ? 
+                d3=2*(minValues[-2])/(minValues[-2]+maxValues[-2]) #Amplitude of oscillation
                 d= d2+d3
 
             else:
-                d=5
+                d=10 # excluded all the one without oscillation 
                 #d=abs(max(X[transient:,i])-max(X[transient:,(i+1)]))/max(X[transient:,i])
                 #this number can be tuned to help the algorythm to find good parameter....
+            #d=0 #v22 DC only
             
         if i<oscillation_ara[0] or i>oscillation_ara[1]:  #notice than 2 inducer concentration are not precised here. no leave some place at transition dynamics
-            d1=  len(minValues)/(1+len(minValues))
+            d1=  len(minValues)/(1+len(minValues)) # v14,21 with len(minValues)/(1+len(minValues)) #v15 10*len(minValues)/(1+len(minValues))
             d2=  2*(max(X[transient:,i])-min(X[transient:,i]))/(max(X[transient:,i])+min(X[transient:,i]))
             d= d1+d2
+            #d= 0 #v20 try to have repressilator
            
 
             
         if i==oscillation_ara[0] or i==oscillation_ara[1]: 
             d=0
-        print(d)
+       # print(d)
         d_final=d_final+d
         
     

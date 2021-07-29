@@ -1,0 +1,169 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=2829101
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=40
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna059
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna059
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna059
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=40
+SLURM_TOPOLOGY_ADDR=core.edge3.dna059
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_icvara.sh
+SLURM_JOBID=554848
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=40
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=554848
+SLURM_LOCALID=0
+SMC step with target distance: 16.198708321300295
+>>>> Loop processing time: 1234.504 sec on 40 CPU cores.
+acceptance rate: 0.09206407659731172
+min accepted distance:  9.00727998003127
+median accepted distance:  15.131462135081302
+median evaluated distance:  23.636719631560375
+Reducing kernel width to :  0.7
+SMC step with target distance: 15.131462135081302
+>>>> Loop processing time: 204.951 sec on 40 CPU cores.
+acceptance rate: 0.14992503748125938
+min accepted distance:  8.717841023139652
+median accepted distance:  14.178218519105876
+median evaluated distance:  23.092616747103158
+SMC step with target distance: 14.178218519105876
+>>>> Loop processing time: 231.105 sec on 40 CPU cores.
+acceptance rate: 0.12077294685990338
+min accepted distance:  7.770003164290055
+median accepted distance:  13.106947491743476
+median evaluated distance:  22.28076478819764
+SMC step with target distance: 13.106947491743476
+>>>> Loop processing time: 285.637 sec on 40 CPU cores.
+acceptance rate: 0.08934953538241601
+min accepted distance:  8.033308763814818
+median accepted distance:  12.284615629294922
+median evaluated distance:  21.893846547005957
+Reducing kernel width to :  0.48999999999999994
+SMC step with target distance: 12.284615629294922
+>>>> Loop processing time: 188.624 sec on 40 CPU cores.
+acceptance rate: 0.06579813133307014
+min accepted distance:  7.600675510659927
+median accepted distance:  11.311164765848401
+median evaluated distance:  21.32597775394501
+Reducing kernel width to :  0.3429999999999999
+SMC step with target distance: 11.311164765848401
+>>>> Loop processing time: 140.103 sec on 40 CPU cores.
+acceptance rate: 0.059669431350319234
+min accepted distance:  5.62113238539401
+median accepted distance:  10.049035126980417
+median evaluated distance:  20.209297829154988
+Reducing kernel width to :  0.24009999999999992
+SMC step with target distance: 10.049035126980417
+>>>> Loop processing time: 110.175 sec on 40 CPU cores.
+acceptance rate: 0.05646208570944611
+min accepted distance:  5.805412857108227
+median accepted distance:  9.652227408286771
+median evaluated distance:  20.04177444400791
+Reducing kernel width to :  0.16806999999999994
+SMC step with target distance: 9.652227408286771
+>>>> Loop processing time: 46.773 sec on 40 CPU cores.
+acceptance rate: 0.11160714285714286
+min accepted distance:  7.8210425471441685
+median accepted distance:  9.492060098682932
+median evaluated distance:  14.030738563272429
+SMC step with target distance: 9.492060098682932
+>>>> Loop processing time: 29.143 sec on 40 CPU cores.
+acceptance rate: 0.18611576400521124
+min accepted distance:  7.833269683405637
+median accepted distance:  9.338243122443386
+median evaluated distance:  12.139193490130726
+SMC step with target distance: 9.338243122443386
+>>>> Loop processing time: 105.453 sec on 40 CPU cores.
+acceptance rate: 0.04747887190200361
+min accepted distance:  7.970879062335995
+median accepted distance:  9.173919028411872
+median evaluated distance:  10.627551692059122
+Reducing kernel width to :  0.11764899999999995
+SMC step with target distance: 9.173919028411872
+>>>> Loop processing time: 24.935 sec on 40 CPU cores.
+acceptance rate: 0.16863406408094436
+min accepted distance:  7.432563686194757
+median accepted distance:  8.977748162699012
+median evaluated distance:  9.542477178725452
+SMC step with target distance: 8.977748162699012
+>>>> Loop processing time: 35.662 sec on 40 CPU cores.
+acceptance rate: 0.12906556530717606
+min accepted distance:  6.266077704680316
+median accepted distance:  8.841092920870574
+median evaluated distance:  9.592274744319987
+SMC step with target distance: 8.841092920870574
+>>>> Loop processing time: 10.948 sec on 40 CPU cores.
+acceptance rate: 0.5162622612287042
+min accepted distance:  7.428465540425232
+median accepted distance:  8.436073560687559
+median evaluated distance:  8.774615144170555
+Increasing kernel width to :  0.16806999999999994
+SMC step with target distance: 8.436073560687559
+>>>> Loop processing time: 46.612 sec on 40 CPU cores.
+acceptance rate: 0.09819324430479183
+min accepted distance:  7.45904372816806
+median accepted distance:  8.364103099202392
+median evaluated distance:  8.818202593546738
+Reducing kernel width to :  0.11764899999999995
+SMC step with target distance: 8.364103099202392
+>>>> Loop processing time: 7.460 sec on 40 CPU cores.
+acceptance rate: 0.7326007326007326
+min accepted distance:  6.726644271545348
+median accepted distance:  8.150444538850026
+median evaluated distance:  8.195440528472446
+Increasing kernel width to :  0.16806999999999994
+SMC step with target distance: 8.150444538850026
+>>>> Loop processing time: 30.972 sec on 40 CPU cores.
+acceptance rate: 0.14378145219266714
+min accepted distance:  6.473685871102624
+median accepted distance:  8.055004774745079
+median evaluated distance:  8.344951769586585
+SMC step with target distance: 8.055004774745079
+>>>> Loop processing time: 15.339 sec on 40 CPU cores.
+acceptance rate: 0.3197953309881676
+min accepted distance:  6.258953650409804
+median accepted distance:  7.89148547573205
+median evaluated distance:  8.142945117534211
+SMC step with target distance: 7.89148547573205
+>>>> Loop processing time: 17.058 sec on 40 CPU cores.
+acceptance rate: 0.24919013207077
+min accepted distance:  5.91172158972991
+median accepted distance:  7.807495094063593
+median evaluated distance:  7.972969892607296
+SMC step with target distance: 7.807495094063593
+Traceback (most recent call last):
+  File "abc_smc.py", line 236, in <module>
+    main(sys.argv[1:])
+  File "abc_smc.py", line 233, in main
+    Sequential_ABC(x_data, ncpus=40,initial_dist = 200.0, final_dist =2.0,prior_label = 6,Npars=1000)
+  File "abc_smc.py", line 204, in Sequential_ABC
+    Npars = Npars, kernelfactor = kernelfactor)
+  File "abc_smc.py", line 113, in GeneratePars
+    kernel = multivariate_normal(cov = previouscovar)
+  File "/users/ibarbier/myfirstvenv/lib64/python3.6/site-packages/scipy/stats/_multivariate.py", line 367, in __call__
+    seed=seed)
+  File "/users/ibarbier/myfirstvenv/lib64/python3.6/site-packages/scipy/stats/_multivariate.py", line 743, in __init__
+    self.cov_info = _PSD(self.cov, allow_singular=allow_singular)
+  File "/users/ibarbier/myfirstvenv/lib64/python3.6/site-packages/scipy/stats/_multivariate.py", line 165, in __init__
+    raise np.linalg.LinAlgError('singular matrix')
+numpy.linalg.LinAlgError: singular matrix

@@ -11,9 +11,10 @@ import os
 from collections import Counter
 import sys
 
-filename="AC-DC_12"
-n=['1','2','3','4','5','6']#
-n=['7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24']
+filename="AC-DC_25"
+n=['1','2','3','4','5','6','7','8','9','10','11']
+n=['12','13','14','15','16','17','18','final']
+#,'5','6','7','8',,'19','20','21','22','23','24']
 #n=['1']
 
 sys.path.insert(0, '/users/ibarbier/AC-DC/smc_'+filename)
@@ -38,52 +39,23 @@ def load(number= n,filename=filename):
     df['dist']=dist_output
     df=df.sort_values('dist',ascending=False)
     distlist= sorted(df['dist'])
+    p=[]
+    for dist in distlist:
+        
+        p_0=df[df['dist']==dist]
+   
+        p_min=p_0
+        p0=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
+                p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
+                p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
+                p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
+                p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
+   
+        p0=abc_smc.pars_to_dict(p0)
+        p.append(p0)
 
-    p_0=df[df['dist']==min(df['dist'])]
-    p_25=df[df['dist']==distlist[250]]
-    p_50=df[df['dist']==distlist[500]]
-    p_75=df[df['dist']==distlist[750]]
-    p_100=df[df['dist']==max(df['dist'])]
-    #print(min(df['dist']),distlist[250],distlist[500],distlist[750],max(df['dist']))
-
-    p_min=p_0
-    p0=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
-            p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
-            p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
-            p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
-            p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
-    p_min=p_25
-    p25=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
-            p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
-            p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
-            p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
-            p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
-    p_min=p_50
-    p50=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
-            p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
-            p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
-            p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
-            p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
-    p_min=p_75
-    p75=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
-            p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
-            p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
-            p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
-            p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
-    p_min=p_100
-    p100=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
-            p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
-            p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
-            p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
-            p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
     
-    p0=abc_smc.pars_to_dict(p0)
-    p25=abc_smc.pars_to_dict(p25)
-    p50=abc_smc.pars_to_dict(p50)
-    p75=abc_smc.pars_to_dict(p75)
-    p100=abc_smc.pars_to_dict(p100)
-    
-    return p0,p25,p50,p75,p100, df
+    return p, df
 
 
 ##plotting part
@@ -150,7 +122,7 @@ def par_plot(df,name,nb,parlist):
                 plt.hist(df[par1])
                 plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
             else:
-                plt.scatter(df[par1],df[par2], c=df['dist'], s=0.001, cmap='viridis', vmin=mindist, vmax=maxdist)
+                plt.scatter(df[par1],df[par2], c=df['dist'], s=0.001, cmap='viridis')# vmin=mindist, vmax=maxdist)
                 plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
                 plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
             if i > 0 and j < len(namelist)-1 :
@@ -185,8 +157,9 @@ if __name__ == "__main__":
     
     ARA=pr.ARA
     for i in n:
-      p0,p25,p50,p75,p100, pdf= load(i,filename)
+      p, pdf= load(i,filename)
+    
 
-      plot(ARA,[p0,p25,p50,p75,p100],filename,i)
+      plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,i)
       par_plot(pdf,filename,i,pr.parlist)
       
