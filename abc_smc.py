@@ -12,13 +12,24 @@ import os
 import pandas as pd
 import multiprocessing
 import time
-import model_equation
 
+
+
+version="ACDC_30"
+
+sys.path.insert(0, '/users/ibarbier/AC-DC/smc_'+version+'/')
+#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/smc_'+filename)
+import model_equation
 
 parlist=model_equation.parlist
 x_data= model_equation.ARA
-version="AC-DC_25"
- 
+
+initdist=model_equation.initdist
+finaldist=model_equation.finaldist
+priot_label=model_equation.priot_label
+
+
+
 
 def pars_to_dict(pars):
 ### This function is not necessary, but it makes the code a bit easier to read,
@@ -230,7 +241,7 @@ def main(argv):
     if os.path.isdir('smc_'+version) is False: ## if 'smc' folder does not exist:
         os.mkdir('smc_'+version) ## create it, the output will go there
         
-    Sequential_ABC(x_data, ncpus=40,initial_dist = 40.0, final_dist =1.,prior_label = None,Npars=1000)
+    Sequential_ABC(x_data, ncpus=40,initial_dist = initdist, final_dist =finaldist,prior_label = None,Npars=1000)
 
 if __name__ == "__main__":
    main(sys.argv[1:])

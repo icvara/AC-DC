@@ -11,31 +11,32 @@ import os
 from collections import Counter
 import sys
 
-filename="AC-DC_25"
-n=['1','2','3','4','5','6','7','8','9','10','11']
-n=['12','13','14','15','16','17','18','final']
+filename="ACDC_30"
+n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']
+#n=['12','13','14','15','16','17','18','final']
 #,'5','6','7','8',,'19','20','21','22','23','24']
 #n=['1']
 
 sys.path.insert(0, '/users/ibarbier/AC-DC/smc_'+filename)
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/smc_'+filename)
-import par as pr
+import model_equation as pr
   
 
-
+parlist=pr.parlist
 
 ##par from abc smc
-def load(number= n,filename=filename):
+def load(number= n,filename=filename,parlist=parlist):
 
-
+    namelist=[]
+    for i,par in enumerate(parlist):
+        namelist.append(parlist[i]['name'])
+        
     path = 'smc_'+filename+'/pars_' + number + '.out'
     dist_path = 'smc_'+filename+'/distances_' + number + '.out'
 
     raw_output= np.loadtxt(path)
     dist_output= np.loadtxt(dist_path)
-    df = pd.DataFrame(raw_output, columns = ['K_ARAX','n_ARAX','K_XY','n_XY','K_XZ','n_XZ', 'beta_X','alpha_X','delta_X',
-                                              'K_ARAY','n_ARAY','K_YZ','n_YZ', 'beta_Y','alpha_Y','delta_Y',
-                                              'K_ZX','n_ZX', 'beta_Z','alpha_Z','delta_Z'])
+    df = pd.DataFrame(raw_output, columns = namelist)
     df['dist']=dist_output
     df=df.sort_values('dist',ascending=False)
     distlist= sorted(df['dist'])
@@ -43,13 +44,9 @@ def load(number= n,filename=filename):
     for dist in distlist:
         
         p_0=df[df['dist']==dist]
-   
-        p_min=p_0
-        p0=[p_min['K_ARAX'].tolist()[0],p_min['n_ARAX'].tolist()[0],p_min['K_XY'].tolist()[0],p_min['n_XY'].tolist()[0],p_min['K_XZ'].tolist()[0],p_min['n_XZ'].tolist()[0], 
-                p_min['beta_X'].tolist()[0],p_min['alpha_X'].tolist()[0],p_min['delta_X'].tolist()[0],
-                p_min['K_ARAY'].tolist()[0],p_min['n_ARAY'].tolist()[0],p_min['K_YZ'].tolist()[0],p_min['n_YZ'].tolist()[0], p_min['beta_Y'].tolist()[0],
-                p_min['alpha_Y'].tolist()[0],p_min['delta_Y'].tolist()[0],
-                p_min['K_ZX'].tolist()[0],p_min['n_ZX'].tolist()[0], p_min['beta_Z'].tolist()[0],p_min['alpha_Z'].tolist()[0],p_min['delta_Z'].tolist()[0]]
+        p0=[]
+        for n in namelist:
+          p0.append(p_0[n].tolist()[0])
    
         p0=abc_smc.pars_to_dict(p0)
         p.append(p0)
@@ -74,11 +71,11 @@ def plot(ARA,p,name,nb):
 
 
         plt.subplot(len(p),3,(1+i*3))
-        sns.heatmap(df_X, cmap="Reds", vmin=0, vmax=0.2)
+        sns.heatmap(df_X, cmap="Reds")
         plt.subplot(len(p),3,(2+i*3))
-        sns.heatmap(df_Y, cmap ='Blues', vmin=0, vmax=0.2)
+        sns.heatmap(df_Y, cmap ='Blues')
         plt.subplot(len(p),3,(3+i*3))
-        sns.heatmap(df_Z, cmap ='Greens', vmin=0, vmax=0.2)
+        sns.heatmap(df_Z, cmap ='Greens')
 
     plt.savefig('smc_'+name+"/plot/"+nb+'_heatmap'+'.pdf', bbox_inches='tight')
    # plt.show()
@@ -109,8 +106,6 @@ def par_plot(df,name,nb,parlist):
     #plt.plot(df['K_ARAX'],df['K_ARAY'],'ro')
     fonts=2
     namelist=[]
-    maxdist=20
-    mindist=4
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
  
@@ -157,7 +152,7 @@ if __name__ == "__main__":
     
     ARA=pr.ARA
     for i in n:
-      p, pdf= load(i,filename)
+      p, pdf= load(i,filename,parlist)
     
 
       plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,i)
