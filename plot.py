@@ -11,13 +11,14 @@ import os
 from collections import Counter
 import sys
 
-filename="ACDC_30"
-n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']
+filename="ACDC_all"
+n=['final']
+#['1','2','3','4','5','6','7','8','9','10','11','12']#,'16','17','18','19']
 #n=['12','13','14','15','16','17','18','final']
 #,'5','6','7','8',,'19','20','21','22','23','24']
 #n=['1']
 
-sys.path.insert(0, '/users/ibarbier/AC-DC/smc_'+filename)
+sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/smc_'+filename)
 import model_equation as pr
   
@@ -31,8 +32,8 @@ def load(number= n,filename=filename,parlist=parlist):
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
         
-    path = 'smc_'+filename+'/pars_' + number + '.out'
-    dist_path = 'smc_'+filename+'/distances_' + number + '.out'
+    path = filename+'/smc/pars_' + number + '.out'
+    dist_path = filename+'/smc/distances_' + number + '.out'
 
     raw_output= np.loadtxt(path)
     dist_output= np.loadtxt(dist_path)
@@ -77,7 +78,8 @@ def plot(ARA,p,name,nb):
         plt.subplot(len(p),3,(3+i*3))
         sns.heatmap(df_Z, cmap ='Greens')
 
-    plt.savefig('smc_'+name+"/plot/"+nb+'_heatmap'+'.pdf', bbox_inches='tight')
+    plt.savefig(name+"/plot/"+nb+'_heatmap'+'.pdf', bbox_inches='tight')
+    #plt.savefig(name+"/plot/"+nb+'_heatmap'+'.png', bbox_inches='tight')
    # plt.show()
     plt.close()
 
@@ -139,7 +141,8 @@ def par_plot(df,name,nb,parlist):
                     plt.yticks(fontsize=4,rotation=90)
             
       
-    plt.savefig('smc_'+name+"/plot/"+nb+'_Full_par_plot.pdf', bbox_inches='tight')
+    plt.savefig(name+"/plot/"+nb+'_Full_par_plot.pdf', bbox_inches='tight')
+    #plt.savefig(name+"/plot/"+nb+'_Full_par_plot.png', bbox_inches='tight')
     plt.close()
     #plt.show()
 
@@ -147,8 +150,8 @@ def par_plot(df,name,nb,parlist):
 
 if __name__ == "__main__":
     
-    if os.path.isdir('smc_'+filename+'/plot') is False: ## if 'smc' folder does not exist:
-        os.mkdir('smc_'+filename+'/plot') ## create it, the output will go there
+    if os.path.isdir(filename+'/plot') is False: ## if 'smc' folder does not exist:
+        os.mkdir(filename+'/plot') ## create it, the output will go there
     
     ARA=pr.ARA
     for i in n:

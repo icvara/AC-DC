@@ -1,0 +1,47 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=3724301
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=1
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna007
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna007
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna007
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=1
+SLURM_TOPOLOGY_ADDR=core.edge1.dna007
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_plot.sh
+SLURM_JOBID=607420
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=1
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=607420
+SLURM_LOCALID=0
+Traceback (most recent call last):
+  File "plot.py", line 155, in <module>
+    p, pdf= load(i,filename,parlist)
+  File "plot.py", line 37, in load
+    raw_output= np.loadtxt(path)
+  File "/users/ibarbier/myfirstvenv/lib64/python3.6/site-packages/numpy/lib/npyio.py", line 961, in loadtxt
+    fh = np.lib._datasource.open(fname, 'rt', encoding=encoding)
+  File "/users/ibarbier/myfirstvenv/lib64/python3.6/site-packages/numpy/lib/_datasource.py", line 195, in open
+    return ds.open(path, mode, encoding=encoding, newline=newline)
+  File "/users/ibarbier/myfirstvenv/lib64/python3.6/site-packages/numpy/lib/_datasource.py", line 535, in open
+    raise IOError("%s not found." % path)
+OSError: ACDC_X/smc/pars_10.out not found.

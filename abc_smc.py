@@ -15,9 +15,9 @@ import time
 
 
 
-version="ACDC_30"
-
-sys.path.insert(0, '/users/ibarbier/AC-DC/smc_'+version+'/')
+version="ACDC_all"
+pl= None #prior_label=
+sys.path.insert(0, '/users/ibarbier/AC-DC/'+version+'/')
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/smc_'+filename)
 import model_equation
 
@@ -26,7 +26,7 @@ x_data= model_equation.ARA
 
 initdist=model_equation.initdist
 finaldist=model_equation.finaldist
-priot_label=model_equation.priot_label
+
 
 
 
@@ -193,9 +193,9 @@ def Sequential_ABC(x_data, ncpus,
         weights = np.loadtxt('smc_'+'/weights_{}_{}_{}_{}.out'.format(model_equation.model,sto,gamma,prior_label))
         accepted_distances = np.loadtxt('smc_'+'/distances_{}_{}_{}_{}.out'.format(model_equation.model,sto,gamma,prior_label))
         '''
-        pars = np.loadtxt('smc_'+version+'/pars_{}.out'.format(prior_label))
-        weights = np.loadtxt('smc_'+version+'/weights_{}.out'.format(prior_label))
-        accepted_distances = np.loadtxt('smc_'+version+'/distances_{}.out'.format(prior_label))
+        pars = np.loadtxt(version +'/smc'+'/pars_{}.out'.format(prior_label))
+        weights = np.loadtxt(version +'/smc'+'/weights_{}.out'.format(prior_label))
+        accepted_distances = np.loadtxt(version +'/smc'+'/distances_{}.out'.format(prior_label))
         distance = np.median(accepted_distances)
         idistance = prior_label
 
@@ -224,9 +224,9 @@ def Sequential_ABC(x_data, ncpus,
             last_round = True
         else:
             distance = proposed_dist
-        np.savetxt('smc_'+version+'/pars_{}.out'.format(label), pars)
-        np.savetxt('smc_'+version+'/weights_{}.out'.format(label), weights)
-        np.savetxt('smc_'+version+'/distances_{}.out'.format(label), accepted_distances)
+        np.savetxt(version +'/smc'+'/pars_{}.out'.format(label), pars)
+        np.savetxt(version +'/smc'+'/weights_{}.out'.format(label), weights)
+        np.savetxt(version +'/smc'+'/distances_{}.out'.format(label), accepted_distances)
 
         if acceptance < 0.1 and kernelfactor>0.1 and adaptative_kernel:
             kernelfactor = kernelfactor * 0.7
@@ -238,10 +238,10 @@ def Sequential_ABC(x_data, ncpus,
 
 def main(argv):
 
-    if os.path.isdir('smc_'+version) is False: ## if 'smc' folder does not exist:
-        os.mkdir('smc_'+version) ## create it, the output will go there
+    if os.path.isdir(version +'/smc') is False: ## if 'smc' folder does not exist:
+        os.mkdir(version +'/smc') ## create it, the output will go there
         
-    Sequential_ABC(x_data, ncpus=40,initial_dist = initdist, final_dist =finaldist,prior_label = None,Npars=1000)
+    Sequential_ABC(x_data, ncpus=40,initial_dist = initdist, final_dist =finaldist,prior_label = pl,Npars=1000)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
