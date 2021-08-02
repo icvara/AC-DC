@@ -6,8 +6,13 @@ import matplotlib.pyplot as plt
 import sys
 from scipy import stats
 
-filename=["ACDC_X","ACDC_Y","ACDC_Z","ACDC_all"]
-n=['final']
+#filename=["ACDC_X","ACDC_Y","ACDC_Z","ACDC_all"]
+filename=['ACDC_1ind']
+#filename=['ACDC_X','ACDC_1ind']
+#n=['final']
+n=['1','2','3','4','5','6','7','8','9','10','11','12','final']#'13','14','15','final']
+#n=['1','2','3','4','5','6','7','8','9','10','11','12','13','14']
+
 path='C:/Users/Administrator/Desktop/Modeling/AC-DC/'
 sys.path.insert(0, path + filename[0])
 import model_equation as meq
@@ -29,9 +34,9 @@ def pars_to_dict(pars):
 
 def load(number= n,filename=filename,parlist=parlist):
     namelist=[]
+    number=str(number)
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
-        
     filepath = path+filename+'/smc/pars_' + number + '.out'
     dist_path =  path+filename+'/smc/distances_' + number + '.out'
     raw_output= np.loadtxt(filepath)
@@ -50,112 +55,86 @@ def load(number= n,filename=filename,parlist=parlist):
         p.append(p0)    
     return p, df
 
-'''
-fonts=6
-for fi,fnm in enumerate(filename):
-    p,df= load(n[0],fnm,parlist)
-    for i,name in enumerate(namelist):
-        plt.subplot(4,len(namelist),(i+1+fi*len(namelist)))
-        plt.hist(df[name])
-        plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-        plt.ylim(0,300)
 
-        if fi== len(filename)-1 and  i > 0 :
-            plt.xticks(fontsize=fonts)
-            plt.xlabel(name,fontsize=fonts)
-        if i == 0 and fi < len(filename)-1:
-            plt.yticks(fontsize=fonts)
-            plt.ylabel("count",fontsize=fonts)
-        if (fi!= len(filename)-1 and  i!=0):
-            plt.xticks([])
-            plt.yticks([])
-            
-       
-    
-plt.show()
-
-'''
-
-'''
-stats_df = pd.DataFrame( columns = ['par','method','mean','sd'])#,'mode'])
-parl = np.append(namelist,'dist')
-for fi,fnm in enumerate(filename):
-    p,df= load(n[0],fnm,parlist)
-    mean=np.mean(df).tolist()
-    sd=np.std(df).tolist()
-    mode=stats.mode(df)[0][0]
-    new_row={'par':parl,'method':[fnm]*len(parl),'mean':mean,'sd':sd,'mode':mode}
-    df2=pd.DataFrame(new_row)
-    stats_df =stats_df.append(df2)
-   # print(mean,sd,mode)
-#print(stats_df)
-
-
-
-# set width of bars
-barWidth = 0.20
-
-# Set position of bar on X axis
-r1 = np.arange(len(parl))
-
-for i,nm in enumerate(filename):
-    v=stats_df[stats_df['method']==nm]
-    plt.bar((r1+barWidth*i),v['mean'],yerr=v['sd'], capsize=2,width=barWidth, label=nm)
-
-plt.xlabel('par', fontweight='bold')
-plt.xticks([r + barWidth for r in range(len(parl))], parl)
-plt.legend()
-plt.show()
-
-
-# set width of bars
-barWidth = 0.20
-# Set position of bar on X axis
-r1 = np.arange(len(parl))
-for i,nm in enumerate(filename):
-    v=stats_df[stats_df['method']==nm]
-    plt.bar((r1+barWidth*i),v['mode'],width=barWidth, label=nm)
-
-plt.xlabel('par', fontweight='bold')
-plt.xticks([r + barWidth for r in range(len(parl))], parl)
-plt.legend()
-plt.show()
-'''
-parl = np.append(namelist,'dist')
-index=1
-for i,name in enumerate(parl):
-    plt.subplot(4,4,index)
-    plt.tight_layout()
+def get_stats(filename,namelist):
+    stats_df = pd.DataFrame( columns = ['par','method','mean','sd'])#,'mode'])
+    parl = np.append(namelist,'dist')
     for fi,fnm in enumerate(filename):
         p,df= load(n[0],fnm,parlist)
-        sns.kdeplot(df[name],bw_adjust=.8,label=fnm)
-    #plt.ylim(0,1)
-    if i < (len(parl)-2):
-        plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-    index=index+1
-    if index==5:       
-        plt.legend(bbox_to_anchor=(1.05, 1))
-
-#sns.kdeplot(df['K_XZ'])
+        mean=np.mean(df).tolist()
+        sd=np.std(df).tolist()
+        mode=stats.mode(df)[0][0]
+        new_row={'par':parl,'method':[fnm]*len(parl),'mean':mean,'sd':sd,'mode':mode}
+        df2=pd.DataFrame(new_row)
+        stats_df =stats_df.append(df2)
+    return stats_df
 
 
-plt.savefig("compareplot.pdf", bbox_inches='tight')
-plt.show()
+def bar_plot(filename,namelist, t="mean"):
+    stats_df=get_stats(filename,namelist)
+    # set width of bars
+    barWidth = 0.20
+    # Set position of bar on X axis
+    r1 = np.arange(len(parl))
+
+    #mean
+    if t=="mean":
+        for i,nm in enumerate(filename):
+            v=stats_df[stats_df['method']==nm]
+            plt.bar((r1+barWidth*i),v['mean'],yerr=v['sd'], capsize=2,width=barWidth, label=nm)
+
+        plt.xlabel('par', fontweight='bold')
+        plt.xticks([r + barWidth for r in range(len(parl))], parl)
+        plt.legend()
+        plt.show()
+
+    #mode       
+    if t == "mode":
+        for i,nm in enumerate(filename):
+            v=stats_df[stats_df['method']==nm]
+            plt.bar((r1+barWidth*i),v['mode'],width=barWidth, label=nm)
+
+        plt.xlabel('par', fontweight='bold')
+        plt.xticks([r + barWidth for r in range(len(parl))], parl)
+        plt.legend()
+        plt.show()
 
 
-fonts=6
-'''
-for i,name in enumerate(namelist):
-        plt.subplot(1,len(namelist),i+1)
-
+def plot_compare(filename,namelist):
+    parl = np.append(namelist,'dist')
+    index=1
+    for i,name in enumerate(parl):
+        plt.subplot(4,4,index)
+        plt.tight_layout()
         for fi,fnm in enumerate(filename):
             p,df= load(n[0],fnm,parlist)
-            plt.hist(df[name])
-        plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-        plt.ylim(0,300)
-        plt.xlabel(name)
+            sns.kdeplot(df[name],bw_adjust=.8,label=fnm)
+        #plt.ylim(0,1)
+        if i < (len(parl)-2):
+            plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+        index=index+1
+        if index==5:       
+            plt.legend(bbox_to_anchor=(1.05, 1))
 
-                   
-    
-plt.show()
-'''
+    #sns.kdeplot(df['K_XZ'])
+    plt.savefig(str(filename)+str(n[0])+"_compareplot.pdf", bbox_inches='tight')
+    plt.show()
+
+
+def plot_alltime(filename,namelist):
+    parl = np.append(namelist,'dist')
+    index=1
+    for i,name in enumerate(parl):
+        plt.subplot(4,4,index)
+        plt.tight_layout()
+        for ni,nmbr in enumerate(n):
+            p,df= load(nmbr,filename[0],parlist)
+            sns.kdeplot(df[name],bw_adjust=.8,label=nmbr)
+        #plt.ylim(0,1)
+        if i < (len(parl)-2):
+            plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+        index=index+1
+        #if index==5:       
+        #    plt.legend(bbox_to_anchor=(1.05, 1))
+    plt.show()
+
