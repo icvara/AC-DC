@@ -158,9 +158,9 @@ def distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
     return d_final
 
 
-def model(x,pars,totaltime=tt, dt=dtt):
-    Xi=np.ones(len(x))*0.2
-    Yi=np.zeros(len(x))
-    Zi=np.zeros(len(x))
+def model(x,pars,totaltime=tt, dt=dtt,init=[0.2,0,0]):
+    Xi=np.ones(len(x))*init[0]
+    Yi=np.ones(len(x))*init[1]
+    Zi=np.ones(len(x))*init[2]
     X,Y,Z = Integration(Xi,Yi,Zi,totaltime,dt,x,pars)
     return X,Y,Z
