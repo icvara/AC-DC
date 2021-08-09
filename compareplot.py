@@ -7,7 +7,7 @@ import sys
 from scipy import stats
 
 #filename=["ACDC_X","ACDC_Y","ACDC_Z","ACDC_all"]
-filename=['ACDC_X']
+filename=['ACDC_X2']
 #filename=['ACDC_X','ACDC_1ind']
 n=['final']
 #n=['1','2','3','4','5','6','7','8','9','10','11','12','final']#'13','14','15','final']
@@ -16,8 +16,6 @@ n=['final']
 path='C:/Users/Administrator/Desktop/Modeling/AC-DC/'
 sys.path.insert(0, path + filename[0])
 import model_equation as meq
-
-
   
 parlist=meq.parlist
 namelist=[]
@@ -301,58 +299,58 @@ def ind1vs2indmeanandmode():
 
 
 #chose parameter
-#pstats=get_stats(['ACDC_1ind'],namelist)
-#p,df= load('final','ACDC_1ind',parlist)
-#parUsed=pars_to_dict(pstats['mode'].tolist(),parlist)
+
+p,df= load('final','ACDC_X2',parlist)
 parUsed=par0
-ARA=np.logspace(-4.5,-2.,100,base=10)
-#parUsed['n_ZX']=2
-#parUsed['K_ARAX']=-2.5
-#parUsed['K_XZ']=-3
-
-
-#ARA=[0]
-#xrange=np.arange(0,10**parUsed['beta/alpha_X'],10**parUsed['beta/alpha_X']/20)
-#yrange=np.arange(0,10**parUsed['beta/alpha_Y'],10**parUsed['beta/alpha_Y']/10)
-#zrange=np.arange(0,10**parUsed['beta/alpha_Z'],10**parUsed['beta/alpha_Z']/20)
-
-##x=0
-#y=0
-#z=10**parUsed['beta/alpha_Z']
-#ss=[]
-#for i,x in enumerate(xrange):
-   # for j,y in enumerate(yrange):
-#        for k,z in enumerate(zrange):
-#initt=[x,y,z]
-#X,Y,Z=meq.model(ARA,parUsed,init=initt)
-#ss.append(X[-2])
-        
-#plt.scatter(ARA.tolist()*len(xrange)*len(zrange),ss)
-#plt.xscale('log')
-#plt.show()
-
-plt.subplot(2,1,1)
-initt=[0,0,100]
-X,Y,Z=meq.model(ARA,parUsed,init=initt)
-df_X=pd.DataFrame(X,columns=ARA)
-sns.heatmap(df_X, cmap="Reds")
-plt.subplot(2,1,2)
-initt=[100,0,0]
-X,Y,Z=meq.model(ARA,parUsed,init=initt)
+#parUsed=p[0]
+ARA=np.logspace(-4.5,-2.,10,base=10)
+X,Y,Z=meq.model(ARA,parUsed,totaltime=400)
 df_X=pd.DataFrame(X,columns=ARA)
 sns.heatmap(df_X, cmap="Reds")
 plt.show()
+
+ss=meq.findss(ARA[9],parUsed)
+
+print(X[-2][9])
+print(ss)
+
+X,Y,Z=meq.Flow(X[-2][9],Y[-2][9],Z[-2][9],ARA,parUsed)
+print(X,Y,Z)
+X,Y,Z=meq.Flow(ss[0][0],ss[0][1],ss[0][2],ARA,parUsed)
+print(".......")
+print(X,Y,Z)
+
 '''
-        df_X=pd.DataFrame(X,columns=ARA)
-        df_Y=pd.DataFrame(Y,columns=ARA)
-        df_Z=pd.DataFrame(Z,columns=ARA)
+allss=[]
+xss=[]
+yss=[]
+zss=[]
 
-        plt.subplot(10,3,(1+3*i))
-        sns.heatmap(df_X, cmap="Reds")
-        plt.subplot(10,3,(2+3*i))
-        sns.heatmap(df_Y, cmap ='Blues')
-        plt.subplot(10,3,(3+3*i))
-        sns.heatmap(df_Z, cmap ='Greens')
+for a in ARA:
+#a=np.array([ARA[5]])
+    ss=meq.findss(a,parUsed)
+    for s in ss:
+        xss.append(s[0])
+        yss.append(s[1])
+        zss.append(s[2])
 
-        plt.show()
+ss=meq.findss(ARA[9],parUsed)
+print(ss)
+X,Y,Z=meq.model([ARA[9]],parUsed,init=ss[0])
+df_X=pd.DataFrame(X,columns=ARA)
+sns.heatmap(df_X, cmap="Reds")
+plt.show()
+
+
+
+maxX=[]
+minX=[]
+for i in np.arange(0,len(ARA)):
+    maxX.append(max(X[:,i]))
+    minX.append(min(X[:,i]))
+
+plt.plot(xss)
+plt.plot(maxX,'--r')
+plt.plot(minX,'--b')
+plt.show()
 '''

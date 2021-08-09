@@ -7,6 +7,8 @@ import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.signal import argrelextrema
 import numpy as np
+from scipy import optimize
+from scipy.optimize import brentq
 
 #par for abc_smc
 initdist=40.
@@ -52,11 +54,11 @@ def Flow(X,Y,Z,ARA,par):
     flow_x = flow_x - X
 
     flow_y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
-    flow_y = flow_y / ( 1 + np.power(X/10**(par['K_XY']+par['beta/alpha_X']),par['n_XY']))
+    flow_y = flow_y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
     flow_y = flow_y - Y
 
-    flow_z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']+par['beta/alpha_Y']),par['n_YZ']))
-    flow_z = flow_z /( 1 + np.power(X/10**(par['K_XZ']+par['beta/alpha_X']),par['n_XZ']))
+    flow_z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
+    flow_z = flow_z /( 1 + np.power(X/10**(par['K_XZ']),par['n_XZ']))
     flow_z = flow_z - Z
 
     return flow_x,flow_y,flow_z
@@ -164,3 +166,62 @@ def model(x,pars,totaltime=tt, dt=dtt,init=[0.2,0,0]):
     Zi=np.ones(len(x))*init[2]
     X,Y,Z = Integration(Xi,Yi,Zi,totaltime,dt,x,pars)
     return X,Y,Z
+
+
+
+def solvedfunction(Zi,ARA,par):
+    #rewrite the system equation to have only one unknow and to be call with scipy.optimze.brentq
+    #the output give a function where when the line reach 0 are a steady states
+
+    X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
+    X = X / ( 1 + np.power((Zi/10**(par['K_ZX'])),par['n_ZX']))
+
+    Y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
+    Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
+
+    Z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
+    Z = Z /( 1 + np.power(X/10**(par['K_XZ']),par['n_XZ']))
+    func = Zi - Z
+    return func
+
+def findss(ARA,par):   
+    #function to find steady state
+    #1. find where line reached 0
+    Zi=np.arange(0,100,1)
+   # Zi=np.logspace(-14,5,200,base=10)
+
+    f=solvedfunction(ARA,Zi,par)
+    plt.plot(Zi,f)
+   # plt.xscale("log")
+    plt.show()
+    x=f[1:-1]*f[0:-2] #when the output give <0, where is a change in sign, meaning 0 is crossed
+    index=np.where(x<0)
+
+    ss=[]
+    for i in index[0]:
+        Z=brentq(solvedfunction, Zi[i], Zi[i+1],args=(ARA,par)) #find the value at 0
+        #now we have the other ss
+        X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
+        X = X / ( 1 + np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
+        Y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
+        Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
+        ss.append(np.array([X,Y,Z]))
+
+    return ss
+
+def stability(ARA,par):
+    ss= findss(ARA,par)
+    eigens=np.array([])
+    for i,s in enumerate(ss): 
+        A=jacobianMatrix(ARA,s[0],s[1],s[2],par)
+        eigvals, eigvecs =eig(A)
+        sse=eigvals.real
+        eigens.append(sse)
+        
+
+    return turing_type, eigens
+
+
+def jacobianMatrix(ARA,X,Y,Z,par):
+    A=[0,0]
+    return A
