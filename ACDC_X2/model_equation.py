@@ -9,12 +9,10 @@ from scipy.signal import argrelextrema
 import numpy as np
 from scipy import optimize
 from scipy.optimize import brentq
-from numpy.linalg import eig
-
 
 #par for abc_smc
 initdist=40.
-finaldist=1.0
+finaldist=2.5
 priot_label=None
 dtt=0.1
 tt=120 #totaltime
@@ -26,21 +24,21 @@ parlist = [
     #first node X param
     {'name' : 'K_ARAX', 'lower_limit':-4.0,'upper_limit':-1.0}, 
     {'name' : 'n_ARAX','lower_limit':0.5,'upper_limit':2.0},
-    {'name' : 'K_XY','lower_limit':-7.0,'upper_limit':-2.0},
+    {'name' : 'K_XY','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_XY','lower_limit':0.5,'upper_limit':2.0},
-    {'name' : 'K_XZ','lower_limit':-7.0,'upper_limit':-2.0},
+    {'name' : 'K_XZ','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_XZ','lower_limit':0.5,'upper_limit':2.0},
     {'name' : 'beta/alpha_X','lower_limit':0.0,'upper_limit':4.0},
 
     #Seconde node Y param
     {'name' : 'K_ARAY', 'lower_limit':-4.0,'upper_limit':-1.0}, 
     {'name' : 'n_ARAY','lower_limit':0.5,'upper_limit':2.0},
-    {'name' : 'K_YZ','lower_limit':-7.0,'upper_limit':-2.0},
+    {'name' : 'K_YZ','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_YZ','lower_limit':0.5,'upper_limit':2.0},
     {'name' : 'beta/alpha_Y','lower_limit':0.0,'upper_limit':4.0},
 
     #third node Z param
-    {'name' : 'K_ZX','lower_limit':-7.0,'upper_limit':-2.0},
+    {'name' : 'K_ZX','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_ZX','lower_limit':0.5,'upper_limit':2.0},
     {'name' : 'beta/alpha_Z','lower_limit':0.0,'upper_limit':4.0},
 ]
@@ -189,13 +187,13 @@ def solvedfunction(Zi,ARA,par):
 def findss(ARA,par):   
     #function to find steady state
     #1. find where line reached 0
-    Zi=np.arange(0,100,0.2)
-   # Zi=np.logspace(-10,2,200,base=10)
+    Zi=np.arange(0,100,1)
+   # Zi=np.logspace(-14,5,200,base=10)
 
-    f=solvedfunction(Zi,ARA,par)
-    #plt.plot(Zi,f)
-    #plt.xscale("log")
-    #plt.show()
+    f=solvedfunction(ARA,Zi,par)
+    plt.plot(Zi,f)
+   # plt.xscale("log")
+    plt.show()
     x=f[1:-1]*f[0:-2] #when the output give <0, where is a change in sign, meaning 0 is crossed
     index=np.where(x<0)
 
@@ -213,20 +211,15 @@ def findss(ARA,par):
 
 def stability(ARA,par):
     ss= findss(ARA,par)
-    eigens=[]
-    det=[]
-    tr=[]
+    eigens=np.array([])
     for i,s in enumerate(ss): 
         A=jacobianMatrix(ARA,s[0],s[1],s[2],par)
         eigvals, eigvecs =eig(A)
         sse=eigvals.real
         eigens.append(sse)
-        d=np.linalg.det(A)
-        t= np.trace(A)
-        det.append(d)
-        tr.append(t)
+        
 
-    return eigens, det, tr
+    return turing_type, eigens
 
 
 def jacobianMatrix(ARA,X,Y,Z,par):
@@ -247,6 +240,6 @@ def jacobianMatrix(ARA,X,Y,Z,par):
     dzdy= dzdy /(np.power((X/10**par['K_XZ']),par['n_XZ'])+1)*Y*np.power((np.power(Y/10**par['K_YZ'],par['n_YZ'])+1) ,2)
     dzdz = -1
      
-    A=np.array(([dxdx,dxdy,dxdz],[dydx,dydy,dydz],[dzdx,dzdy,dzdz]))
+    A=np.array([dxdx,dxdy,dxdz],[dydx,dydy,dydz],[dzdx,dzdy,dzdz])
 
     return A
