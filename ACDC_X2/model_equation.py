@@ -12,7 +12,7 @@ from scipy.optimize import brentq
 
 #par for abc_smc
 initdist=40.
-finaldist=2.5
+finaldist=1.0
 priot_label=None
 dtt=0.1
 tt=120 #totaltime
@@ -223,5 +223,23 @@ def stability(ARA,par):
 
 
 def jacobianMatrix(ARA,X,Y,Z,par):
-    A=[0,0]
+    dxdx = -1
+    dxdy = 0
+    dxdz=-(((np.power(ARA,par['n_ARAX'])*(10**par['beta/alpha_X']-1))/ ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))+1)*par['n_ZX']*np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
+    dxdz=dxdz/(Z*np.power((np.power((Z/10**(par['K_ZX'])),par['n_ZX'])+1),2))
+
+    dydx=-(((np.power(ARA,par['n_ARAY'])*(10**par['beta/alpha_Y']-1))/ ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))+1)*par['n_XY']*np.power((X/10**(par['K_XY'])),par['n_XY']))
+    dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))    
+    dydy=-1
+    dydz=0
+
+    dzdx = -(10**par['beta/alpha_Z']*par['n_XZ']*np.power((X/10**par['K_XZ']),par['n_XZ']))
+    dzdx= dzdx /(np.power((Y/10**par['K_YZ']),par['n_YZ'])+1)*X*np.power((np.power(X/10**par['K_XZ'],par['n_XZ'])+1) ,2)
+
+    dzdy= -(10**par['beta/alpha_Z']*par['n_YZ']*np.power((Y/10**par['K_YZ']),par['n_YZ']))
+    dzdy= dzdy /(np.power((X/10**par['K_XZ']),par['n_XZ'])+1)*Y*np.power((np.power(Y/10**par['K_YZ'],par['n_YZ'])+1) ,2)
+    dzdz = -1
+     
+    A=np.array([dxdx,dxdy,dxdz],[dydx,dydy,dydz],[dzdx,dzdy,dzdz])
+
     return A
