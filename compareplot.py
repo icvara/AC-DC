@@ -5,13 +5,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 from scipy import stats
+from matplotlib.colors import LogNorm, Normalize
 
 #filename=["ACDC_X","ACDC_Y","ACDC_Z","ACDC_all"]
 filename=['ACDC_X2']
 #filename=['ACDC_X','ACDC_1ind']
 n=['final']
 #n=['1','2','3','4','5','6','7','8','9','10','11','12','final']#'13','14','15','final']
-#n=['1','2','3','4','5','6','7','8','9','10','11','12','13','14']
+n=['1','2','3','4','5','6','7','8','9','10','11']#,'12','13','14','15']#,'final']
 
 path='C:/Users/Administrator/Desktop/Modeling/AC-DC/'
 sys.path.insert(0, path + filename[0])
@@ -155,6 +156,8 @@ def plot_compare(filename,namelist):
     plt.show()
 
 
+
+
 def plot_alltime(filename,namelist):
     parl = np.append(namelist,'dist')
     index=1
@@ -169,9 +172,10 @@ def plot_alltime(filename,namelist):
             plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
         index=index+1
         #if index==5:       
-        #    plt.legend(bbox_to_anchor=(1.05, 1))
+    plt.legend(bbox_to_anchor=(1.05, 1))
     plt.show()
 
+plot_alltime(['ACDC_X2'],namelist)
 
 def plotdistpar(filename,namelist):
     index=1
@@ -299,58 +303,51 @@ def ind1vs2indmeanandmode():
 
 
 #chose parameter
-
-p,df= load('final','ACDC_X2',parlist)
-parUsed=par0
-#parUsed=p[0]
-ARA=np.logspace(-4.5,-2.,10,base=10)
-X,Y,Z=meq.model(ARA,parUsed,totaltime=400)
-df_X=pd.DataFrame(X,columns=ARA)
-sns.heatmap(df_X, cmap="Reds")
-plt.show()
-
-ss=meq.findss(ARA[9],parUsed)
-
-print(X[-2][9])
-print(ss)
-
-X,Y,Z=meq.Flow(X[-2][9],Y[-2][9],Z[-2][9],ARA,parUsed)
-print(X,Y,Z)
-X,Y,Z=meq.Flow(ss[0][0],ss[0][1],ss[0][2],ARA,parUsed)
-print(".......")
-print(X,Y,Z)
-
-'''
-allss=[]
-xss=[]
-yss=[]
-zss=[]
-
-for a in ARA:
-#a=np.array([ARA[5]])
-    ss=meq.findss(a,parUsed)
-    for s in ss:
-        xss.append(s[0])
-        yss.append(s[1])
-        zss.append(s[2])
-
-ss=meq.findss(ARA[9],parUsed)
-print(ss)
-X,Y,Z=meq.model([ARA[9]],parUsed,init=ss[0])
-df_X=pd.DataFrame(X,columns=ARA)
-sns.heatmap(df_X, cmap="Reds")
-plt.show()
+def bifurcation():
+    p,df= load('final','ACDC_X2',parlist)
+    parUsed=par0
+    parUsed=p[0]
+    ARA=np.logspace(-4.5,-2.,200,base=10)
 
 
 
-maxX=[]
-minX=[]
-for i in np.arange(0,len(ARA)):
-    maxX.append(max(X[:,i]))
-    minX.append(min(X[:,i]))
+    X,Y,Z=meq.model(ARA,parUsed,totaltime=400)
+    df_X=pd.DataFrame(X[500:],columns=ARA)
+    sns.heatmap(df_X, cmap="Reds", norm=LogNorm())
+    plt.show()
 
-plt.plot(xss)
-plt.plot(maxX,'--r')
-plt.plot(minX,'--b')
-plt.show()
-'''
+
+    allss=[]
+    xss=[]
+    yss=[]
+    zss=[]
+    maxX=[]
+    minX=[]
+    for a in ARA:
+    #a=np.array([ARA[5]])
+        ss=meq.findss(a,parUsed)
+        for s in ss:
+            xss.append(s[0])
+            yss.append(s[1])
+            zss.append(s[2])
+            #print(meq.stability(a,parUsed))
+            X,Y,Z=meq.model([a],parUsed,init=s)
+          
+    maxX=[]
+    minX=[]
+    X,Y,Z=meq.model(ARA,parUsed)
+    for i in np.arange(0,len(ARA)):
+        maxX.append(max(X[500:,i]))
+        minX.append(min(X[500:,i]))
+
+    plt.plot(ARA,xss,'--r')
+    plt.plot(ARA,maxX,'-r')
+    plt.plot(ARA,minX,'-r')
+    plt.fill_between(ARA,maxX,minX,alpha=0.5,facecolor='red')
+    plt.yscale("log")
+    plt.xscale("log")
+
+    #plt.plot(yss,'b')
+    #plt.plot(zss,'g')
+    plt.show()
+
