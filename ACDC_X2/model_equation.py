@@ -187,15 +187,16 @@ def solvedfunction(Zi,ARA,par):
 def findss(ARA,par):   
     #function to find steady state
     #1. find where line reached 0
-    Zi=np.arange(0,100,1)
+    Zi=np.arange(0,100000,1)
    # Zi=np.logspace(-14,5,200,base=10)
 
-    f=solvedfunction(ARA,Zi,par)
-    plt.plot(Zi,f)
+    f=solvedfunction(Zi,ARA,par)
+   # plt.plot(Zi,f)
    # plt.xscale("log")
-    plt.show()
+   # plt.show()
     x=f[1:-1]*f[0:-2] #when the output give <0, where is a change in sign, meaning 0 is crossed
     index=np.where(x<0)
+    
 
     ss=[]
     for i in index[0]:

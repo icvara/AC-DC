@@ -12,7 +12,7 @@ filename=['ACDC_X2']
 #filename=['ACDC_X','ACDC_1ind']
 n=['final']
 #n=['1','2','3','4','5','6','7','8','9','10','11','12','final']#'13','14','15','final']
-n=['1','2','3','4','5','6','7','8','9','10','11']#,'12','13','14','15']#,'final']
+n=['1','2','3','4','5','6','7','8','9','10','11']#,'12','13','14','final']#,'15']#,'final']
 
 path='C:/Users/Administrator/Desktop/Modeling/AC-DC/'
 sys.path.insert(0, path + filename[0])
@@ -175,7 +175,7 @@ def plot_alltime(filename,namelist):
     plt.legend(bbox_to_anchor=(1.05, 1))
     plt.show()
 
-plot_alltime(['ACDC_X2'],namelist)
+#plot_alltime(['ACDC_X2'],namelist)
 
 def plotdistpar(filename,namelist):
     index=1
@@ -303,19 +303,16 @@ def ind1vs2indmeanandmode():
 
 
 #chose parameter
-def bifurcation():
+def bifurcation(parUsed=None):
     p,df= load('final','ACDC_X2',parlist)
-    parUsed=par0
-    parUsed=p[0]
+    #parUsed=par0
+    if parUsed == None:
+        parUsed=p[0]
     ARA=np.logspace(-4.5,-2.,200,base=10)
-
-
-
-    X,Y,Z=meq.model(ARA,parUsed,totaltime=400)
+    X,Y,Z=meq.model(ARA,parUsed,totaltime=500)
     df_X=pd.DataFrame(X[500:],columns=ARA)
     sns.heatmap(df_X, cmap="Reds", norm=LogNorm())
     plt.show()
-
 
     allss=[]
     xss=[]
@@ -326,24 +323,47 @@ def bifurcation():
     for a in ARA:
     #a=np.array([ARA[5]])
         ss=meq.findss(a,parUsed)
+       # print(ss)
         for s in ss:
             xss.append(s[0])
             yss.append(s[1])
             zss.append(s[2])
             #print(meq.stability(a,parUsed))
-            X,Y,Z=meq.model([a],parUsed,init=s)
+            #X,Y,Z=meq.model([a],parUsed,init=s)
           
     maxX=[]
     minX=[]
-    X,Y,Z=meq.model(ARA,parUsed)
+    maxY=[]
+    minY=[]
+    maxZ=[]
+    minZ=[]
+   # X,Y,Z=meq.model(ARA,parUsed,totaltime=400)
     for i in np.arange(0,len(ARA)):
-        maxX.append(max(X[500:,i]))
-        minX.append(min(X[500:,i]))
-
+        maxX.append(max(X[200:,i]))
+        minX.append(min(X[200:,i]))
+        maxY.append(max(Y[200:,i]))
+        minY.append(min(Y[200:,i]))
+        maxZ.append(max(Z[200:,i]))
+        minZ.append(min(Z[200:,i]))
+    plt.subplot(3,1,1)
     plt.plot(ARA,xss,'--r')
     plt.plot(ARA,maxX,'-r')
     plt.plot(ARA,minX,'-r')
-    plt.fill_between(ARA,maxX,minX,alpha=0.5,facecolor='red')
+    plt.fill_between(ARA,maxX,minX,alpha=0.2,facecolor='red')
+    plt.yscale("log")
+    plt.xscale("log")
+    plt.subplot(3,1,2)
+    plt.plot(ARA,yss,'--b')
+    plt.plot(ARA,maxY,'-b')
+    plt.plot(ARA,minY,'-b')
+    plt.fill_between(ARA,maxY,minY,alpha=0.2,facecolor='blue')
+    plt.yscale("log")
+    plt.xscale("log")
+    plt.subplot(3,1,3)
+    plt.plot(ARA,zss,'--g')
+    plt.plot(ARA,maxZ,'-g')
+    plt.plot(ARA,minZ,'-g')
+    plt.fill_between(ARA,maxZ,minZ,alpha=0.2,facecolor='green')
     plt.yscale("log")
     plt.xscale("log")
 
@@ -351,3 +371,10 @@ def bifurcation():
     #plt.plot(zss,'g')
     plt.show()
 
+p,df= load('final','ACDC_X2',parlist)
+#plt.scatter(df['beta/alpha_Y'],df['K_ARAY'])
+df2=df[df['beta/alpha_Y']<1.5]
+df2=df2[df['K_ARAY']>-2.5]
+px=df2.iloc[0].tolist()[:-1]
+px=pars_to_dict(px,parlist)
+bifurcation(p[1])
