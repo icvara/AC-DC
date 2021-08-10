@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import sys
 from scipy import stats
 from matplotlib.colors import LogNorm, Normalize
+from scipy.signal import argrelextrema
+
 
 #filename=["ACDC_X","ACDC_Y","ACDC_Z","ACDC_all"]
 filename=['ACDC_X2']
@@ -302,54 +304,44 @@ def ind1vs2indmeanandmode():
 
 
 
-def calculateSScurve(ARA,parUsed):
-    #create line for bifurcation
-    xss=[]
-    yss=[]
-    zss=[]
+
+
+
+def calculateSS(ARA,parUsed):
+    #sort ss according to their stabilitz
+    #create stability list of shape : arabinose x steady x X,Y,Z
+    unstable=np.zeros((len(ARA),3,3))
+    stable=np.zeros((len(ARA),3,3))
+    oscillation=np.zeros((len(ARA),3,3))
+    unstable[:]=np.nan
+    stable[:]=np.nan
+    oscillation[:]=np.nan
 
     for ai,a in enumerate(ARA):
-    #a=np.array([ARA[5]])
         ss=meq.findss(a,parUsed)
-        sx=[np.nan,np.nan,np.nan]
-        sy=[np.nan,np.nan,np.nan]
-        sz=[np.nan,np.nan,np.nan]
-       # print(ss)
         if len(ss) > 3:
             print("error: more than 3 steadystates")
         else:
-            c=1
+            d = b = c=0 # can replace a,b,c by si, but allow to have osccilation on the same level
             for si,s in enumerate(ss):
-               # if len(ss)<3:
-                    if ai == 0 :
-                        sx[si] = s[0]
-                        sy[si] = s[1]
-                        sz[si] = s[2]                        
-                    else:
-                        if np.isnan(xss[ai-1]).any():
-                                ss_x = np.array(([sx[0] for sx in ss]))
-                                vx=abs(ss_x-xss[ai-1][0]) #only compare to the first one bc in my system only the first is not nan
-                                ix=np.nanargmin(vx)
-                                if s[0]==ss_x[ix]: # return the index of the one closest to previous point
-                                    sx[0]=s[0]
-                                    sy[0]=s[1]
-                                    sz[0]=s[2]
-                                else:
-                                    sx[c]=s[0]
-                                    sy[c]=s[1]
-                                    sz[c]=s[2]
-                                    c=c+1
+                e=meq.stability(a,parUsed,[s])[0][0]
+                if all(e<0):
+                        stable[ai][d]=s
+                        d+=1
+                if any(e>0):
+                    pos=e[e>0]
+                    if len(pos)==2:
+                        if pos[0]-pos[1] == 0:
+                            oscillation[ai][b]=s
+                            b+=1
                         else:
-                                vx=abs(s[0]-xss[ai-1]) 
-                                ix=np.nanargmin(vx)
-                                sx[ix]=s[0]
-                                sy[ix]=s[1]
-                                sz[ix]=s[2]
-           # print(sx)
-            xss.append(sx)
-            yss.append(sy)
-            zss.append(sz)
-    return xss,yss,zss
+                            unstable[ai][c]=s
+                            c+=1
+                    else:
+                        unstable[ai][c]=s 
+                        c+=1                  
+    return unstable,stable,oscillation
+
 
 #chose parameter
 def bifurcation(parUsed=None):
@@ -357,15 +349,19 @@ def bifurcation(parUsed=None):
     #parUsed=par0
     if parUsed == None:
         parUsed=p[0]
-    ARA=np.logspace(-4.5,-2.,10,base=10)
-
-    init=[1000,0,0]
+    ARA=np.logspace(-4.5,-2.,20,base=10)
+    ss=meq.findss(ARA[0],parUsed)[0]
+    #print(ss)
+    init=[ss[0],ss[1],ss[2]]
     X,Y,Z=meq.model(ARA,parUsed,totaltime=100,init=init)
     df_X=pd.DataFrame(X[500:],columns=ARA)
     sns.heatmap(df_X, cmap="Reds", norm=LogNorm())
     plt.show()
 
     xss,yss,zss = calculateSScurve(ARA,parUsed)
+
+
+
     maxX=[]
     minX=[]
     maxY=[]
@@ -373,18 +369,37 @@ def bifurcation(parUsed=None):
     maxZ=[]
     minZ=[]
    # X,Y,Z=meq.model(ARA,parUsed,totaltime=400)
+    delta=10e-5
     for i in np.arange(0,len(ARA)):
-        maxX.append(max(X[200:,i]))
-        minX.append(min(X[200:,i]))
+        min_x=[np.nan,np.nan,np.nan]
+        max_x=[np.nan,np.nan,np.nan]
+        ss=meq.findss(ARA[i],parUsed)
+        for si,s in enumerate(ss):
+            init=[s[0]+delta,s[1]+delta,s[2]+delta]
+            X,Y,Z=meq.model(ARA,parUsed,totaltime=100,init=init)
+           # print(max(X[200:,i]))
+
+            max_x[si]=max(X[200:,i])
+            min_x[si]=min(X[200:,i])
+
+          
+
+
+
+        maxX.append(max_x)
+        minX.append(min_x)
+
+        
+       # minX.append(min(X[200:,i]))
         maxY.append(max(Y[200:,i]))
         minY.append(min(Y[200:,i]))
         maxZ.append(max(Z[200:,i]))
         minZ.append(min(Z[200:,i]))
     plt.subplot(3,1,1)
-    plt.plot(ARA,xss,'--ro')
-  #  plt.plot(ARA,maxX,'-r')
-   # plt.plot(ARA,minX,'-r')
-   # plt.fill_between(ARA,maxX,minX,alpha=0.2,facecolor='red')
+    plt.plot(ARA,xss,'--o')
+    plt.plot(ARA,maxX,'-b')
+    plt.plot(ARA,minX,'-g')
+    #plt.fill_between(ARA,maxX,minX,alpha=0.2,facecolor='red')
     plt.yscale("log")
     plt.xscale("log")
     plt.subplot(3,1,2)
@@ -403,14 +418,56 @@ def bifurcation(parUsed=None):
     plt.xscale("log")
     plt.show()
 
-p,df= load('final','ACDC_X2',parlist)
-#plt.scatter(df['beta/alpha_Y'],df['K_ARAY'])
-#df2=df[df['beta/alpha_Y']<1.5]
-#df2=df2[df['K_ARAY']>-2.5]
-#px=df2.iloc[0].tolist()[:-1]
-#px=pars_to_dict(px,parlist)
-ARA=np.logspace(-4.5,-2.,10,base=10)
-print(meq.stability(ARA[1],p[1]))
-print(meq.stability(ARA[5],p[1]))
-print(meq.stability(ARA[9],p[1]))
-bifurcation(p[1])
+
+def getlimitcycle(ARA,ssl,par,tt=500):
+    M=np.ones((len(ARA),3,3))*np.nan
+    m=np.ones((len(ARA),3,3))*np.nan
+    delta=10e-5
+    transient=500
+    for ai,a in enumerate(ARA):
+            ss=ssl[ai]
+            for si,s in enumerate(ss):
+                if any(np.isnan(s)) == False:
+                    init=[s[0]+delta,s[1]+delta,s[2]+delta]
+                    X,Y,Z=meq.model([a],par,totaltime=tt,init=init)
+                    M[ai,si,0]=max(X[transient:])
+                    M[ai,si,1]=max(Y[transient:])
+                    M[ai,si,2]=max(Z[transient:])
+                    m[ai,si,0]=min(X[transient:])
+                    m[ai,si,1]=min(Y[transient:])
+                    m[ai,si,2]=min(Z[transient:])
+
+                    max_list=argrelextrema(X[transient:], np.greater)
+                    maxValues=X[transient:][max_list]
+                    min_list=argrelextrema(X[transient:], np.less)
+                    minValues=X[transient:][min_list]
+
+                    maximaStability = abs(maxValues[-2]-minValues[-2])-(maxValues[-3]-minValues[-3])
+                    if maximaStability > 0.01:
+                        print("limit cycle not achieved for ARA["+str(ai)+"]:" + str(a) + " at st.s:"+ str(s))
+
+    return M,m
+
+
+
+
+
+def bifurcation_plot(n,filename)
+    p,df= load(n,filename,parlist)
+    ARA=np.logspace(-4.5,-2.,200,base=10)
+    un,st,osc=calculateSS(ARA,p[1])
+    M,m=getlimitcycle(ARA,osc,p[1],tt=500)
+    for i,col in enumerate(['r','b','g']):
+        plt.subplot(3,1,i+1)
+        plt.plot(ARA,un[:,:,i],'--'+col)
+        plt.plot(ARA,st[:,:,i],'-'+col)
+        plt.plot(ARA,osc[:,:,i],'--'+col)
+        plt.fill_between(ARA,M[:,0,i],m[:,0,i],alpha=0.2,facecolor=col)
+        plt.fill_between(ARA,M[:,1,i],m[:,1,i],alpha=0.2,facecolor=col)
+        plt.fill_between(ARA,M[:,2,i],m[:,2,i],alpha=0.2,facecolor=col)
+        plt.yscale("log")
+        plt.xscale("log")
+    plt.show()
+
+
+#bifurcation(p[1])

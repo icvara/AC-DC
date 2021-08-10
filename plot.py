@@ -5,11 +5,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import abc_smc
-import model_equation as meq
 import statistics
 import os
 from collections import Counter
 import sys
+from scipy.signal import argrelextrema
+from matplotlib.colors import LogNorm, Normalize
+
 
 filename="ACDC_X2"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']
@@ -19,15 +21,14 @@ n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']
 #n=['1']
 
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/smc_'+filename)
-import model_equation as pr
+#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+import model_equation as meq
   
 
-parlist=pr.parlist
+parlist=meq.parlist
 
 ##par from abc smc
 def load(number= n,filename=filename,parlist=parlist):
-
     namelist=[]
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
@@ -64,44 +65,23 @@ def plot(ARA,p,name,nb):
         
 
         X,Y,Z = meq.model(ARA,par)
-
-
         df_X=pd.DataFrame(X,columns=ARA)
         df_Y=pd.DataFrame(Y,columns=ARA)
         df_Z=pd.DataFrame(Z,columns=ARA)
 
 
         plt.subplot(len(p),3,(1+i*3))
-        sns.heatmap(df_X, cmap="Reds")
+        sns.heatmap(df_X, cmap="Reds", norm=LogNorm())
         plt.subplot(len(p),3,(2+i*3))
-        sns.heatmap(df_Y, cmap ='Blues')
+        sns.heatmap(df_Y, cmap ='Blues', norm=LogNorm())
         plt.subplot(len(p),3,(3+i*3))
-        sns.heatmap(df_Z, cmap ='Greens')
+        sns.heatmap(df_Z, cmap ='Greens', norm=LogNorm())
 
     plt.savefig(name+"/plot/"+nb+'_heatmap'+'.pdf', bbox_inches='tight')
     #plt.savefig(name+"/plot/"+nb+'_heatmap'+'.png', bbox_inches='tight')
    # plt.show()
     plt.close()
 
-
-    '''
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.plot(X[:,-1],Y[:,-1],Z[:,-1],'-')
-    ax.view_init(30, 75)
-    plt.savefig("plot/"+name+'_'+n+'_3D'+'.pdf', bbox_inches='tight')
-    plt.close()
-
-
-    plt.plot(X[:,-1],'-r')
-    plt.plot(Y[:,-1],'-b')
-    plt.plot(Z[:,-1],'-g')
-    plt.ylim(0,1)
-    plt.plot([20/0.1, 20/0.1], [0, 1], 'k--', lw=1)
-    plt.savefig("plot/"+name+'_'+n+'_time'+'.pdf', bbox_inches='tight')
-    plt.close()
-    #plt.show()
-    '''
 
 def par_plot(df,name,nb,parlist):
 
@@ -142,22 +122,109 @@ def par_plot(df,name,nb,parlist):
             
       
     plt.savefig(name+"/plot/"+nb+'_Full_par_plot.pdf', bbox_inches='tight')
-    #plt.savefig(name+"/plot/"+nb+'_Full_par_plot.png', bbox_inches='tight')
     plt.close()
     #plt.show()
 
 
+def bifurcation_plot(n,filename,p):
+   # p,df= load(n,filename,parlist)
+    ARA=np.logspace(-4.5,-2.,200,base=10)
+    un,st,osc=calculateSS(ARA,p)
+    M,m=getlimitcycle(ARA,osc,p,tt=500)
+    for i,col in enumerate(['r','b','g']):
+        plt.subplot(3,1,i+1)
+        plt.plot(ARA,un[:,:,i],'--'+col)
+        plt.plot(ARA,st[:,:,i],'-'+col)
+        plt.plot(ARA,osc[:,:,i],'--'+col)
+        plt.fill_between(ARA,M[:,0,i],m[:,0,i],alpha=0.2,facecolor=col)
+        plt.fill_between(ARA,M[:,1,i],m[:,1,i],alpha=0.2,facecolor=col)
+        plt.fill_between(ARA,M[:,2,i],m[:,2,i],alpha=0.2,facecolor=col)
+        plt.yscale("log")
+        plt.xscale("log")
+    #plt.show()
+    plt.savefig(filename+"/plot/"+n+'_Bifurcation.pdf', bbox_inches='tight')
+    plt.close()
+
+def getlimitcycle(ARA,ssl,par,tt=500):
+    M=np.ones((len(ARA),3,3))*np.nan
+    m=np.ones((len(ARA),3,3))*np.nan
+    delta=10e-5
+    transient=500
+    for ai,a in enumerate(ARA):
+            ss=ssl[ai]
+            for si,s in enumerate(ss):
+                if any(np.isnan(s)) == False:
+                    init=[s[0]+delta,s[1]+delta,s[2]+delta]
+                    X,Y,Z=meq.model([a],par,totaltime=tt,init=init)
+                    M[ai,si,0]=max(X[transient:])
+                    M[ai,si,1]=max(Y[transient:])
+                    M[ai,si,2]=max(Z[transient:])
+                    m[ai,si,0]=min(X[transient:])
+                    m[ai,si,1]=min(Y[transient:])
+                    m[ai,si,2]=min(Z[transient:])
+
+                    max_list=argrelextrema(X[transient:], np.greater)
+                    maxValues=X[transient:][max_list]
+                    min_list=argrelextrema(X[transient:], np.less)
+                    minValues=X[transient:][min_list]
+                    if len(minValues)>3 and len(maxValues)>3:
+                        maximaStability = abs(maxValues[-2]-minValues[-2])-(maxValues[-3]-minValues[-3])
+                        if maximaStability > 0.01:
+                            print("limit cycle not achieved for ARA["+str(ai)+"]:" + str(a) + " at st.s:"+ str(s))
+                    else:
+                        print("limit cycle not achieved for ARA["+str(ai)+"]:" + str(a) + " at st.s:"+ str(s))
+
+
+    return M,m
+
+def calculateSS(ARA,parUsed):
+    #sort ss according to their stabilitz
+    #create stability list of shape : arabinose x steady x X,Y,Z
+    unstable=np.zeros((len(ARA),3,3))
+    stable=np.zeros((len(ARA),3,3))
+    oscillation=np.zeros((len(ARA),3,3))
+    unstable[:]=np.nan
+    stable[:]=np.nan
+    oscillation[:]=np.nan
+
+    for ai,a in enumerate(ARA):
+        ss=meq.findss(a,parUsed)
+        if len(ss) > 3:
+            print("error: more than 3 steadystates")
+        else:
+            d = b = c=0 # can replace a,b,c by si, but allow to have osccilation on the same level
+            for si,s in enumerate(ss):
+                e=meq.stability(a,parUsed,[s])[0][0]
+                if all(e<0):
+                        stable[ai][d]=s
+                        d+=1
+                if any(e>0):
+                    pos=e[e>0]
+                    if len(pos)==2:
+                        if pos[0]-pos[1] == 0:
+                            oscillation[ai][b]=s
+                            b+=1
+                        else:
+                            unstable[ai][c]=s
+                            c+=1
+                    else:
+                        unstable[ai][c]=s 
+                        c+=1                  
+    return unstable,stable,oscillation
 
 if __name__ == "__main__":
-    
+   
     if os.path.isdir(filename+'/plot') is False: ## if 'smc' folder does not exist:
         os.mkdir(filename+'/plot') ## create it, the output will go there
     
-    ARA=pr.ARA
+    ARA=meq.ARA
     for i in n:
       p, pdf= load(i,filename,parlist)
     
-
       plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,i)
-      par_plot(pdf,filename,i,pr.parlist)
+      par_plot(pdf,filename,i,meq.parlist)
+
+    bifurcation_plot('final',filename,p[0])
+
       
+
