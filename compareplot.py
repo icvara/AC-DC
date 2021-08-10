@@ -302,35 +302,70 @@ def ind1vs2indmeanandmode():
 
 
 
+def calculateSScurve(ARA,parUsed):
+    #create line for bifurcation
+    xss=[]
+    yss=[]
+    zss=[]
+
+    for ai,a in enumerate(ARA):
+    #a=np.array([ARA[5]])
+        ss=meq.findss(a,parUsed)
+        sx=[np.nan,np.nan,np.nan]
+        sy=[np.nan,np.nan,np.nan]
+        sz=[np.nan,np.nan,np.nan]
+       # print(ss)
+        if len(ss) > 3:
+            print("error: more than 3 steadystates")
+        else:
+            c=1
+            for si,s in enumerate(ss):
+               # if len(ss)<3:
+                    if ai == 0 :
+                        sx[si] = s[0]
+                        sy[si] = s[1]
+                        sz[si] = s[2]                        
+                    else:
+                        if np.isnan(xss[ai-1]).any():
+                                ss_x = np.array(([sx[0] for sx in ss]))
+                                vx=abs(ss_x-xss[ai-1][0]) #only compare to the first one bc in my system only the first is not nan
+                                ix=np.nanargmin(vx)
+                                if s[0]==ss_x[ix]: # return the index of the one closest to previous point
+                                    sx[0]=s[0]
+                                    sy[0]=s[1]
+                                    sz[0]=s[2]
+                                else:
+                                    sx[c]=s[0]
+                                    sy[c]=s[1]
+                                    sz[c]=s[2]
+                                    c=c+1
+                        else:
+                                vx=abs(s[0]-xss[ai-1]) 
+                                ix=np.nanargmin(vx)
+                                sx[ix]=s[0]
+                                sy[ix]=s[1]
+                                sz[ix]=s[2]
+           # print(sx)
+            xss.append(sx)
+            yss.append(sy)
+            zss.append(sz)
+    return xss,yss,zss
+
 #chose parameter
 def bifurcation(parUsed=None):
     p,df= load('final','ACDC_X2',parlist)
     #parUsed=par0
     if parUsed == None:
         parUsed=p[0]
-    ARA=np.logspace(-4.5,-2.,200,base=10)
-    X,Y,Z=meq.model(ARA,parUsed,totaltime=500)
+    ARA=np.logspace(-4.5,-2.,10,base=10)
+
+    init=[1000,0,0]
+    X,Y,Z=meq.model(ARA,parUsed,totaltime=100,init=init)
     df_X=pd.DataFrame(X[500:],columns=ARA)
     sns.heatmap(df_X, cmap="Reds", norm=LogNorm())
     plt.show()
 
-    allss=[]
-    xss=[]
-    yss=[]
-    zss=[]
-    maxX=[]
-    minX=[]
-    for a in ARA:
-    #a=np.array([ARA[5]])
-        ss=meq.findss(a,parUsed)
-       # print(ss)
-        for s in ss:
-            xss.append(s[0])
-            yss.append(s[1])
-            zss.append(s[2])
-            #print(meq.stability(a,parUsed))
-            #X,Y,Z=meq.model([a],parUsed,init=s)
-          
+    xss,yss,zss = calculateSScurve(ARA,parUsed)
     maxX=[]
     minX=[]
     maxY=[]
@@ -346,35 +381,36 @@ def bifurcation(parUsed=None):
         maxZ.append(max(Z[200:,i]))
         minZ.append(min(Z[200:,i]))
     plt.subplot(3,1,1)
-    plt.plot(ARA,xss,'--r')
-    plt.plot(ARA,maxX,'-r')
-    plt.plot(ARA,minX,'-r')
-    plt.fill_between(ARA,maxX,minX,alpha=0.2,facecolor='red')
+    plt.plot(ARA,xss,'--ro')
+  #  plt.plot(ARA,maxX,'-r')
+   # plt.plot(ARA,minX,'-r')
+   # plt.fill_between(ARA,maxX,minX,alpha=0.2,facecolor='red')
     plt.yscale("log")
     plt.xscale("log")
     plt.subplot(3,1,2)
     plt.plot(ARA,yss,'--b')
-    plt.plot(ARA,maxY,'-b')
-    plt.plot(ARA,minY,'-b')
-    plt.fill_between(ARA,maxY,minY,alpha=0.2,facecolor='blue')
+   # plt.plot(ARA,maxY,'-b')
+   # plt.plot(ARA,minY,'-b')
+   # plt.fill_between(ARA,maxY,minY,alpha=0.2,facecolor='blue')
     plt.yscale("log")
     plt.xscale("log")
     plt.subplot(3,1,3)
     plt.plot(ARA,zss,'--g')
-    plt.plot(ARA,maxZ,'-g')
-    plt.plot(ARA,minZ,'-g')
-    plt.fill_between(ARA,maxZ,minZ,alpha=0.2,facecolor='green')
+  #  plt.plot(ARA,maxZ,'-g')
+  #  plt.plot(ARA,minZ,'-g')
+  #  plt.fill_between(ARA,maxZ,minZ,alpha=0.2,facecolor='green')
     plt.yscale("log")
     plt.xscale("log")
-
-    #plt.plot(yss,'b')
-    #plt.plot(zss,'g')
     plt.show()
 
 p,df= load('final','ACDC_X2',parlist)
 #plt.scatter(df['beta/alpha_Y'],df['K_ARAY'])
-df2=df[df['beta/alpha_Y']<1.5]
-df2=df2[df['K_ARAY']>-2.5]
-px=df2.iloc[0].tolist()[:-1]
-px=pars_to_dict(px,parlist)
+#df2=df[df['beta/alpha_Y']<1.5]
+#df2=df2[df['K_ARAY']>-2.5]
+#px=df2.iloc[0].tolist()[:-1]
+#px=pars_to_dict(px,parlist)
+ARA=np.logspace(-4.5,-2.,10,base=10)
+print(meq.stability(ARA[1],p[1]))
+print(meq.stability(ARA[5],p[1]))
+print(meq.stability(ARA[9],p[1]))
 bifurcation(p[1])

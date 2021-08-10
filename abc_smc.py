@@ -228,7 +228,7 @@ def Sequential_ABC(x_data, ncpus,
         np.savetxt(version +'/smc'+'/weights_{}.out'.format(label), weights)
         np.savetxt(version +'/smc'+'/distances_{}.out'.format(label), accepted_distances)
 
-        if acceptance < 0.1 and kernelfactor>0.1 and adaptative_kernel:
+        if acceptance < 0.1 and kernelfactor>0.1 and adaptative_kernel: #change here to have lower condition
             kernelfactor = kernelfactor * 0.7
             print('Reducing kernel width to : ',kernelfactor)
         elif acceptance > 0.5 and kernelfactor<1 and adaptative_kernel:
@@ -241,7 +241,7 @@ def main(argv):
     if os.path.isdir(version +'/smc') is False: ## if 'smc' folder does not exist:
         os.mkdir(version +'/smc') ## create it, the output will go there
         
-    Sequential_ABC(x_data, ncpus=40,initial_dist = initdist, final_dist =finaldist,prior_label = pl,Npars=1000)
+    Sequential_ABC(x_data, ncpus=40,initial_dist = initdist, final_dist =finaldist,prior_label = pl,Npars=1000, adaptative_kernel = False)
 
 if __name__ == "__main__":
    main(sys.argv[1:])

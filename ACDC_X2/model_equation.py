@@ -10,6 +10,7 @@ import numpy as np
 from scipy import optimize
 from scipy.optimize import brentq
 
+
 #par for abc_smc
 initdist=40.
 finaldist=2.5
@@ -187,13 +188,16 @@ def solvedfunction(Zi,ARA,par):
 def findss(ARA,par):   
     #function to find steady state
     #1. find where line reached 0
-    Zi=np.arange(0,100000,1)
-   # Zi=np.logspace(-14,5,200,base=10)
+    Zi=np.logspace(-14,5,500,base=10)
 
     f=solvedfunction(Zi,ARA,par)
-   # plt.plot(Zi,f)
-   # plt.xscale("log")
-   # plt.show()
+    '''
+    plt.plot(Zi,f)
+    plt.xscale("log")
+    plt.ylim(-0.1,0.1)
+    plt.xlim(10e-6,1)
+    plt.show()
+    '''
     x=f[1:-1]*f[0:-2] #when the output give <0, where is a change in sign, meaning 0 is crossed
     index=np.where(x<0)
     
@@ -212,15 +216,15 @@ def findss(ARA,par):
 
 def stability(ARA,par):
     ss= findss(ARA,par)
-    eigens=np.array([])
+    eigens=[]
     for i,s in enumerate(ss): 
         A=jacobianMatrix(ARA,s[0],s[1],s[2],par)
-        eigvals, eigvecs =eig(A)
+        eigvals, eigvecs =np.linalg.eig(A)
         sse=eigvals.real
+       # print(sse)
         eigens.append(sse)
         
-
-    return turing_type, eigens
+    return eigens, np.trace(A), np.linalg.det(A)
 
 
 def jacobianMatrix(ARA,X,Y,Z,par):
@@ -232,15 +236,14 @@ def jacobianMatrix(ARA,X,Y,Z,par):
     dydx=-(((np.power(ARA,par['n_ARAY'])*(10**par['beta/alpha_Y']-1))/ ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))+1)*par['n_XY']*np.power((X/10**(par['K_XY'])),par['n_XY']))
     dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))    
     dydy=-1
-    dydz=0
+    dydz= 0
 
     dzdx = -(10**par['beta/alpha_Z']*par['n_XZ']*np.power((X/10**par['K_XZ']),par['n_XZ']))
     dzdx= dzdx /(np.power((Y/10**par['K_YZ']),par['n_YZ'])+1)*X*np.power((np.power(X/10**par['K_XZ'],par['n_XZ'])+1) ,2)
-
     dzdy= -(10**par['beta/alpha_Z']*par['n_YZ']*np.power((Y/10**par['K_YZ']),par['n_YZ']))
     dzdy= dzdy /(np.power((X/10**par['K_XZ']),par['n_XZ'])+1)*Y*np.power((np.power(Y/10**par['K_YZ'],par['n_YZ'])+1) ,2)
     dzdz = -1
      
-    A=np.array([dxdx,dxdy,dxdz],[dydx,dydy,dydz],[dzdx,dzdy,dzdz])
+    A=np.array(([dxdx,dxdy,dxdz],[dydx,dydy,dydz],[dzdx,dzdy,dzdz]))
 
     return A
