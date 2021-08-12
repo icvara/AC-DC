@@ -13,7 +13,7 @@ from scipy.optimize import brentq
 
 #par for abc_smc
 initdist=40.
-finaldist=2.5
+finaldist=1.0
 priot_label=None
 dtt=0.1
 tt=120 #totaltime

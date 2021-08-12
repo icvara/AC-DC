@@ -9,15 +9,17 @@ from matplotlib.colors import LogNorm, Normalize
 from scipy.signal import argrelextrema
 
 
-#filename=["ACDC_X","ACDC_Y","ACDC_Z","ACDC_all"]
-filename=['ACDC_X2']
+filename=["ACDC_X2","ACDC_Y2","ACDC_Z2"]#,"ACDC_all"]
+#filename=['ACDC_X2']
 #filename=['ACDC_X','ACDC_1ind']
 n=['final']
 #n=['1','2','3','4','5','6','7','8','9','10','11','12','final']#'13','14','15','final']
-n=['1','2','3','4','5','6','7','8','9','10','11']#,'12','13','14','final']#,'15']#,'final']
+#n=['1','2','3','4','5','6','7','8','9','10','11','12','13','final']#,'12','13','14','final']#,'15']#,'final']
 
 path='C:/Users/Administrator/Desktop/Modeling/AC-DC/'
+path='/users/ibarbier/AC-DC/'
 sys.path.insert(0, path + filename[0])
+
 import model_equation as meq
   
 parlist=meq.parlist
@@ -137,14 +139,15 @@ def bar_plot(filename,namelist, t="mean"):
         plt.show()
 
 
-def plot_compare(filename,namelist):
+def plot_compare(n,filename,namelist):
     parl = np.append(namelist,'dist')
     index=1
+    size=round(np.sqrt(len(parl)))
     for i,name in enumerate(parl):
-        plt.subplot(4,4,index)
+        plt.subplot(size,size,index)
         plt.tight_layout()
         for fi,fnm in enumerate(filename):
-            p,df= load(n[0],fnm,parlist)
+            p,df= load(n,fnm,parlist)
             sns.kdeplot(df[name],bw_adjust=.8,label=fnm)
         #plt.ylim(0,1)
         if i < (len(parl)-2):
@@ -154,10 +157,10 @@ def plot_compare(filename,namelist):
             plt.legend(bbox_to_anchor=(1.05, 1))
 
     #sns.kdeplot(df['K_XZ'])
-    plt.savefig(str(filename)+str(n[0])+"_compareplot.pdf", bbox_inches='tight')
+    plt.savefig(str(filename)+str(n)+"_compareplot.pdf", bbox_inches='tight')
     plt.show()
 
-
+#plot_compare(n[0],filename,namelist)
 
 
 def plot_alltime(filename,namelist):
@@ -452,7 +455,7 @@ def getlimitcycle(ARA,ssl,par,tt=500):
 
 
 
-def bifurcation_plot(n,filename)
+def bifurcation_plot(n,filename):
     p,df= load(n,filename,parlist)
     ARA=np.logspace(-4.5,-2.,200,base=10)
     un,st,osc=calculateSS(ARA,p[1])

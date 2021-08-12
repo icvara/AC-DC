@@ -13,12 +13,13 @@ from scipy.signal import argrelextrema
 from matplotlib.colors import LogNorm, Normalize
 
 
-filename="ACDC_X2"
-n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']
+filename="ACDC_ALL2"
+n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
+
 #['1','2','3','4','5','6','7','8','9','10','11','12']#,'16','17','18','19']
-#n=['12','13','14','15','16','17','18','final']
+#n=['final','12','13','14','15','16','17','18']
 #,'5','6','7','8',,'19','20','21','22','23','24']
-#n=['1']
+#n=['15','final']
 
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
@@ -124,7 +125,28 @@ def par_plot(df,name,nb,parlist):
     plt.savefig(name+"/plot/"+nb+'_Full_par_plot.pdf', bbox_inches='tight')
     plt.close()
     #plt.show()
-
+    
+def plot_alltime(n,filename,parlist):
+    namelist=[]
+    for i,par in enumerate(parlist):
+        namelist.append(parlist[i]['name'])
+    parl = np.append(namelist,'dist')
+    index=1
+    size=round(np.sqrt(len(parl)))
+    for i,name in enumerate(parl):
+        plt.subplot(size,size,index)
+        plt.tight_layout()
+        for ni,nmbr in enumerate(n):
+            p,df= load(nmbr,filename,parlist)
+            sns.kdeplot(df[name],bw_adjust=.8,label=nmbr)
+        #plt.ylim(0,1)
+        if i < (len(parl)-2):
+            plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+        if index==size:       
+          plt.legend(bbox_to_anchor=(1.05, 1))
+        index=index+1
+    plt.savefig(filename+"/plot/"+'ALLround_plot.pdf', bbox_inches='tight')
+    plt.close()
 
 def bifurcation_plot(n,filename,p):
    # p,df= load(n,filename,parlist)
@@ -218,13 +240,15 @@ if __name__ == "__main__":
         os.mkdir(filename+'/plot') ## create it, the output will go there
     
     ARA=meq.ARA
+    plot_alltime(n,filename,meq.parlist)
+    
     for i in n:
-      p, pdf= load(i,filename,parlist)
+      p, pdf= load(i,filename,meq.parlist)
     
       plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,i)
       par_plot(pdf,filename,i,meq.parlist)
 
-    bifurcation_plot('final',filename,p[0])
-
+    bifurcation_plot('final',filename,p[1])
+    
       
 

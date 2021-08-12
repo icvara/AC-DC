@@ -1,5 +1,5 @@
 
-## equation for X only
+## equation for Y only
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -10,6 +10,7 @@ import numpy as np
 from scipy import optimize
 from scipy.optimize import brentq
 
+
 #par for abc_smc
 initdist=40.
 finaldist=1.0
@@ -17,28 +18,28 @@ priot_label=None
 dtt=0.1
 tt=120 #totaltime
 tr=20 #transient time
-node="X"
+node="Y"
 
 #list for ACDC
 parlist = [ 
     #first node X param
     {'name' : 'K_ARAX', 'lower_limit':-4.0,'upper_limit':-1.0}, 
     {'name' : 'n_ARAX','lower_limit':0.5,'upper_limit':2.0},
-    {'name' : 'K_XY','lower_limit':-7.0,'upper_limit':-2.0},
+    {'name' : 'K_XY','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_XY','lower_limit':0.5,'upper_limit':2.0},
-    {'name' : 'K_XZ','lower_limit':-7.0,'upper_limit':-2.0},
+    {'name' : 'K_XZ','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_XZ','lower_limit':0.5,'upper_limit':2.0},
     {'name' : 'beta/alpha_X','lower_limit':0.0,'upper_limit':4.0},
 
     #Seconde node Y param
     {'name' : 'K_ARAY', 'lower_limit':-4.0,'upper_limit':-1.0}, 
     {'name' : 'n_ARAY','lower_limit':0.5,'upper_limit':2.0},
-    {'name' : 'K_YZ','lower_limit':-7.0,'upper_limit':-2.0},
+    {'name' : 'K_YZ','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_YZ','lower_limit':0.5,'upper_limit':2.0},
     {'name' : 'beta/alpha_Y','lower_limit':0.0,'upper_limit':4.0},
 
     #third node Z param
-    {'name' : 'K_ZX','lower_limit':-7.0,'upper_limit':-2.0},
+    {'name' : 'K_ZX','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_ZX','lower_limit':0.5,'upper_limit':2.0},
     {'name' : 'beta/alpha_Z','lower_limit':0.0,'upper_limit':4.0},
 ]
@@ -57,8 +58,8 @@ def Flow(X,Y,Z,ARA,par):
     flow_y = flow_y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
     flow_y = flow_y - Y
 
-    flow_z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
-    flow_z = flow_z /( 1 + np.power(X/10**(par['K_XZ']),par['n_XZ']))
+    flow_z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**par['K_YZ'],par['n_YZ']))
+    flow_z = flow_z /( 1 + np.power(X/10**par['K_XZ'],par['n_XZ']))
     flow_z = flow_z - Z
 
     return flow_x,flow_y,flow_z
@@ -106,10 +107,10 @@ def distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
     for i in range(0,len(x)):
              # for local maxima
              max_list=argrelextrema(A[transient:,i], np.greater)
-             maxValues=X[transient:,i][max_list]
+             maxValues=A[transient:,i][max_list]
              # for local minima
              min_list=argrelextrema(A[transient:,i], np.less)
-             minValues=X[transient:,i][min_list]
+             minValues=A[transient:,i][min_list]
      
      
              if i>oscillation_ara[0] and i<oscillation_ara[1]:           
@@ -187,15 +188,19 @@ def solvedfunction(Zi,ARA,par):
 def findss(ARA,par):   
     #function to find steady state
     #1. find where line reached 0
-    Zi=np.arange(0,100,1)
-   # Zi=np.logspace(-14,5,200,base=10)
+    Zi=np.logspace(-14,5,500,base=10)
 
-    f=solvedfunction(ARA,Zi,par)
+    f=solvedfunction(Zi,ARA,par)
+    '''
     plt.plot(Zi,f)
-   # plt.xscale("log")
+    plt.xscale("log")
+    plt.ylim(-0.1,0.1)
+    plt.xlim(10e-6,1)
     plt.show()
+    '''
     x=f[1:-1]*f[0:-2] #when the output give <0, where is a change in sign, meaning 0 is crossed
     index=np.where(x<0)
+    
 
     ss=[]
     for i in index[0]:
@@ -209,17 +214,19 @@ def findss(ARA,par):
 
     return ss
 
-def stability(ARA,par):
-    ss= findss(ARA,par)
-    eigens=np.array([])
+def stability(ARA,par,ss=0):
+    if ss==0:
+        ss= findss(ARA,par)
+    eigens=[]
     for i,s in enumerate(ss): 
         A=jacobianMatrix(ARA,s[0],s[1],s[2],par)
-        eigvals, eigvecs =eig(A)
+        eigvals, eigvecs =np.linalg.eig(A)
         sse=eigvals.real
+       # print(sse)
         eigens.append(sse)
         
+    return eigens, np.trace(A), np.linalg.det(A)
 
-    return turing_type, eigens
 
 
 def jacobianMatrix(ARA,X,Y,Z,par):
@@ -231,15 +238,37 @@ def jacobianMatrix(ARA,X,Y,Z,par):
     dydx=-(((np.power(ARA,par['n_ARAY'])*(10**par['beta/alpha_Y']-1))/ ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))+1)*par['n_XY']*np.power((X/10**(par['K_XY'])),par['n_XY']))
     dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))    
     dydy=-1
-    dydz=0
+    dydz= 0
 
     dzdx = -(10**par['beta/alpha_Z']*par['n_XZ']*np.power((X/10**par['K_XZ']),par['n_XZ']))
-    dzdx= dzdx /(np.power((Y/10**par['K_YZ']),par['n_YZ'])+1)*X*np.power((np.power(X/10**par['K_XZ'],par['n_XZ'])+1) ,2)
+    dzdx= dzdx /((np.power((Y/10**par['K_YZ']),par['n_YZ'])+1)*X*np.power((np.power(X/10**par['K_XZ'],par['n_XZ'])+1) ,2))
 
     dzdy= -(10**par['beta/alpha_Z']*par['n_YZ']*np.power((Y/10**par['K_YZ']),par['n_YZ']))
-    dzdy= dzdy /(np.power((X/10**par['K_XZ']),par['n_XZ'])+1)*Y*np.power((np.power(Y/10**par['K_YZ'],par['n_YZ'])+1) ,2)
+    dzdy= dzdy /((np.power((X/10**par['K_XZ']),par['n_XZ'])+1)*Y*np.power((np.power(Y/10**par['K_YZ'],par['n_YZ'])+1) ,2))
     dzdz = -1
      
-    A=np.array([dxdx,dxdy,dxdz],[dydx,dydy,dydz],[dzdx,dzdy,dzdz])
+    A=np.array(([dxdx,dxdy,dxdz],[dydx,dydy,dydz],[dzdx,dzdy,dzdz]))
+
+    return A
+
+def approximateJacob(ARA,X,Y,Z,par):
+    delta=10e-5
+    #used to verify the Jacobain matrix. 
+
+    x,y,z =Flow(X,Y,Z,ARA,par)
+
+    dxdx = (Flow(X+delta,Y,Z,ARA,par)[0] - x)/delta
+    dxdy = (Flow(X,Y+delta,Z,ARA,par)[0] - x)/delta
+    dxdz = (Flow(X,Y,Z+delta,ARA,par)[0] - x)/delta
+
+    dydx = (Flow(X+delta,Y,Z,ARA,par)[1] - y)/delta
+    dydy = (Flow(X,Y+delta,Z,ARA,par)[1] - y)/delta
+    dydz = (Flow(X,Y,Z+delta,ARA,par)[1] - y)/delta
+
+    dzdx = (Flow(X+delta,Y,Z,ARA,par)[2] - z)/delta
+    dzdy = (Flow(X,Y+delta,Z,ARA,par)[2] - z)/delta
+    dzdz = (Flow(X,Y,Z+delta,ARA,par)[2] - z)/delta
+
+    A=np.array(([dxdx,dxdy,dxdz],[dydx,dydy,dydz],[dzdx,dzdy,dzdz]))
 
     return A
