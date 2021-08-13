@@ -210,7 +210,8 @@ def findss(ARA,par):
         X = X / ( 1 + np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
         Y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
         Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
-        ss.append(np.array([X,Y,Z]))
+       # ss.append(np.array([X,Y,Z]))
+        ss.append([X,Y,Z])
 
     return ss
 
