@@ -184,7 +184,7 @@ def bifurcation_plot(n,filename,pars):
     #plt.savefig(filename+"/plot/"+n+'_Bifurcation.pdf', bbox_inches='tight')
     plt.close()
 
-def bifurcation_Xplot(n,filename,pars):
+def bifurcation_Xplot(n,filename,pars,c):
    # p,df= load(n,filename,parlist)
     ARA=np.logspace(-4.5,-2.,50,base=10)
     #ARA=np.logspace(-4.5,-2.,10,base=10)
@@ -196,24 +196,36 @@ def bifurcation_Xplot(n,filename,pars):
         M,m=getlimitcycle(ARA,osc,p)
         plt.subplot(sizex,sizey,pi+1)
         #for i,col in enumerate(['r','b','g']):
+        col='r'
         i=0
-        plt.plot(ARA,un[:,:,i],'--'+col)
-        plt.plot(ARA,st[:,:,i],'-'+col)
-        plt.plot(ARA,osc[:,:,i],'--', c='black')
-
+        
+        
         plt.plot(ARA,M[:,0,i],'-'+col,linewidth=1)
         plt.plot(ARA,M[:,1,i],'-'+col,linewidth=1)
         plt.plot(ARA,M[:,2,i],'-'+col,linewidth=1)
         plt.plot(ARA,m[:,0,i],'-'+col,linewidth=1)
         plt.plot(ARA,m[:,1,i],'-'+col,linewidth=1)
         plt.plot(ARA,m[:,2,i],'-'+col,linewidth=1)
+        
+        plt.plot(ARA,un[:,:,i],'--'+col)
+        plt.plot(ARA,st[:,:,i],'-'+col)
+        plt.plot(ARA,osc[:,:,i],'--', c='black')
+
+
         plt.fill_between(ARA,M[:,0,i],m[:,0,i],alpha=0.2,facecolor=col)
         plt.fill_between(ARA,M[:,1,i],m[:,1,i],alpha=0.2,facecolor=col)
         plt.fill_between(ARA,M[:,2,i],m[:,2,i],alpha=0.2,facecolor=col)
         plt.yscale("log")
         plt.xscale("log")
+        if pi%(sizex+1) == 0:
+            plt.xticks([])
+        if pi%sizey == 0:
+            plt.yticks([])
+        else:
+            plt.xticks([])
+            plt.yticks([])
    # plt.show()
-    plt.savefig(filename+"/plot/"+'full_Bifurcation.pdf', bbox_inches='tight')
+    plt.savefig(filename+"/plot/"+str(c)+'_full_Bifurcation.pdf', bbox_inches='tight')
     plt.close()
 
 def getminmax(X,Y,Z,transient):
@@ -381,7 +393,8 @@ if __name__ == "__main__":
      # par_plot(pdf,filename,i,meq.parlist)
 
     #bifurcation_plot('final',filename,p[1])
-    bifurcation_Xplot('final',filename,pars)
+    for i in np.arange(3,10):
+      bifurcation_Xplot('final',filename,p[(0+100*i):(100*i+99)],c=i)
 
 
 
