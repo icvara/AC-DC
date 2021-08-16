@@ -201,7 +201,6 @@ def findss(ARA,par):
     x=f[1:-1]*f[0:-2] #when the output give <0, where is a change in sign, meaning 0 is crossed
     index=np.where(x<0)
     
-
     ss=[]
     for i in index[0]:
         Z=brentq(solvedfunction, Zi[i], Zi[i+1],args=(ARA,par)) #find the value at 0
@@ -226,7 +225,7 @@ def stability(ARA,par,ss=0):
        # print(sse)
         eigens.append(sse)
         
-    return eigens, np.trace(A), np.linalg.det(A)
+    return eigens #, np.trace(A), np.linalg.det(A)
 
 
 
