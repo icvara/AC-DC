@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --time 00-04:40:00
+#SBATCH --time 00-8:40:00
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 1

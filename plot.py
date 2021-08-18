@@ -10,11 +10,14 @@ from collections import Counter
 import sys
 from scipy.signal import argrelextrema
 from matplotlib.colors import LogNorm, Normalize
+import multiprocessing
+import time
+from functools import partial
 
 
 filename="ACDC_X2"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
-n=['final']
+#n=['final']
 
 #['1','2','3','4','5','6','7','8','9','10','11','12']#,'16','17','18','19']
 #n=['final','12','13','14','15','16','17','18']
@@ -91,15 +94,28 @@ def plot(ARA,p,name,nb):
     plt.close()
 
 
-def par_plot(df,name,nb,parlist):
+def plotALLX(ARA,p,name,nb):
+    #ARA=np.logspace(-4.5,-2.,1000,base=10)
+    sizex=np.sqrt(len(p))
+    sizey=np.sqrt(len(p))
+    for i,par in enumerate(p):        
+        X,Y,Z = meq.model(ARA,par)
+        df_X=pd.DataFrame(X,columns=ARA)
+        #df_Y=pd.DataFrame(Y,columns=ARA)
+        #df_Z=pd.DataFrame(Z,columns=ARA)
+        plt.subplot(sizex,sizey,i+1)
+        sns.heatmap(df_X, cmap="Reds", norm=LogNorm())
 
+    plt.savefig(name+"/plot/"+nb+'ALLALL_heatmap'+'.pdf', bbox_inches='tight')
+    #plt.savefig(name+"/plot/"+nb+'_heatmap'+'.png', bbox_inches='tight')
+  #  plt.show()
+    plt.close()
+
+
+def par_plot(df,name,nb,parlist,namelist):
     #plt.plot(df['K_ARAX'],df['K_ARAY'],'ro')
     fonts=2
-    namelist=[]
-    for i,par in enumerate(parlist):
-        namelist.append(parlist[i]['name'])
  
-    
     for i,par1 in enumerate(namelist):
         for j,par2 in enumerate(namelist):
             plt.subplot(len(namelist),len(namelist), i+j*len(namelist)+1)
@@ -126,13 +142,30 @@ def par_plot(df,name,nb,parlist):
                     plt.ylabel(par2,fontsize=fonts)
                     plt.xlabel(par1,fontsize=fonts)
                     plt.xticks(fontsize=fonts)
-                    plt.yticks(fontsize=4,rotation=90)
-            
-      
-    plt.savefig(name+"/plot/"+nb+'_Full_par_plot.pdf', bbox_inches='tight')
+                    plt.yticks(fontsize=4,rotation=90)                 
+    plt.savefig(name+"/plot/"+nb+'_par_plot.pdf', bbox_inches='tight')
     plt.close()
     #plt.show()
     
+def splitted_parplot(n,filename,parlist):
+    namelist=[]
+    for i,par in enumerate(parlist):
+       namelist.append(parlist[i]['name'])
+    namelist=np.array(namelist) 
+    parlist=np.array(parlist)   
+    p, pdf= load(n,filename,parlist)
+
+    namelist2=namelist[[2,4,9,12]] #only K par
+    parlist2=parlist[[2,4,9,12]]
+    namelist3=namelist[[0,1,6,7,8,11]] #only B and activation
+    parlist3=parlist[[0,1,6,7,8,11]]
+    namelist4=namelist[[7,8,9,10,11]] #only Y par
+    parlist4=parlist[[7,8,9,10,11]]
+    par_plot(pdf,filename,(str(n)+'ALL'),parlist,namelist)
+    par_plot(pdf,filename,(str(n)+'K'),parlist2,namelist2)
+    par_plot(pdf,filename,(str(n)+'B'),parlist3,namelist3)
+    par_plot(pdf,filename,(str(n)+'Y'),parlist4,namelist4)
+        
 def plot_alltime(n,filename,parlist):
     namelist=[]
     for i,par in enumerate(parlist):
@@ -184,7 +217,7 @@ def bifurcation_plot(n,filename,pars):
     #plt.savefig(filename+"/plot/"+n+'_Bifurcation.pdf', bbox_inches='tight')
     plt.close()
 
-def bifurcation_Xplot(ARA,n,filename,pars):
+def bifurcation_Xplot(ARA,n,filename,pars,c):
    # p,df= load(n,filename,parlist)
    # ARA=np.logspace(-4.5,-2.,50,base=10)
     #ARA=np.logspace(-4.5,-2.,10,base=10)
@@ -215,7 +248,7 @@ def bifurcation_Xplot(ARA,n,filename,pars):
             plt.xticks([])
             plt.yticks([])
     #plt.show()
-    plt.savefig(filename+'_selected_Bifurcation.pdf', bbox_inches='tight')
+    plt.savefig(filename+'/'+str(c)+'_XBifurcation.pdf', bbox_inches='tight')
     plt.close()
 
 def getminmax(X,Y,Z,transient):
@@ -347,32 +380,199 @@ def calculateALL(ARA,parUsed):
     return ss,eig,unstable,stable,oscillation,M,m
 
 
-def isoscillationandstability(ARA,M,st):
-    a=np.argwhere(M>0)
-    b=np.argwhere(st>0)
-    #middle=round(len(ARA)/2)
-    out = any(check in a[:,0] for check in b[:,0])
-    return out
+def isoscillationandstability(ARA,M,st,threshold=0.2):
+    #check if we have limit cycle and stable state at the same ARA concentration 
+    #isolate the behaviour at high ara (up) and low ara (down)
+    nb = round(len(ARA)*threshold) # number of concentration required to be counted
+    up=0
+    down=0
+    idk=0
+    bdown=[]
+    bup=[]
+    t1=[]
+    t2=[] 
+    ACDC=False
+    
+    a=np.unique(np.argwhere(M>0)[:,0])
+    b=np.unique(np.argwhere(st>0)[:,0]) 
+    x=b[1:-1]-b[0:-2] #when the output give >1, it means there is a gap between the stable ss
+    ind=np.where(x>1)   
+    if len(ind)>1:
+      print("error in attribution: more than 2 stable state")      
+    if len(ind[0])==0: #only one steady state, this is a bit unlikely
+      #let's put them in in special category atm
+      idk=len(b)                
+    else:
+      index=ind[0][0]
+      bdown=b[:(index+1)]
+      bup=b[(index+1):]          
+    for c1 in a:
+      for c2 in bdown:
+            t1.append(c1==c2)
+      for c3 in bup:
+            t2.append(c1==c3)
+    down=sum(t1)
+    up=sum(t2)   
+    if up>nb or down>nb or idk>nb:
+      ACDC=True   
+    return ACDC,up,down, idk
 
 
-'''  
-print(ss[9])
-print("...........")
-#ss2=ss[ss[:,:,0].argsort()]
-ss2=ss[ss[:,:,0].argsort()]
-#ss2=ss[:,:,0]
-print(ss2.shape)
+def selectACDCpar(ARA,p,iter):
+    ss,eig,un,st,osc,M,m=calculateALL(ARA,p)
+    ACDC,up,down,idk=isoscillationandstability(ARA,M,st)
+    if ACDC:
+      return p,up,down,idk
+
+def selectALL_ACDCpar(ARA,p,ncpus=40):
+    pool = multiprocessing.Pool(ncpus)
+    Npars=len(p)
+    results = pool.map(func=partial(selectACDCpar, ARA, p),iterable=range(Npars), chunksize=10)
+    pool.close()
+    pool.join()    
+    end_time = time.time()
+    print(f'>>>> Loop processing time: {end_time-start_time:.3f} sec on {ncpus} CPU cores.')
+    accepted_par = [result[0] for result in results]
+    criteria = [result[1:3] for result in results]   
+    return accepted_par, criteria
+
+def run(n,filename,ncpus=40):
+    ARA=np.logspace(-4.5,-2.,20,base=10)
+    p, pdf= load(n,filename,meq.parlist)
+    #accepted_par, criteria = selectALL_ACDCpar(ARA,p,ncpus)
+    criteria=[]
+    accepted_index=[]
+    p=p[0:10]
+    for i,pi in enumerate(p):
+        ss,eig,un,st,osc,M,m=calculateALL(ARA,pi)
+        ACDC,up,down,idk=isoscillationandstability(ARA,M,st)
+        if ACDC:
+            criteria.append([up,down,idk])
+            accepted_index.append(i)
+    np.savetxt(filename +'/criteria.out', criteria)
+    np.savetxt(filename +'/ACDC_par_index.out', accepted_index)
+    selected_index = np.loadtxt(filename+'/ACDC_par_index.out')
+    criteria = np.loadtxt(filename +'/criteria.out')
+    selected_index =[int(x) for x in selected_index]
+    p_selected =  np.take(p,selected_index)
+    bifurcation_Xplot(ARA,'final',filename,p_selected,c='selected')
+
+
+################################BUILDING AREA
+#run('final',filename,ncpus=40)
+'''
+
+selected_index = np.loadtxt(filename+'/ACDC_par_index.out')
+criteria = np.loadtxt(filename +'/criteria.out')
+selected_index =[int(x) for x in selected_index]
+p_selected =  np.take(p,selected_index)
+bifurcation_Xplot(ARA,'final',filename,p_selected,c='selected')
 '''
 
 
+def par_plot2(df,df2,name,nb,parlist,namelist):
+    a = df2[df2['up']>0]
+    a=a[a['down']==0]
+    b = df2[df2['down']>0 ]
+    b=b[b['up']==0]
+    c = df2[df2['idk']>0]
+    d = df2[df2['down']>0 ]
+    d=d[d['up']>0]
+    #plot the parameter with the slected parameter on top of it
+    #plt.plot(df['K_ARAX'],df['K_ARAY'],'ro')
+    fonts=2
+    
+    for i,par1 in enumerate(namelist):
+        for j,par2 in enumerate(namelist):
+            plt.subplot(len(namelist),len(namelist), i+j*len(namelist)+1)
+            if i == j :
+                sns.kdeplot(df[par1],color='black',bw_adjust=.8,linewidth=0.5)
+                #sns.kdeplot(c[par1],color='gray',bw_adjust=.8,linewidth=0.5)
+                #sns.kdeplot(a[par1],color='green', bw_adjust=.8,linewidth=0.5)
+                sns.kdeplot(b[par1],color='red',bw_adjust=.8,linewidth=0.5)
+                #sns.kdeplot(d[par1],color='orange',bw_adjust=.8,linewidth=0.5)
+                plt.ylabel("")
+                plt.xlabel("")
+                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+            else:
+                plt.scatter(df[par1],df[par2], c='black', s=0.0001)# vmin=mindist, vmax=maxdist)
+               # plt.scatter(c[par1],c[par2], color='black', s=0.0001)
+               # plt.scatter(a[par1],a[par2], color='green', s=0.0001)
+                plt.scatter(b[par1],b[par2], color='red', s=0.0001)                
+                #plt.scatter(d[par1],d[par2], color='orange', s=0.0001)
+                #plt.scatter(df2[par1],df2[par2], c='blue', s=0.001)
+                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+                plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
+            if i > 0 and j < len(namelist)-1 :
+                plt.xticks([])
+                plt.yticks([])
+            else:
+                if i==0 and j!=len(namelist)-1:
+                    plt.xticks([])
+                    plt.ylabel(par2,fontsize=fonts)
+                    plt.yticks(fontsize=fonts,rotation=90)
+                if j==len(namelist)-1 and i != 0:
+                    plt.yticks([])
+                    plt.xlabel(par1,fontsize=fonts)
+                    plt.xticks(fontsize=fonts)
+                else:
+                    plt.ylabel(par2,fontsize=fonts)
+                    plt.xlabel(par1,fontsize=fonts)
+                    plt.xticks(fontsize=fonts)
+                    plt.yticks(fontsize=4,rotation=90)                 
+    plt.savefig(name+"/"+nb+'_selected_par_plot.pdf', bbox_inches='tight')
+    plt.close()
+    #plt.show()
 
+
+def plotselectedparoverall(n,filename,parlist):
+     selected_index = np.loadtxt(filename+'/ACDC_par_index.out')
+     criteria = np.loadtxt(filename +'/criteria.out')
+     selected_index =[int(x) for x in selected_index]      
+     ARA=np.logspace(-4.5,-2.,20,base=10)
+     p, pdf= load(n,filename,parlist)
+     pdf2=pdf.iloc[selected_index]
+     p_selected =  np.take(p,selected_index) 
+     pdf2['up']=criteria[:,0]
+     pdf2['down']=criteria[:,1]
+     pdf2['idk']=criteria[:,2]
+         
+     namelist=[]
+     for i,par in enumerate(meq.parlist):
+       namelist.append(parlist[i]['name'])
+     namelist=np.array(namelist)
+
+     namelist2=namelist[[2,4,9,12]] #only K par
+     parlist2=parlist[[2,4,9,12]] 
+     namelist3=namelist[[0,1,6,7,8,11]] #only B and activation
+     parlist3=parlist[[0,1,6,7,8,11]]
+     namelist4=namelist[[7,8,9,10,11]] #only Y par
+     parlist4=parlist[[7,8,9,10,11]]
+     
+     par_plot2(pdf,pdf2,filename,n,parlist,namelist)
+     par_plot2(pdf,pdf2,filename,'K',parlist2,namelist2)
+     par_plot2(pdf,pdf2,filename,'B',parlist3,namelist3)
+     par_plot2(pdf,pdf2,filename,'Y',parlist4,namelist4)
+     
+
+    
+#splitted_parplot('final',filename,meq.parlist)
+
+ARA=meq.ARA
+for i in n:
+  p, pdf= load(i,filename,meq.parlist)
+  plotALLX(ARA,p,filename,i)
+
+
+##############################################################################################################3   
+'''
 if __name__ == "__main__":
    
     if os.path.isdir(filename+'/plot') is False: ## if 'smc' folder does not exist:
         os.mkdir(filename+'/plot') ## create it, the output will go there
     
     ARA=meq.ARA
-    ARA=np.logspace(-4.5,-2.,40,base=10)
+    ARA=np.logspace(-4.5,-2.,20,base=10)
    # plot_alltime(n,filename,meq.parlist)
     
     #for i in n:
@@ -383,15 +583,18 @@ if __name__ == "__main__":
 
     #bifurcation_plot('final',filename,p[1])
     p, pdf= load('final',filename,meq.parlist)
-    acdc_p=[]
     index=[]
-    for i,p in enumerate([p[100]]):
-        ss,eig,un,st,osc,M,m=calculateALL(ARA,p)
-        if isoscillationandstability(ARA,M,st):
-            acdc_p.append(p)
-            index.append(i)
-
-    np.savetxt(filename +'_selectedpar.out',index)
+    for j in np.arange(0,9):
+      acdc_p=[]     
+      bifurcation_Xplot(ARA,'final',filename,p[(0+100*j):(99+100*j)],c=j)
+      for i,pi in enumerate(p[(0+100*j):(99+100*j)]):
+          ss,eig,un,st,osc,M,m=calculateALL(ARA,pi)
+          if isoscillationandstability(ARA,M,st):
+               acdc_p.append(pi)
+               index.append(int(i+j*100)) 
+          np.savetxt(str(j)+'_'+filename +'_selectedpar.out',index)
+ '''     
+        
 
     
-    bifurcation_Xplot(ARA,'final',filename,acdc_p)
+    

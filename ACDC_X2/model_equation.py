@@ -211,7 +211,9 @@ def findss(ARA,par):
         Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
        # ss.append(np.array([X,Y,Z]))
         ss.append([X,Y,Z])
-
+        
+    #order ss here
+    ss.sort()
     return ss
 
 def stability(ARA,par,ss=0):
