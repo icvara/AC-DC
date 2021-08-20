@@ -17,19 +17,18 @@ from functools import partial
 
 filename="ACDC_X2"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
-#n=['final']
-
-#['1','2','3','4','5','6','7','8','9','10','11','12']#,'16','17','18','19']
-#n=['final','12','13','14','15','16','17','18']
-#,'5','6','7','8',,'19','20','21','22','23','24']
-#n=['15','final']
+n=['final']
 
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
-
 parlist=meq.parlist
+
+
+######################################################################33
+#########################################################################
+###########################################################################
 
 def load(number= n,filename=filename,parlist=parlist):
     namelist=[]
@@ -188,6 +187,93 @@ def plot_alltime(n,filename,parlist):
     plt.savefig(filename+"/plot/"+'ALLround_plot.pdf', bbox_inches='tight')
     plt.close()
 
+
+def par_plot2(df,df2,name,nb,parlist,namelist):
+    a = df2[df2['up']>0]
+    a=a[a['down']==0]
+    b = df2[df2['down']>0 ]
+    b=b[b['up']==0]
+    c = df2[df2['idk']>0]
+    d = df2[df2['down']>0 ]
+    d=d[d['up']>0]
+    #plot the parameter with the slected parameter on top of it
+    #plt.plot(df['K_ARAX'],df['K_ARAY'],'ro')
+    fonts=2
+    
+    for i,par1 in enumerate(namelist):
+        for j,par2 in enumerate(namelist):
+            plt.subplot(len(namelist),len(namelist), i+j*len(namelist)+1)
+            if i == j :
+                sns.kdeplot(df[par1],color='black',bw_adjust=.8,linewidth=0.5)
+                #sns.kdeplot(c[par1],color='gray',bw_adjust=.8,linewidth=0.5)
+                #sns.kdeplot(a[par1],color='green', bw_adjust=.8,linewidth=0.5)
+                sns.kdeplot(b[par1],color='red',bw_adjust=.8,linewidth=0.5)
+                #sns.kdeplot(d[par1],color='orange',bw_adjust=.8,linewidth=0.5)
+                plt.ylabel("")
+                plt.xlabel("")
+                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+            else:
+                plt.scatter(df[par1],df[par2], c='black', s=0.0001)# vmin=mindist, vmax=maxdist)
+               # plt.scatter(c[par1],c[par2], color='black', s=0.0001)
+               # plt.scatter(a[par1],a[par2], color='green', s=0.0001)
+                plt.scatter(b[par1],b[par2], color='red', s=0.0001)                
+                #plt.scatter(d[par1],d[par2], color='orange', s=0.0001)
+                #plt.scatter(df2[par1],df2[par2], c='blue', s=0.001)
+                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+                plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
+            if i > 0 and j < len(namelist)-1 :
+                plt.xticks([])
+                plt.yticks([])
+            else:
+                if i==0 and j!=len(namelist)-1:
+                    plt.xticks([])
+                    plt.ylabel(par2,fontsize=fonts)
+                    plt.yticks(fontsize=fonts,rotation=90)
+                if j==len(namelist)-1 and i != 0:
+                    plt.yticks([])
+                    plt.xlabel(par1,fontsize=fonts)
+                    plt.xticks(fontsize=fonts)
+                else:
+                    plt.ylabel(par2,fontsize=fonts)
+                    plt.xlabel(par1,fontsize=fonts)
+                    plt.xticks(fontsize=fonts)
+                    plt.yticks(fontsize=4,rotation=90)                 
+    plt.savefig(name+"/"+nb+'_selected_par_plot.pdf', bbox_inches='tight')
+    plt.close()
+    #plt.show()
+
+
+def plotselectedparoverall(n,filename,parlist):
+     selected_index = np.loadtxt(filename+'/ACDC_par_index.out')
+     criteria = np.loadtxt(filename +'/criteria.out')
+     selected_index =[int(x) for x in selected_index]      
+     ARA=np.logspace(-4.5,-2.,20,base=10)
+     p, pdf= load(n,filename,parlist)
+     pdf2=pdf.iloc[selected_index]
+     p_selected =  np.take(p,selected_index) 
+     pdf2['up']=criteria[:,0]
+     pdf2['down']=criteria[:,1]
+     pdf2['idk']=criteria[:,2]
+         
+     namelist=[]
+     for i,par in enumerate(meq.parlist):
+       namelist.append(parlist[i]['name'])
+     namelist=np.array(namelist)
+
+     namelist2=namelist[[2,4,9,12]] #only K par
+     parlist2=parlist[[2,4,9,12]] 
+     namelist3=namelist[[0,1,6,7,8,11]] #only B and activation
+     parlist3=parlist[[0,1,6,7,8,11]]
+     namelist4=namelist[[7,8,9,10,11]] #only Y par
+     parlist4=parlist[[7,8,9,10,11]]
+     
+     par_plot2(pdf,pdf2,filename,n,parlist,namelist)
+     par_plot2(pdf,pdf2,filename,'K',parlist2,namelist2)
+     par_plot2(pdf,pdf2,filename,'B',parlist3,namelist3)
+     par_plot2(pdf,pdf2,filename,'Y',parlist4,namelist4)
+     
+
+
 def bifurcation_plot(n,filename,pars):
    # p,df= load(n,filename,parlist)
     ARA=np.logspace(-4.5,-2.,200,base=10)
@@ -228,18 +314,19 @@ def bifurcation_Xplot(ARA,n,filename,pars,c):
         ss,eig,un,st,os,M,m=calculateALL(ARA,p)
         #M,m=getlimitcycle(ARA,osc,p)
         plt.subplot(sizex,sizey,pi+1)
+        plt.tight_layout()
         for i in np.arange(0,un.shape[1]):
-                plt.plot(ARA,un[:,i,0],'--',c='orange',linewidth=.1)
-                plt.plot(ARA,st[:,i,0],'-r',linewidth=.1)
-                plt.plot(ARA,os[:,i,0],'--b',linewidth=.1)
-                plt.plot(ARA,M[:,i,0],'-b',linewidth=.1)
-                plt.plot(ARA,m[:,i,0],'-b',linewidth=.1)
+                plt.plot(ARA,un[:,i,0],'--',c='orange',linewidth=1)
+                plt.plot(ARA,st[:,i,0],'-r',linewidth=1)
+                plt.plot(ARA,os[:,i,0],'--b',linewidth=1)
+                plt.plot(ARA,M[:,i,0],'-b',linewidth=1)
+                plt.plot(ARA,m[:,i,0],'-b',linewidth=1)
                 plt.fill_between(ARA,M[:,i,0],m[:,i,0],alpha=0.2,facecolor='blue')
 
         plt.yscale("log")
         plt.xscale("log")
     
-  
+        '''
         if pi%(sizex+1) == 0:
             plt.xticks([])
         if pi%sizey == 0:
@@ -247,9 +334,15 @@ def bifurcation_Xplot(ARA,n,filename,pars,c):
         else:
             plt.xticks([])
             plt.yticks([])
-    #plt.show()
-    plt.savefig(filename+'/'+str(c)+'_XBifurcation.pdf', bbox_inches='tight')
+        '''
+    plt.show()
+    #plt.savefig(filename+'/'+str(c)+'_XBifurcation.pdf', bbox_inches='tight')
     plt.close()
+
+
+
+##############################################3Bifurcation part 
+################################################################################
 
 def getminmax(X,Y,Z,transient):
     M=np.ones(3)*np.nan
@@ -338,6 +431,10 @@ def getEigen(ARA,par,s):
 def getpar(i,df):
     return pars_to_dict(df.iloc[i].tolist())
 
+def getclosestindex(vector,value,index):
+    if index == 0: #this is the first point 
+        return [0,1,2]
+
 
 def calculateALL(ARA,parUsed):
     #sort ss according to their stabilitz
@@ -349,21 +446,17 @@ def calculateALL(ARA,parUsed):
     unstable=np.ones((len(ARA),nStstate,nNode))*np.nan
     stable=np.ones((len(ARA),nStstate,nNode))*np.nan
     oscillation=np.ones((len(ARA),nStstate,nNode))*np.nan
-    delta=10e-20
     M=np.ones((len(ARA),nStstate,nNode))*np.nan
     m=np.ones((len(ARA),nStstate,nNode))*np.nan
 
-    #ss, eig = getALLss(ARA,parUsed)
-
+    delta=10e-20 #perturbation from ss
     for i,a in enumerate(ARA):
         ss2=meq.findss(a,parUsed) 
         for j,s in enumerate(ss2):
             ss[i,j]=s
             eig[i,j]=getEigen(a,parUsed,s)
-      #  for j in np.arange(0,4):
             if np.all(eig[i,j]<0):
                 stable[i,j]=ss[i,j]
-
             if any(eig[i,j]>0):
                 pos=eig[i,j][eig[i,j]>0]
                 if len(pos)==2:
@@ -379,6 +472,40 @@ def calculateALL(ARA,parUsed):
                 unstable[i,j]=ss[i,j]
     return ss,eig,unstable,stable,oscillation,M,m
 
+def calculateALL2(ARA,parUsed):
+    #sort ss according to their stabilitz
+    #create stability list of shape : arabinose x steady x X,Y,Z 
+    nNode=3 # number of nodes : X,Y,Z
+    nStstate= 5 # number of steady state accepted by. to create the storage array
+    ss=np.ones((len(ARA),nStstate,nNode))*np.nan 
+    eig= np.ones((len(ARA),nStstate,nNode))*np.nan 
+    unstable=np.ones((len(ARA),nStstate,nNode))*np.nan
+    stable=np.ones((len(ARA),nStstate,nNode))*np.nan
+    oscillation=np.ones((len(ARA),nStstate,nNode))*np.nan
+    M=np.ones((len(ARA),nStstate,nNode))*np.nan
+    m=np.ones((len(ARA),nStstate,nNode))*np.nan
+
+    delta=10e-20 #perturbation from ss
+    ss=meq.findss2(ARA,parUsed) 
+    for j,s in enumerate(ss2):
+            ss[i,j]=s
+            eig[i,j]=getEigen(a,parUsed,s)
+            if np.all(eig[i,j]<0):
+                stable[i,j]=ss[i,j]
+            if any(eig[i,j]>0):
+                pos=eig[i,j][eig[i,j]>0]
+                if len(pos)==2:
+                        if pos[0]-pos[1] == 0:
+                            oscillation[i][j]=ss[i,j]
+                            init=[ss[i,j,0]+delta,ss[i,j,1]+delta,ss[i,j,2]+delta]
+                            M[i,j],m[i,j] = limitcycle(a,init,parUsed)
+                        else:
+                            unstable[i,j]=ss[i,j]
+                else:
+                    unstable[i,j]=ss[i,j]
+            else:
+                unstable[i,j]=ss[i,j]
+    return ss,eig,unstable,stable,oscillation,M,m
 
 def isoscillationandstability(ARA,M,st,threshold=0.2):
     #check if we have limit cycle and stable state at the same ARA concentration 
@@ -470,99 +597,58 @@ bifurcation_Xplot(ARA,'final',filename,p_selected,c='selected')
 '''
 
 
-def par_plot2(df,df2,name,nb,parlist,namelist):
-    a = df2[df2['up']>0]
-    a=a[a['down']==0]
-    b = df2[df2['down']>0 ]
-    b=b[b['up']==0]
-    c = df2[df2['idk']>0]
-    d = df2[df2['down']>0 ]
-    d=d[d['up']>0]
-    #plot the parameter with the slected parameter on top of it
-    #plt.plot(df['K_ARAX'],df['K_ARAY'],'ro')
-    fonts=2
-    
-    for i,par1 in enumerate(namelist):
-        for j,par2 in enumerate(namelist):
-            plt.subplot(len(namelist),len(namelist), i+j*len(namelist)+1)
-            if i == j :
-                sns.kdeplot(df[par1],color='black',bw_adjust=.8,linewidth=0.5)
-                #sns.kdeplot(c[par1],color='gray',bw_adjust=.8,linewidth=0.5)
-                #sns.kdeplot(a[par1],color='green', bw_adjust=.8,linewidth=0.5)
-                sns.kdeplot(b[par1],color='red',bw_adjust=.8,linewidth=0.5)
-                #sns.kdeplot(d[par1],color='orange',bw_adjust=.8,linewidth=0.5)
-                plt.ylabel("")
-                plt.xlabel("")
-                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-            else:
-                plt.scatter(df[par1],df[par2], c='black', s=0.0001)# vmin=mindist, vmax=maxdist)
-               # plt.scatter(c[par1],c[par2], color='black', s=0.0001)
-               # plt.scatter(a[par1],a[par2], color='green', s=0.0001)
-                plt.scatter(b[par1],b[par2], color='red', s=0.0001)                
-                #plt.scatter(d[par1],d[par2], color='orange', s=0.0001)
-                #plt.scatter(df2[par1],df2[par2], c='blue', s=0.001)
-                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-                plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
-            if i > 0 and j < len(namelist)-1 :
-                plt.xticks([])
-                plt.yticks([])
-            else:
-                if i==0 and j!=len(namelist)-1:
-                    plt.xticks([])
-                    plt.ylabel(par2,fontsize=fonts)
-                    plt.yticks(fontsize=fonts,rotation=90)
-                if j==len(namelist)-1 and i != 0:
-                    plt.yticks([])
-                    plt.xlabel(par1,fontsize=fonts)
-                    plt.xticks(fontsize=fonts)
-                else:
-                    plt.ylabel(par2,fontsize=fonts)
-                    plt.xlabel(par1,fontsize=fonts)
-                    plt.xticks(fontsize=fonts)
-                    plt.yticks(fontsize=4,rotation=90)                 
-    plt.savefig(name+"/"+nb+'_selected_par_plot.pdf', bbox_inches='tight')
-    plt.close()
-    #plt.show()
-
-
-def plotselectedparoverall(n,filename,parlist):
-     selected_index = np.loadtxt(filename+'/ACDC_par_index.out')
-     criteria = np.loadtxt(filename +'/criteria.out')
-     selected_index =[int(x) for x in selected_index]      
-     ARA=np.logspace(-4.5,-2.,20,base=10)
-     p, pdf= load(n,filename,parlist)
-     pdf2=pdf.iloc[selected_index]
-     p_selected =  np.take(p,selected_index) 
-     pdf2['up']=criteria[:,0]
-     pdf2['down']=criteria[:,1]
-     pdf2['idk']=criteria[:,2]
-         
-     namelist=[]
-     for i,par in enumerate(meq.parlist):
-       namelist.append(parlist[i]['name'])
-     namelist=np.array(namelist)
-
-     namelist2=namelist[[2,4,9,12]] #only K par
-     parlist2=parlist[[2,4,9,12]] 
-     namelist3=namelist[[0,1,6,7,8,11]] #only B and activation
-     parlist3=parlist[[0,1,6,7,8,11]]
-     namelist4=namelist[[7,8,9,10,11]] #only Y par
-     parlist4=parlist[[7,8,9,10,11]]
-     
-     par_plot2(pdf,pdf2,filename,n,parlist,namelist)
-     par_plot2(pdf,pdf2,filename,'K',parlist2,namelist2)
-     par_plot2(pdf,pdf2,filename,'B',parlist3,namelist3)
-     par_plot2(pdf,pdf2,filename,'Y',parlist4,namelist4)
-     
-
     
 #splitted_parplot('final',filename,meq.parlist)
 
 ARA=meq.ARA
-for i in n:
-  p, pdf= load(i,filename,meq.parlist)
-  plotALLX(ARA,p,filename,i)
+ARA=np.logspace(-4.5,-2.,20,base=10)
 
+p, pdf= load('final',filename,meq.parlist)
+p=np.array(p)
+#p=p[[0,10,100,900]]
+p=p[900]
+
+
+#print(ARA)
+Zi=np.logspace(-14,5,500,base=10)
+#a=meq.solvedfunction2(Zi,ARA,p)
+for a in ARA:
+    b=meq.solvedfunction(Zi,a,p)
+
+
+
+a=meq.findss2(ARA,p)
+#print(a)
+
+A=meq.jacobianMatrix(ARA,a[0,0][0],a[0,0][1],a[0,0][2],p)
+print(A)
+
+plt.plot(a[:,:,0])
+plt.yscale("log")
+#plt.xscale("log")
+plt.show()
+
+ss=[]
+#for a in ARA:
+#    ss.append(meq.findss(a,p))
+
+#print(a,b)
+
+
+s,eig,un,st,os,M,m=calculateALL(ARA,p)
+        #M,m=getlimitcycle(ARA,osc,p)
+plt.tight_layout()
+for i in np.arange(0,un.shape[1]):
+    plt.plot(ARA,un[:,i,0],'--',c='orange',linewidth=1)
+    plt.plot(ARA,st[:,i,0],'-r',linewidth=1)
+    plt.plot(ARA,os[:,i,0],'--b',linewidth=1)
+    plt.plot(ARA,M[:,i,0],'-b',linewidth=1)
+    plt.plot(ARA,m[:,i,0],'-b',linewidth=1)
+    plt.fill_between(ARA,M[:,i,0],m[:,i,0],alpha=0.2,facecolor='blue')
+
+plt.yscale("log")
+plt.xscale("log")
+plt.show()
 
 ##############################################################################################################3   
 '''
