@@ -20,7 +20,7 @@ n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16
 n=['final']
 
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
@@ -105,9 +105,9 @@ def plotALLX(ARA,p,name,nb):
         plt.subplot(sizex,sizey,i+1)
         sns.heatmap(df_X, cmap="Reds", norm=LogNorm())
 
-    plt.savefig(name+"/plot/"+nb+'ALLALL_heatmap'+'.pdf', bbox_inches='tight')
+   # plt.savefig(name+"/plot/"+nb+'ALLALL_heatmap'+'.pdf', bbox_inches='tight')
     #plt.savefig(name+"/plot/"+nb+'_heatmap'+'.png', bbox_inches='tight')
-  #  plt.show()
+    plt.show()
     plt.close()
 
 
@@ -304,9 +304,6 @@ def bifurcation_plot(n,filename,pars):
     plt.close()
 
 def bifurcation_Xplot(ARA,n,filename,pars,c):
-   # p,df= load(n,filename,parlist)
-   # ARA=np.logspace(-4.5,-2.,50,base=10)
-    #ARA=np.logspace(-4.5,-2.,10,base=10)
     sizex=round(np.sqrt(len(pars))+0.5)
     sizey=round(np.sqrt(len(pars)))
 
@@ -364,63 +361,85 @@ def getpeaks(X,transient):
 
     return maxValues, minValues
 
+def reachss(ssa,X,par,a):
+    thr= 0.001
+    out=False
 
-def limitcycle(a,init,par,X=[],Y=[],Z=[],transient=500,count=0):
-    threshold=0.001
+    for ss in ssa:
+        if np.all(np.isnan(ss)) == False:
+            A=meq.jacobianMatrix(a,ss[0],ss[1],ss[2],par)
+            eigvals, eigvecs =np.linalg.eig(A)
+            sse=eigvals.real
+            if np.all(sse<0):
+                if abs((X[-2]-ss[0])/X[-2]) < thr:
+                         out= True
+
+    return out
+
+
+def limitcycle(ai,ss,ARA,init,par,dummy,X=[],Y=[],Z=[],transient=500,count=0):
+    threshold=0.01
     tt=200
     c=count
     #init=[init[0] + 10e-5,init[1] + 10e-5,init[2] + 10e-5]
-
-    x,y,z=meq.model([a],par,totaltime=tt,init=init)
+    ssa=ss[ai]
+    x,y,z=meq.model([ARA[ai]],par,totaltime=tt,init=init)
     X=np.append(X,x)
     Y=np.append(Y,y)
     Z=np.append(Z,z)
-   # print(c)
-    #print(init)
+
     M = m = np.nan
 
     maxValues, minValues = getpeaks(X,transient)
+
     if len(minValues)>4 and len(maxValues)>4:
-        maximaStability = abs((maxValues[-2]-minValues[-2])-(maxValues[-4]-minValues[-4]))/(maxValues[-4]-minValues[-4]) #didn't take -1 and -2 because, i feel like -1 is buggy sometimes...
+        maximaStability = abs((maxValues[-2]-minValues[-2])-(maxValues[-3]-minValues[-3]))/(maxValues[-3]-minValues[-3]) #didn't take -1 and -2 because, i feel like -1 is buggy sometimes...
         if maximaStability > threshold:
-            #if we didn't reach the stability repeat the same for another 100 time until we reach it
-            initt=[X[-2],Y[-2],Z[-2]] #take the -2 instead of -1 because sometimes the -1 is 0 because of some badly scripted part somewhere
+            if reachss(ssa,X,par,ARA[ai])==False:
+                #if we didn't reach the stability repeat the same for another 100 time until we reach it
+                initt=[X[-2],Y[-2],Z[-2]] #take the -2 instead of -1 because sometimes the -1 is 0 because of some badly scripted part somewhere
+                c=c+1
+                if c<10:
+               # if reachsteadystate(a,initt,par) == False:
+                    M,m = limitcycle(ai,ss,ARA,initt,par,dummy,X,Y,Z,count=c)            
+                if c==10:
+                        #here the issue comes probably from 1) strange peak 2)very long oscillation
+                        #here I try to get rid of strange peak , with multiple maxima and minima by peak. for this I take the local maximun and min of each..
+                        #the issue here is to create artefact bc in the condition doesn't specify this kind of behaviour
 
-            c=c+1
+                        maxValues2 = getpeaks(maxValues,0)[0]  
+                        minValues2 = getpeaks(minValues,0)[1]
+                        maximaStability2 = abs((maxValues2[-2]-minValues2[-2])-(maxValues2[-3]-minValues2[-3]))/(maxValues2[-3]-minValues2[-3]) #didn't take -1 and -2 because, i feel like -1 is buggy sometimes...
+                        if maximaStability2 < threshold:
+                            M,m = getminmax(X,Y,Z,transient=transient)
+                        else:
+                            #very long oscillation?
+                            print("no limit cycle: probably encounter stable point at {} arabinose at p{}".format(ARA[ai],dummy))
+                            plt.plot(X[transient:])
+                            plt.yscale("log")
+                            plt.show() 
 
-            if c<10:
-           # if reachsteadystate(a,initt,par) == False:
-                M,m = limitcycle(a,initt,par,X,Y,Z,count=c)
-            
-           # if c==10:
-               # e=meq.stability(a,par)[0][0]
-            #        print("no limit cycle: probably encounter stable point at {} arabinose".format(a)
-        
-                   # print(maximaStability)
-                   # print(maxValues)
-                    #plt.plot(X[transient:])
-                    #plt.yscale("log")
-                    #plt.show()
-                   # c=0
-                   # M,m = limitcycle(a,initt,transient,par,X,Y,Z,c)
-               
         else:
-          #  print('delatAmp win: ' + str(maximaStability))
+
             M,m = getminmax(X,Y,Z,transient=transient)
-            
+         
     else:
        # print("no enough oscillation: " + str(len(minValues)))
-        initt=[X[-2],Y[-2],Z[-2]]
-        c=c+1
-        if c<10:
-            M,m = limitcycle(a,initt,par,X,Y,Z,count=c)  
-        #if c==10:           
-        #            print("error in limit cycle at {}  ".format(ai,len(ARA)))
-                    #plt.plot(X[transient:])
-                    #plt.yscale("log")
-                    #plt.show()
-    return M,m
+        if reachss(ssa,X,par,ARA[ai])==False:
+            #print("homoclinic")
+            initt=[X[-2],Y[-2],Z[-2]]
+            c=c+1
+            if c<10:
+                M,m = limitcycle(ai,ss,ARA,initt,par,dummy,X,Y,Z,count=c)  
+            if c==10: 
+                #very long oscillation?          
+                print("error in limit cycle ara = {}, p{}".format(ARA[ai],dummy))
+                plt.plot(X[transient:])
+                plt.yscale("log")
+                plt.show()
 
+
+    return M,m
 
 def getEigen(ARA,par,s):
     A=meq.jacobianMatrix(ARA,s[0],s[1],s[2],par)
@@ -431,81 +450,144 @@ def getEigen(ARA,par,s):
 def getpar(i,df):
     return pars_to_dict(df.iloc[i].tolist())
 
-def getclosestindex(vector,value,index):
-    if index == 0: #this is the first point 
-        return [0,1,2]
-
-
-def calculateALL(ARA,parUsed):
+def calculateALL2(ARA,parUsed, dummy):
     #sort ss according to their stabilitz
     #create stability list of shape : arabinose x steady x X,Y,Z 
     nNode=3 # number of nodes : X,Y,Z
     nStstate= 5 # number of steady state accepted by. to create the storage array
-    ss=np.ones((len(ARA),nStstate,nNode))*np.nan 
+  #  ss=np.ones((len(ARA),nStstate,nNode))*np.nan 
     eig= np.ones((len(ARA),nStstate,nNode))*np.nan 
     unstable=np.ones((len(ARA),nStstate,nNode))*np.nan
     stable=np.ones((len(ARA),nStstate,nNode))*np.nan
     oscillation=np.ones((len(ARA),nStstate,nNode))*np.nan
+    homoclincic=np.ones((len(ARA),nStstate,nNode))*np.nan
     M=np.ones((len(ARA),nStstate,nNode))*np.nan
     m=np.ones((len(ARA),nStstate,nNode))*np.nan
 
-    delta=10e-20 #perturbation from ss
-    for i,a in enumerate(ARA):
-        ss2=meq.findss(a,parUsed) 
-        for j,s in enumerate(ss2):
-            ss[i,j]=s
-            eig[i,j]=getEigen(a,parUsed,s)
-            if np.all(eig[i,j]<0):
-                stable[i,j]=ss[i,j]
-            if any(eig[i,j]>0):
-                pos=eig[i,j][eig[i,j]>0]
-                if len(pos)==2:
-                        if pos[0]-pos[1] == 0:
-                            oscillation[i][j]=ss[i,j]
-                            init=[ss[i,j,0]+delta,ss[i,j,1]+delta,ss[i,j,2]+delta]
-                            M[i,j],m[i,j] = limitcycle(a,init,parUsed)
-                        else:
-                            unstable[i,j]=ss[i,j]
-                else:
-                    unstable[i,j]=ss[i,j]
-            else:
-                unstable[i,j]=ss[i,j]
-    return ss,eig,unstable,stable,oscillation,M,m
 
-def calculateALL2(ARA,parUsed):
-    #sort ss according to their stabilitz
-    #create stability list of shape : arabinose x steady x X,Y,Z 
-    nNode=3 # number of nodes : X,Y,Z
-    nStstate= 5 # number of steady state accepted by. to create the storage array
-    ss=np.ones((len(ARA),nStstate,nNode))*np.nan 
-    eig= np.ones((len(ARA),nStstate,nNode))*np.nan 
-    unstable=np.ones((len(ARA),nStstate,nNode))*np.nan
-    stable=np.ones((len(ARA),nStstate,nNode))*np.nan
-    oscillation=np.ones((len(ARA),nStstate,nNode))*np.nan
-    M=np.ones((len(ARA),nStstate,nNode))*np.nan
-    m=np.ones((len(ARA),nStstate,nNode))*np.nan
-
-    delta=10e-20 #perturbation from ss
+    delta=10e-10 #perturbation from ss
     ss=meq.findss2(ARA,parUsed) 
-    for j,s in enumerate(ss2):
-            ss[i,j]=s
-            eig[i,j]=getEigen(a,parUsed,s)
-            if np.all(eig[i,j]<0):
-                stable[i,j]=ss[i,j]
-            if any(eig[i,j]>0):
-                pos=eig[i,j][eig[i,j]>0]
-                if len(pos)==2:
-                        if pos[0]-pos[1] == 0:
-                            oscillation[i][j]=ss[i,j]
-                            init=[ss[i,j,0]+delta,ss[i,j,1]+delta,ss[i,j,2]+delta]
-                            M[i,j],m[i,j] = limitcycle(a,init,parUsed)
-                        else:
-                            unstable[i,j]=ss[i,j]
+    A=meq.jacobianMatrix2(ARA,ss,parUsed)
+
+    for i in np.arange(0,len(ARA)):
+        for j in np.arange(0,ss.shape[1]):
+            if np.any(np.isnan(A[i][j]))==False:
+                eigvals, eigvecs =np.linalg.eig(A[i][j])
+                eig[i,j]=eigvals.real
+
+                if any(eig[i,j]>0):
+                    pos=eig[i,j][eig[i,j]>0]
+                    if len(pos)==2:
+                            if pos[0]-pos[1] == 0:                                
+                                init=[ss[i,j,0]+delta,ss[i,j,1]+delta,ss[i,j,2]+delta]
+                                M[i,j],m[i,j] = limitcycle(i,ss,ARA,init,parUsed,dummy)###
+                                if np.isnan(M[i,j][0]):
+                                    homoclincic[i][j]=ss[i,j] 
+
+                                else:
+                                    oscillation[i][j]=ss[i,j]
+                            else:
+                                unstable[i,j]=ss[i,j]
+                    else:
+                        unstable[i,j]=ss[i,j]
                 else:
-                    unstable[i,j]=ss[i,j]
-            else:
-                unstable[i,j]=ss[i,j]
-    return ss,eig,unstable,stable,oscillation,M,m
+                    if np.all(eig[i,j]<0):
+                        stable[i,j]=ss[i,j]
+                    else:
+                       unstable[i,j]=ss[i,j]
+    return ss,eig,unstable,stable,oscillation,homoclincic,M,m
+
+
+def findbifurcation(ARA,st,un,os,hc, dummy=0):
+    bifu=np.zeros((len(ARA),un.shape[1])) 
+    transition=np.zeros((len(ARA))) 
+    os2=binarize(os)
+    un2=binarize(un)
+    st2=binarize(st)
+    hc2=binarize(hc)
+
+    #saddle node (1) : when two stable states (st,st) cohexist , transition type 1 st->st
+    multistable=np.sum(st2,axis=1)
+    multistable[multistable<2]=0
+    v1=un2+multistable[:,None]
+    v1[v1<3]=0
+    v1=st2 +multistable[:,None] + os2
+    saddlei_neg=np.where((v1[:-1]-v1[1:])==-3)
+    saddlei_pos=np.where((v1[:-1]-v1[1:])==3)
+    bifu[saddlei_neg[0]+1,saddlei_neg[1]]=1
+    bifu[saddlei_pos[0],saddlei_pos[1]]=1
+    transition[saddlei_neg[0]+1] = 1
+    transition[saddlei_pos[0]] = 1
+
+    #saddle node (1) : when two stable states (st,os) cohexist , transition type 2 st->os
+    v2=np.sum(st2,axis=1)
+    v2[v2>1]=1
+    v1=os2+v2[:,None]
+    v1[v1<2]=0
+    saddlei_neg=np.where((v1[:-1]-v1[1:])==-2)
+    saddlei_pos=np.where((v1[:-1]-v1[1:])==2)
+    bifu[saddlei_neg[0]+1,saddlei_neg[1]]=1
+    bifu[saddlei_pos]=1
+    transition[saddlei_neg[0]+1] = 2
+    transition[saddlei_pos[0]] = 2
+
+    #homclinic (4) : when hc and st cohexist, transition type 4 os->st 
+    v1=os2*10+hc2*4+st2
+    hci_neg=np.where((v1[:-1]-v1[1:])==-6)
+    hci_pos=np.where((v1[:-1]-v1[1:])==6)
+    bifu[hci_neg[0]+1,hci_neg[1]]=4
+    bifu[hci_pos]=4
+    transition[hci_neg[0]+1] = 4
+    transition[hci_pos[0]] = 4
+
+    #when no other on same line mean that we have probably homoclinic..
+    hci_neg=np.where((v1[:-1]-v1[1:])==-10)
+    hci_pos=np.where((v1[:-1]-v1[1:])==10)
+    if len(hci_neg[0])>0:
+        print("please, check homoclinic for p" + str(dummy))
+        bifu[hci_neg[0]+1,hci_neg[1]]=4
+        bifu[hci_pos]=4
+        transition[hci_neg[0]+1] = 4
+        transition[hci_pos[0]] = 4
+
+    #hopf (3) : when hc and st cohexist, transition type 3 st->os withotu hysteresis 
+    hfi_neg=np.where((v1[:-1]-v1[1:])==-9)
+    hfi_pos=np.where((v1[:-1]-v1[1:])==9)
+    bifu[hfi_neg[0]+1,hfi_neg[1]]=3
+    bifu[hfi_pos[0],hfi_pos[1]]=3
+    transition[hfi_neg[0]+1] = 3
+    transition[hfi_pos[0]] = 3
+
+    #print(bifu)
+    return bifu, transition
+
+def countbifurcation(bifu):
+    saddle = len(bifu[bifu==1])
+    Hopf = len(bifu[bifu==3])
+    homoclinic = len(bifu[bifu==4])
+    return [saddle,Hopf,homoclinic]
+
+    
+def getmaxmultistability(os,st):
+    v1=os
+    v2=v1[:,:,0]/v1[:,:,0]
+    v2[np.isnan(v2)]=0
+    w1=st
+    w2=w1[:,:,0]/w1[:,:,0]
+    w2[np.isnan(w2)]=0
+
+    total=np.sum((v2+w2),axis=1)
+    return max(total)
+
+def binarize(v1):
+    v2=v1[:,:,0]/v1[:,:,0]
+    v2[np.isnan(v2)]=0
+    return v2
+
+
+####################################################
+###################################################PARALLELISATION HERE
+######################################################
 
 def isoscillationandstability(ARA,M,st,threshold=0.2):
     #check if we have limit cycle and stable state at the same ARA concentration 
@@ -585,6 +667,59 @@ def run(n,filename,ncpus=40):
     bifurcation_Xplot(ARA,'final',filename,p_selected,c='selected')
 
 
+def runBifurcation(ARA,pars, filename,n,index):
+    sizex = round(np.sqrt(len(pars)))
+    sizey = round(np.sqrt(len(pars))+0.5)
+
+    max_stability=[]
+    count_bifurcation=[]
+    bifurcation_transition=[]
+
+    for pi,p in enumerate(pars):
+        s,eig,un,st,os,hc,M,m=calculateALL2(ARA,p,dummy=pi+index) 
+        bifu,trans=findbifurcation(ARA,st,un,os,hc,dummy=pi+index)
+        cbifu=countbifurcation(bifu)
+        maxst=getmaxmultistability(os,st)
+        max_stability.append(maxst)
+        count_bifurcation.append(cbifu)
+        bifurcation_transition.append(trans)
+
+
+        plt.subplot(sizex,sizey,pi+1)
+        plt.tight_layout()
+        for i in np.arange(0,un.shape[1]):
+            plt.plot(ARA,un[:,i,0],'--',c='orange',linewidth=.1)
+            plt.plot(ARA,st[:,i,0],'-r',linewidth=.1)
+            plt.plot(ARA,os[:,i,0],'--b',linewidth=.1)
+            plt.plot(ARA,hc[:,i,0],'--g',linewidth=.1)
+            plt.plot(ARA,M[:,i,0],'-b',linewidth=.1)
+            plt.plot(ARA,m[:,i,0],'-b',linewidth=.1)
+            plt.fill_between(ARA,M[:,i,0],m[:,i,0],alpha=0.2,facecolor='blue')
+            plt.text(ARA[0],1,('p'+str(pi+index)),fontsize=1)
+            plt.text(ARA[0],10,('S:{} Hf: {} Hmc: {}'.format(cbifu[0],cbifu[1],cbifu[2])),fontsize=1)
+            plt.tick_params(axis='both', which='major', labelsize=2)
+
+        plt.yscale("log")
+        plt.xscale("log")
+
+    np.savetxt(filename+"/"+str(index)+'_'+str(n)+'max_stability.out', max_stability)
+    np.savetxt(filename+"/"+str(index)+'_'+str(n)+'count_bifurcation.out', count_bifurcation)
+    np.savetxt(filename+"/"+str(index)+'_'+str(n)+'bifurcation_transition.out', bifurcation_transition)
+
+
+    plt.savefig(filename+"/"+str(index)+'_'+str(n)+'XBifurcationplot.pdf', bbox_inches='tight')
+    plt.show()
+
+
+def runBifurcations(n,filename,ARAlen=20,ncpus=40):
+    ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
+    p, pdf= load(n,filename,meq.parlist)
+    for i in [0,1,2,3]:
+        psubset=p[100*i:99+100*i]
+        runBifurcation(ARA,psubset,filename,n,100*i)
+
+
+
 ################################BUILDING AREA
 #run('final',filename,ncpus=40)
 '''
@@ -598,57 +733,11 @@ bifurcation_Xplot(ARA,'final',filename,p_selected,c='selected')
 
 
     
-#splitted_parplot('final',filename,meq.parlist)
 
-ARA=meq.ARA
-ARA=np.logspace(-4.5,-2.,20,base=10)
-
-p, pdf= load('final',filename,meq.parlist)
-p=np.array(p)
-#p=p[[0,10,100,900]]
-p=p[900]
-
-
-#print(ARA)
-Zi=np.logspace(-14,5,500,base=10)
-#a=meq.solvedfunction2(Zi,ARA,p)
-for a in ARA:
-    b=meq.solvedfunction(Zi,a,p)
+runBifurcations('final',filename,ARAlen=50)
 
 
 
-a=meq.findss2(ARA,p)
-#print(a)
-
-A=meq.jacobianMatrix(ARA,a[0,0][0],a[0,0][1],a[0,0][2],p)
-print(A)
-
-plt.plot(a[:,:,0])
-plt.yscale("log")
-#plt.xscale("log")
-plt.show()
-
-ss=[]
-#for a in ARA:
-#    ss.append(meq.findss(a,p))
-
-#print(a,b)
-
-
-s,eig,un,st,os,M,m=calculateALL(ARA,p)
-        #M,m=getlimitcycle(ARA,osc,p)
-plt.tight_layout()
-for i in np.arange(0,un.shape[1]):
-    plt.plot(ARA,un[:,i,0],'--',c='orange',linewidth=1)
-    plt.plot(ARA,st[:,i,0],'-r',linewidth=1)
-    plt.plot(ARA,os[:,i,0],'--b',linewidth=1)
-    plt.plot(ARA,M[:,i,0],'-b',linewidth=1)
-    plt.plot(ARA,m[:,i,0],'-b',linewidth=1)
-    plt.fill_between(ARA,M[:,i,0],m[:,i,0],alpha=0.2,facecolor='blue')
-
-plt.yscale("log")
-plt.xscale("log")
-plt.show()
 
 ##############################################################################################################3   
 '''
