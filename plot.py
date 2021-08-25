@@ -409,16 +409,20 @@ def limitcycle(ai,ss,ARA,init,par,dummy,X=[],Y=[],Z=[],transient=500,count=0):
 
                         maxValues2 = getpeaks(maxValues,0)[0]  
                         minValues2 = getpeaks(minValues,0)[1]
-                        maximaStability2 = abs((maxValues2[-2]-minValues2[-2])-(maxValues2[-3]-minValues2[-3]))/(maxValues2[-3]-minValues2[-3]) #didn't take -1 and -2 because, i feel like -1 is buggy sometimes...
-                        if maximaStability2 < threshold:
-                            M,m = getminmax(X,Y,Z,transient=transient)
+                        if len(minValues2)>4 and len(maxValues2)>4:
+                          maximaStability2 = abs((maxValues2[-2]-minValues2[-2])-(maxValues2[-3]-minValues2[-3]))/(maxValues2[-3]-minValues2[-3]) #didn't take -1 and -2 because, i feel like -1 is buggy sometimes...
+                          if maximaStability2 < threshold:
+                              M,m = getminmax(X,Y,Z,transient=transient)
+                          else:
+                              #very long oscillation?
+                              print("no limit cycle: probably encounter stable point at {} arabinose at p{}".format(ARA[ai],dummy))
+                              '''
+                              plt.plot(X[transient:])
+                              plt.yscale("log")
+                              plt.show() 
+                              '''
                         else:
-                            #very long oscillation?
-                            print("no limit cycle: probably encounter stable point at {} arabinose at p{}".format(ARA[ai],dummy))
-                            plt.plot(X[transient:])
-                            plt.yscale("log")
-                            plt.show() 
-
+                              print("too long oscillation?? at {} arabinose at p{}".format(ARA[ai],dummy))
         else:
 
             M,m = getminmax(X,Y,Z,transient=transient)
@@ -434,9 +438,11 @@ def limitcycle(ai,ss,ARA,init,par,dummy,X=[],Y=[],Z=[],transient=500,count=0):
             if c==10: 
                 #very long oscillation?          
                 print("error in limit cycle ara = {}, p{}".format(ARA[ai],dummy))
+                '''
                 plt.plot(X[transient:])
                 plt.yscale("log")
                 plt.show()
+                '''
 
 
     return M,m
@@ -686,7 +692,7 @@ def runBifurcation(ARA,pars, filename,n,index):
 
 
         plt.subplot(sizex,sizey,pi+1)
-        plt.tight_layout()
+        #plt.tight_layout()
         for i in np.arange(0,un.shape[1]):
             plt.plot(ARA,un[:,i,0],'--',c='orange',linewidth=.1)
             plt.plot(ARA,st[:,i,0],'-r',linewidth=.1)
@@ -695,10 +701,9 @@ def runBifurcation(ARA,pars, filename,n,index):
             plt.plot(ARA,M[:,i,0],'-b',linewidth=.1)
             plt.plot(ARA,m[:,i,0],'-b',linewidth=.1)
             plt.fill_between(ARA,M[:,i,0],m[:,i,0],alpha=0.2,facecolor='blue')
-            plt.text(ARA[0],1,('p'+str(pi+index)),fontsize=1)
-            plt.text(ARA[0],10,('S:{} Hf: {} Hmc: {}'.format(cbifu[0],cbifu[1],cbifu[2])),fontsize=1)
-            plt.tick_params(axis='both', which='major', labelsize=2)
-
+        plt.text(ARA[0],1,('p'+str(pi+index)),fontsize=1)
+        plt.text(ARA[0],10,('S:{} Hf: {} Hmc: {}'.format(cbifu[0],cbifu[1],cbifu[2])),fontsize=1)
+        plt.tick_params(axis='both', which='major', labelsize=2)
         plt.yscale("log")
         plt.xscale("log")
 
@@ -708,15 +713,28 @@ def runBifurcation(ARA,pars, filename,n,index):
 
 
     plt.savefig(filename+"/"+str(index)+'_'+str(n)+'XBifurcationplot.pdf', bbox_inches='tight')
-    plt.show()
+    plt.close()
+    
+    return max_stability, count_bifurcation, bifurcation_transition
 
 
 def runBifurcations(n,filename,ARAlen=20,ncpus=40):
     ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
     p, pdf= load(n,filename,meq.parlist)
+    max_stability=[]
+    count_bifurcation=[]
+    bifurcation_transition=[]
     for i in [0,1,2,3]:
-        psubset=p[100*i:99+100*i]
-        runBifurcation(ARA,psubset,filename,n,100*i)
+        psubset=p[(250*i):(250+250*i)]
+        maxst, cbifu, trans = runBifurcation(ARA,psubset,filename,n,250*i)
+ 
+ #       max_stability.append(maxst)
+  #      count_bifurcation.append(cbifu)
+   #     bifurcation_transition.append(trans)
+    
+  #  np.savetxt(filename+"/"+'ALL_'+str(n)+'max_stability.out', max_stability,fmt='%s')
+  #  np.savetxt(filename+"/"+'ALL_'+str(n)+'count_bifurcation.out', count_bifurcation,fmt='%s')
+  #  np.savetxt(filename+"/"+'ALL_'+str(n)+'bifurcation_transition.out', bifurcation_transition,fmt='%s')
 
 
 
