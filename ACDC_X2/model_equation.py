@@ -167,54 +167,6 @@ def model(x,pars,totaltime=tt, dt=dtt,init=[0.2,0,0]):
     Zi=np.ones(len(x))*init[2]
     X,Y,Z = Integration(Xi,Yi,Zi,totaltime,dt,x,pars)
     return X,Y,Z
-
-
-
-def solvedfunction(Zi,ARA,par):
-    #rewrite the system equation to have only one unknow and to be call with scipy.optimze.brentq
-    #the output give a function where when the line reach 0 are a steady states
-
-    X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
-    X = X / ( 1 + np.power((Zi/10**(par['K_ZX'])),par['n_ZX']))
-
-    Y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
-    Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
-
-    Z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
-    Z = Z /( 1 + np.power(X/10**(par['K_XZ']),par['n_XZ']))
-    func = Zi - Z
-    return func
-
-def findss(ARA,par):   
-    #function to find steady state
-    #1. find where line reached 0
-    Zi=np.logspace(-14,5,500,base=10)
-    f=solvedfunction(Zi,ARA,par)
-
-    '''
-    plt.plot(Zi,f)
-    plt.xscale("log")
-    plt.ylim(-0.0001,0.0001)
-   # plt.xlim(10e-6,1)
-    plt.show()
-    '''
-    x=f[1:-1]*f[0:-2] #when the output give <0, where is a change in sign, meaning 0 is crossed
-    index=np.where(x<0) 
-    
-    ss=[]
-    for i in index[0]:
-        Z=brentq(solvedfunction, Zi[i], Zi[i+1],args=(ARA,par)) #find the value at 0
-        #now we have the other ss
-        X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
-        X = X / ( 1 + np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
-        Y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
-        Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
-       # ss.append(np.array([X,Y,Z]))
-        ss.append([X,Y,Z])
-        
-    #order ss here
-    ss.sort()
-    return ss
     
 
 def solvedfunction2(Zi,ARA,par):
@@ -234,19 +186,15 @@ def solvedfunction2(Zi,ARA,par):
     Z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
     Z = Z /( 1 + np.power(X/10**(par['K_XZ']),par['n_XZ']))
     func = Zi - Z
-    return func
-    
-
-
+    return func    
 
 def findss2(ARA,par):   
     #function to find steady state
     #1. find where line reached 0
     Zi=np.logspace(-14,5,500,base=10)
     f=solvedfunction2(Zi,ARA,par)
-    x=f[:,1:-1]*f[:,0:-2] #when the output give <0, where is a change in sign, meaning 0 is crossed
-    index=np.where(x<0) 
-    
+    x=f[:,1:]*f[:,0:-1] #when the output give <0, where is a change in sign, meaning 0 is crossed
+    index=np.where(x<0)   
     nNode=3 # number of nodes : X,Y,Z
     nStstate= 5 # number of steady state accepted by. to create the storage array
     ss=np.ones((len(ARA),nStstate,nNode))*np.nan  
@@ -343,7 +291,6 @@ def jacobianMatrix2(ARA,ss,par):
     Y=ss[:,:,1]
     Z=ss[:,:,2]
 
-
     ARA=ARA[:,None]
 
     dxdx = -1 *X/X
@@ -363,7 +310,6 @@ def jacobianMatrix2(ARA,ss,par):
     dzdy= -(10**par['beta/alpha_Z']*par['n_YZ']*np.power((Y/10**par['K_YZ']),par['n_YZ']))
     dzdy= dzdy /((np.power((X/10**par['K_XZ']),par['n_XZ'])+1)*Y*np.power((np.power(Y/10**par['K_YZ'],par['n_YZ'])+1) ,2))
     dzdz = -1 *Z/Z
-
 
     A[:,:,0,0]=dxdx
     A[:,:,0,1]=dxdy

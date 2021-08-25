@@ -169,53 +169,6 @@ def model(x,pars,totaltime=tt, dt=dtt,init=[0.2,0,0]):
     return X,Y,Z
 
 
-
-def solvedfunction(Zi,ARA,par):
-    #rewrite the system equation to have only one unknow and to be call with scipy.optimze.brentq
-    #the output give a function where when the line reach 0 are a steady states
-
-    X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
-    X = X / ( 1 + np.power((Zi/10**(par['K_ZX'])),par['n_ZX']))
-
-    Y = 10**par['beta/alpha_Y']
-    Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
-
-    Z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
-    Z = Z /( 1 + np.power(X/10**(par['K_XZ']),par['n_XZ']))
-    func = Zi - Z
-    return func
-
-def findss(ARA,par):   
-    #function to find steady state
-    #1. find where line reached 0
-    Zi=np.logspace(-14,5,500,base=10)
-
-    f=solvedfunction(Zi,ARA,par)
-    '''
-    plt.plot(Zi,f)
-    plt.xscale("log")
-    plt.ylim(-0.1,0.1)
-    plt.xlim(10e-6,1)
-    plt.show()
-    '''
-    x=f[1:-1]*f[0:-2] #when the output give <0, where is a change in sign, meaning 0 is crossed
-    index=np.where(x<0)
-    
-    ss=[]
-    for i in index[0]:
-        Z=brentq(solvedfunction, Zi[i], Zi[i+1],args=(ARA,par)) #find the value at 0
-        #now we have the other ss
-        X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
-        X = X / ( 1 + np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
-        Y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
-        Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
-       # ss.append(np.array([X,Y,Z]))
-        ss.append([X,Y,Z])
-        
-    #order ss here
-    ss.sort()
-    return ss
-
 def stability(ARA,par,ss=0):
     if ss==0:
         ss= findss(ARA,par)
@@ -229,7 +182,82 @@ def stability(ARA,par,ss=0):
         
     return eigens #, np.trace(A), np.linalg.det(A)
 
+def solvedfunction2(Zi,ARA,par):
+    #rewrite the system equation to have only one unknow and to be call with scipy.optimze.brentq
+    #the output give a function where when the line reach 0 are a steady states
+  #  X=np.ones((len(ARA),len(Zi)))
+  #  Y=np.ones((len(ARA),len(Zi)))
+   # Z=np.ones((len(ARA),len(Zi)))
+    Zi=np.array([Zi])
 
+    X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
+    X = X[:, None] / ( 1 + np.power((Zi/10**(par['K_ZX'])),par['n_ZX'])) 
+
+    Y = 10**par['beta/alpha_Y']
+    Y = Y[:,None] / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
+
+    Z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
+    Z = Z /( 1 + np.power(X/10**(par['K_XZ']),par['n_XZ']))
+    func = Zi - Z
+    return func    
+
+def findss2(ARA,par):   
+    #function to find steady state
+    #1. find where line reached 0
+    Zi=np.logspace(-14,5,500,base=10)
+    f=solvedfunction2(Zi,ARA,par)
+    x=f[:,1:]*f[:,0:-1] #when the output give <0, where is a change in sign, meaning 0 is crossed
+    index=np.where(x<0)   
+    nNode=3 # number of nodes : X,Y,Z
+    nStstate= 5 # number of steady state accepted by. to create the storage array
+    ss=np.ones((len(ARA),nStstate,nNode))*np.nan  
+
+    for i,ai in enumerate(index[0]):
+        Z=brentq(solvedfunction, Zi[index[1][i]], Zi[index[1][i]+1],args=(ARA[ai],par)) #find the value at 0
+        #now we have the other ss
+        X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA[ai],par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA[ai],par['n_ARAX']))) 
+        X = X / ( 1 + np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
+        Y = 10**par['beta/alpha_Y']
+        Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
+        ss= addSSinGoodOrder(ss,np.array([X,Y,Z]),ai,0,beforeXvalues=[])
+
+    return ss
+    
+def addSSinGoodOrder(vector,values,ai,pos,beforeXvalues=[]):
+
+    if ai ==0:
+        if np.isnan(vector[ai,pos,0]):
+            vector[ai,pos]=values
+        else:
+            pos=pos+1
+            vector=addSSinGoodOrder(vector,values,ai,pos)
+    else:
+        if len(beforeXvalues) == 0:
+            beforeXvalues = vector[ai-1,:,0].copy()
+            #print(beforeXvalues)
+        if np.all(np.isnan(beforeXvalues)):
+            if np.isnan(vector[ai,pos,0]):
+                vector[ai,pos]=values
+            else:
+                 pos=pos+1
+                 vector=addSSinGoodOrder(vector,values,ai,pos,beforeXvalues)
+        else:
+            v1=abs(values[0] - beforeXvalues)
+            pos=np.nanargmin(v1)
+            if np.isnan(vector[ai,pos,0]):
+                vector[ai,pos]=values
+            else:
+                previousvalues= vector[ai,pos].copy()
+               
+                v2=abs(previousvalues[0] - beforeXvalues)
+                if np.nanmin(v1)<np.nanmin(v2): #if new values closest, takes the place and replace the previous one
+                    vector[ai,pos]=values
+                    vector=addSSinGoodOrder(vector,previousvalues,ai,pos)
+                else:
+                    adjusted_beforeXvalues= beforeXvalues.copy()
+                    adjusted_beforeXvalues[pos]= np.nan  # remove placed element
+                    vector=addSSinGoodOrder(vector,values,ai,pos,adjusted_beforeXvalues)
+    return vector 
 
 def jacobianMatrix(ARA,X,Y,Z,par):
 ##need to update it
@@ -238,8 +266,12 @@ def jacobianMatrix(ARA,X,Y,Z,par):
     dxdz=-(((np.power(ARA,par['n_ARAX'])*(10**par['beta/alpha_X']-1))/ ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))+1)*par['n_ZX']*np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
     dxdz=dxdz/(Z*np.power((np.power((Z/10**(par['K_ZX'])),par['n_ZX'])+1),2))
 
-    dydx=-(((np.power(ARA,par['n_ARAY'])*(10**par['beta/alpha_Y']-1))/ ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))+1)*par['n_XY']*np.power((X/10**(par['K_XY'])),par['n_XY']))
-    dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))    
+    #dydx=-(((np.power(ARA,par['n_ARAY'])*(10**par['beta/alpha_Y']-1))/ ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))+1)*par['n_XY']*np.power((X/10**(par['K_XY'])),par['n_XY']))
+    #dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2)) 
+
+    dydx= 10**par['beta/alpha_Y']*par['n_XY']*np.power((X/10**par['K_XY']),par['n_XY'])
+    dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))
+
     dydy=-1
     dydz= 0
 
@@ -251,6 +283,47 @@ def jacobianMatrix(ARA,X,Y,Z,par):
     dzdz = -1
      
     A=np.array(([dxdx,dxdy,dxdz],[dydx,dydy,dydz],[dzdx,dzdy,dzdz]))
+
+    return A
+
+def jacobianMatrix2(ARA,ss,par):
+
+    A=np.ones((len(ARA),ss.shape[1],3,3))*np.nan 
+
+    X=ss[:,:,0]
+    Y=ss[:,:,1]
+    Z=ss[:,:,2]
+
+    ARA=ARA[:,None]
+
+    dxdx = -1 *X/X
+    dxdy = 0  *X/X
+    dxdz=-(((np.power(ARA,par['n_ARAX'])*(10**par['beta/alpha_X']-1))/ ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))+1)*par['n_ZX']*np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
+    dxdz=dxdz/(Z*np.power((np.power((Z/10**(par['K_ZX'])),par['n_ZX'])+1),2))
+
+    dydx= 10**par['beta/alpha_Y']*par['n_XY']*np.power((X/10**par['K_XY']),par['n_XY'])
+    dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))   
+    dydy=-1 *Y/Y
+    dydz= 0 *Y/Y
+
+    dzdx = -(10**par['beta/alpha_Z']*par['n_XZ']*np.power((X/10**par['K_XZ']),par['n_XZ']))
+    dzdx= dzdx /((np.power((Y/10**par['K_YZ']),par['n_YZ'])+1)*X*np.power((np.power(X/10**par['K_XZ'],par['n_XZ'])+1) ,2))
+
+    dzdy= -(10**par['beta/alpha_Z']*par['n_YZ']*np.power((Y/10**par['K_YZ']),par['n_YZ']))
+    dzdy= dzdy /((np.power((X/10**par['K_XZ']),par['n_XZ'])+1)*Y*np.power((np.power(Y/10**par['K_YZ'],par['n_YZ'])+1) ,2))
+    dzdz = -1 *Z/Z
+
+    A[:,:,0,0]=dxdx
+    A[:,:,0,1]=dxdy
+    A[:,:,0,2]=dxdz
+
+    A[:,:,1,0]=dydx
+    A[:,:,1,1]=dydy
+    A[:,:,1,2]=dydz
+
+    A[:,:,2,0]=dzdx
+    A[:,:,2,1]=dzdy
+    A[:,:,2,2]=dzdz
 
     return A
 
