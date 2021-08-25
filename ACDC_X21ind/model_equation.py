@@ -194,7 +194,22 @@ def solvedfunction2(Zi,ARA,par):
     X = X[:, None] / ( 1 + np.power((Zi/10**(par['K_ZX'])),par['n_ZX'])) 
 
     Y = 10**par['beta/alpha_Y']
-    Y = Y[:,None] / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
+  #  Y = np.array(Y)
+    Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
+
+    Z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
+    Z = Z /( 1 + np.power(X/10**(par['K_XZ']),par['n_XZ']))
+    func = Zi - Z
+    return func 
+
+def solvedfunction(Zi,ARA,par):
+    Zi=np.array([Zi])
+
+    X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
+    X = X / ( 1 + np.power((Zi/10**(par['K_ZX'])),par['n_ZX'])) 
+
+    Y = 10**par['beta/alpha_Y']
+    Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
 
     Z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
     Z = Z /( 1 + np.power(X/10**(par['K_XZ']),par['n_XZ']))

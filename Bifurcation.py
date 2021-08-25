@@ -15,12 +15,12 @@ import time
 from functools import partial
 
 
-filename="ACDC_X2"
+filename="ACDC_X21ind"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 n=['final']
 #
-#sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
+#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
@@ -516,6 +516,7 @@ def runBifurcations(n,filename,ARAlen=20,ncpus=40):
 
 ################################BUILDING AREA
 
+'''
 n='final'
 ARAlen=50
 
@@ -566,6 +567,7 @@ namelist=np.array(namelist)
 df=pdf
 df2=pdf.iloc[i3]
 '''
+'''
 
 
 fonts=2
@@ -608,7 +610,7 @@ plt.close()
 
 
 
-#runBifurcations('final',filename,ARAlen=50)
+runBifurcations('final',filename,ARAlen=50)
 
 
 

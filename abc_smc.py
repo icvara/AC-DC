@@ -16,7 +16,7 @@ import time
 
 
 version="ACDC_X21ind"
-pl= None #prior_label=
+pl= 17 #prior_label=
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+version+'/')
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+version)
 import model_equation

@@ -15,12 +15,12 @@ import time
 from functools import partial
 
 
-filename="ACDC_X2"
+filename="ACDC_X21ind"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 n=['final']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
@@ -56,7 +56,7 @@ def load(number= n,filename=filename,parlist=parlist):
         p.append(p0)
 
     
-    return p, df
+    return p, df 
 
 def pars_to_dict(pars):
 ### This function is not necessary, but it makes the code a bit easier to read,
@@ -69,7 +69,7 @@ def pars_to_dict(pars):
     return dict_pars
 ##plotting part
 
-def plot(ARA,p,name,nb,tt):
+def plot(ARA,p,name,nb,tt=120):
     #ARA=np.logspace(-4.5,-2.,1000,base=10)
     for i,par in enumerate(p):
         
@@ -87,9 +87,9 @@ def plot(ARA,p,name,nb,tt):
         plt.subplot(len(p),3,(3+i*3))
         sns.heatmap(df_Z, cmap ='Greens', norm=LogNorm())
 
-   # plt.savefig(name+"/plot/"+nb+'_heatmap'+'.pdf', bbox_inches='tight')
+    plt.savefig(name+"/plot/"+nb+'_heatmap'+'.pdf', bbox_inches='tight')
     #plt.savefig(name+"/plot/"+nb+'_heatmap'+'.png', bbox_inches='tight')
-    plt.show()
+    #plt.show()
     plt.close()
 
 
@@ -278,7 +278,7 @@ def plotselectedparoverall(n,filename,parlist):
 
 
 ##############################################################################################################3   
-'''
+
 if __name__ == "__main__":
    
     if os.path.isdir(filename+'/plot') is False: ## if 'smc' folder does not exist:
@@ -287,14 +287,18 @@ if __name__ == "__main__":
     ARA=meq.ARA
     ARA=np.logspace(-4.5,-2.,20,base=10)
    # plot_alltime(n,filename,meq.parlist)
+    namelist=[]
+    for i,par in enumerate(parlist):
+        namelist.append(parlist[i]['name'])
     
-    #for i in n:
-    #  p, pdf= load(i,filename,meq.parlist)
+    for i in n:
+      p, pdf= load(i,filename,meq.parlist)
     
-     # plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,i)
-     # par_plot(pdf,filename,i,meq.parlist)
+      plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,i)
+      par_plot(pdf,filename,i,meq.parlist,namelist)
 
     #bifurcation_plot('final',filename,p[1])
+    '''
     p, pdf= load('final',filename,meq.parlist)
     index=[]
     for j in np.arange(0,9):
@@ -306,7 +310,8 @@ if __name__ == "__main__":
                acdc_p.append(pi)
                index.append(int(i+j*100)) 
           np.savetxt(str(j)+'_'+filename +'_selectedpar.out',index)
- ''' 
+    '''
+ 
 
     
     

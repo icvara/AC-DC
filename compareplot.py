@@ -11,7 +11,7 @@ from scipy.signal import argrelextrema
 
 filename=["ACDC_X2","ACDC_Y2","ACDC_Z2"]#,"ACDC_all"]
 #filename=['ACDC_X2']
-#filename=['ACDC_X','ACDC_1ind']
+filename=['ACDC_X2','ACDC_X21ind']
 n=['final']
 #n=['1','2','3','4','5','6','7','8','9','10','11','12','final']#'13','14','15','final']
 #n=['1','2','3','4','5','6','7','8','9','10','11','12','13','final']#,'12','13','14','final']#,'15']#,'final']
@@ -23,6 +23,7 @@ sys.path.insert(0, path + filename[0])
 import model_equation as meq
   
 parlist=meq.parlist
+
 namelist=[]
 for i,par in enumerate(parlist):
     namelist.append(parlist[i]['name'])
@@ -72,9 +73,9 @@ def pars_to_dict(pars,parlist):
 
 def load(number= n,filename=filename,parlist=parlist):
     namelist=[]
-    number=str(number)
     for i,par in enumerate(parlist):
-        namelist.append(parlist[i]['name'])
+      namelist.append(parlist[i]['name'])
+    number=str(number)
     filepath = path+filename+'/smc/pars_' + number + '.out'
     dist_path =  path+filename+'/smc/distances_' + number + '.out'
     raw_output= np.loadtxt(filepath)
@@ -92,6 +93,7 @@ def load(number= n,filename=filename,parlist=parlist):
         p0=pars_to_dict(p0,parlist)
         p.append(p0)    
     return p, df
+
 
 
 def get_stats(filename,namelist):
@@ -140,6 +142,7 @@ def bar_plot(filename,namelist, t="mean"):
 
 
 def plot_compare(n,filename,namelist):
+
     parl = np.append(namelist,'dist')
     index=1
     size=round(np.sqrt(len(parl)))
@@ -147,8 +150,8 @@ def plot_compare(n,filename,namelist):
         plt.subplot(size,size,index)
         plt.tight_layout()
         for fi,fnm in enumerate(filename):
-            p,df= load(n,fnm,parlist)
-            sns.kdeplot(df[name],bw_adjust=.8,label=fnm)
+              p,df= load(n,fnm,namelist1)
+              sns.kdeplot(df[name],bw_adjust=.8,label=fnm)
         #plt.ylim(0,1)
         if i < (len(parl)-2):
             plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
@@ -159,6 +162,7 @@ def plot_compare(n,filename,namelist):
     #sns.kdeplot(df['K_XZ'])
     plt.savefig(str(filename)+str(n)+"_compareplot.pdf", bbox_inches='tight')
     plt.show()
+
 
 #plot_compare(n[0],filename,namelist)
 
@@ -243,10 +247,10 @@ plt.show()
 
 #####1indvs2ind
 def plotdesnity1vs2():
-    p2,df2= load('final','ACDC_X',parlist)
+    p2,df2= load('final','ACDC_X2',parlist)
     parlist1=parlist.copy()
     del parlist1[7:9]
-    p1,df1= load('12','ACDC_1ind',parlist1)
+    p1,df1= load('final','ACDC_X21ind',parlist1)
 
     namelist=[]
     for i,par in enumerate(parlist1):
@@ -269,7 +273,9 @@ def plotdesnity1vs2():
 
         #sns.kdeplot(df['K_XZ'])
     plt.savefig("1vs2ind"+str(n[0])+"_compareplot.pdf", bbox_inches='tight')
-    plt.show()
+    #plt.show()
+    
+plotdesnity1vs2()
 
 def ind1vs2indmeanandmode():
     p2,df2= load('final','ACDC_X',parlist)
