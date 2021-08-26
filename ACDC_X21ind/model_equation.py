@@ -316,7 +316,7 @@ def jacobianMatrix2(ARA,ss,par):
     dxdz=-(((np.power(ARA,par['n_ARAX'])*(10**par['beta/alpha_X']-1))/ ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))+1)*par['n_ZX']*np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
     dxdz=dxdz/(Z*np.power((np.power((Z/10**(par['K_ZX'])),par['n_ZX'])+1),2))
 
-    dydx= 10**par['beta/alpha_Y']*par['n_XY']*np.power((X/10**par['K_XY']),par['n_XY'])
+    dydx= - 10**par['beta/alpha_Y']*par['n_XY']*np.power((X/10**par['K_XY']),par['n_XY'])
     dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))   
     dydy=-1 *Y/Y
     dydz= 0 *Y/Y
@@ -343,7 +343,7 @@ def jacobianMatrix2(ARA,ss,par):
     return A
 
 def approximateJacob(ARA,X,Y,Z,par):
-    delta=10e-5
+    delta=10e-15
     #used to verify the Jacobain matrix. 
 
     x,y,z =Flow(X,Y,Z,ARA,par)

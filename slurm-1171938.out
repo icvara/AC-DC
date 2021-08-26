@@ -1,0 +1,96 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=4037467
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=1
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna001
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna001
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna001
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=1
+SLURM_TOPOLOGY_ADDR=core.edge1.dna001
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_bifurcation.sh
+SLURM_JOBID=1171938
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=1
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=1171938
+SLURM_LOCALID=0
+too long oscillation?? at 8.094001216083116e-05 arabinose at p5
+too long oscillation?? at 0.0024420530945486497 arabinose at p11
+error in limit cycle ara = 0.0030888435964774815, p34
+error in limit cycle ara = 0.0034738921120831155, p34
+error in limit cycle ara = 0.003906939937054617, p34
+error in limit cycle ara = 0.004941713361323833, p34
+too long oscillation?? at 0.00014563484775012445 arabinose at p38
+please, check homoclinic for p43
+too long oscillation?? at 9.102981779915228e-05 arabinose at p53
+please, check homoclinic for p98
+please, check homoclinic for p120
+error in limit cycle ara = 0.004393970560760791, p217
+error in limit cycle ara = 0.00889159333916464, p217
+error in limit cycle ara = 0.01, p217
+error in limit cycle ara = 0.004393970560760791, p246
+error in limit cycle ara = 0.005557736586486881, p246
+error in limit cycle ara = 0.0019306977288832496, p249
+error in limit cycle ara = 0.0034738921120831155, p261
+error in limit cycle ara = 0.004393970560760791, p261
+error in limit cycle ara = 0.002746474114816053, p285
+too long oscillation?? at 0.002746474114816053 arabinose at p300
+please, check homoclinic for p302
+please, check homoclinic for p321
+error in limit cycle ara = 0.0030888435964774815, p327
+error in limit cycle ara = 0.006250551925273976, p327
+error in limit cycle ara = 0.0079060432109077, p327
+error in limit cycle ara = 0.0030888435964774815, p339
+error in limit cycle ara = 0.007029732115325475, p339
+too long oscillation?? at 0.00016378937069540646 arabinose at p364
+error in limit cycle ara = 0.002746474114816053, p376
+error in limit cycle ara = 0.0030888435964774815, p376
+error in limit cycle ara = 0.003906939937054617, p376
+too long oscillation?? at 7.196856730011514e-05 arabinose at p388
+error in limit cycle ara = 0.006250551925273976, p446
+error in limit cycle ara = 0.0079060432109077, p446
+error in limit cycle ara = 0.00889159333916464, p446
+too long oscillation?? at 0.004941713361323833 arabinose at p476
+error in limit cycle ara = 0.006250551925273976, p519
+error in limit cycle ara = 0.01, p519
+please, check homoclinic for p545
+error in limit cycle ara = 0.0079060432109077, p546
+too long oscillation?? at 0.003906939937054617 arabinose at p549
+error in limit cycle ara = 0.005557736586486881, p589
+error in limit cycle ara = 0.005557736586486881, p590
+error in limit cycle ara = 0.0021713743029375173, p602
+please, check homoclinic for p677
+error in limit cycle ara = 0.007029732115325475, p704
+error in limit cycle ara = 0.0079060432109077, p704
+error in limit cycle ara = 0.0030888435964774815, p746
+error in limit cycle ara = 0.0034738921120831155, p746
+error in limit cycle ara = 0.0030888435964774815, p747
+error in limit cycle ara = 0.0034738921120831155, p747
+too long oscillation?? at 0.0021713743029375173 arabinose at p751
+too long oscillation?? at 0.0030888435964774815 arabinose at p779
+too long oscillation?? at 0.00014563484775012445 arabinose at p790
+error in limit cycle ara = 0.00014563484775012445, p817
+too long oscillation?? at 5.689866029018293e-05 arabinose at p842
+error in limit cycle ara = 0.0019306977288832496, p847
+error in limit cycle ara = 0.002746474114816053, p909
+please, check homoclinic for p911
+error in limit cycle ara = 0.0079060432109077, p958

@@ -51,11 +51,11 @@ ARA=np.logspace(-4.5,-2.,10,base=10)
 def Flow(X,Y,Z,ARA,par):
     #simplify version with less parameter    
     flow_x= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
-    flow_x = flow_x / ( 1 + np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
+    flow_x = flow_x / ( 1 + np.power((Z/(10**par['K_ZX'])),par['n_ZX']))
     flow_x = flow_x - X
 
     flow_y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
-    flow_y = flow_y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
+    flow_y = flow_y / ( 1 + np.power(X/(10**par['K_XY']),par['n_XY']))
     flow_y = flow_y - Y
 
     flow_z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**par['K_YZ'],par['n_YZ']))
@@ -309,8 +309,12 @@ def jacobianMatrix2(ARA,ss,par):
 
     dxdx = -1 *X/X
     dxdy = 0  *X/X
-    dxdz=-(((np.power(ARA,par['n_ARAX'])*(10**par['beta/alpha_X']-1))/ ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))+1)*par['n_ZX']*np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
-    dxdz=dxdz/(Z*np.power((np.power((Z/10**(par['K_ZX'])),par['n_ZX'])+1),2))
+    
+    
+    dxdz=-(((np.power(ARA,par['n_ARAX'])*(10**par['beta/alpha_X']-1))/ ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))+1)*par['n_ZX']*np.power((Z/(10**par['K_ZX'])),par['n_ZX']))
+    dxdz=dxdz/(Z*np.power((np.power((Z/(10**par['K_ZX'])),par['n_ZX'])+1),2))
+
+
 
 
     dydx=-(((np.power(ARA,par['n_ARAY'])*(10**par['beta/alpha_Y']-1))/ ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))+1)*par['n_XY']*np.power((X/10**(par['K_XY'])),par['n_XY']))
@@ -340,7 +344,7 @@ def jacobianMatrix2(ARA,ss,par):
     return A
 
 def approximateJacob(ARA,X,Y,Z,par):
-    delta=10e-5
+    delta=10e-15
     #used to verify the Jacobain matrix. 
 
     x,y,z =Flow(X,Y,Z,ARA,par)

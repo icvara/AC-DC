@@ -516,7 +516,7 @@ def runBifurcations(n,filename,ARAlen=20,ncpus=40):
 
 ################################BUILDING AREA
 
-'''
+
 n='final'
 ARAlen=50
 
@@ -559,6 +559,8 @@ pars=p[i3]
 bifurcation_Xplot(ARA,n,filename,pars,c="onlyhopf + saddle at high ARA")
 
 
+
+'''
 namelist=[]
 for i,par in enumerate(meq.parlist):
        namelist.append(parlist[i]['name'])
@@ -566,8 +568,8 @@ namelist=np.array(namelist)
 
 df=pdf
 df2=pdf.iloc[i3]
-'''
-'''
+
+
 
 
 fonts=2
@@ -606,11 +608,14 @@ for i,par1 in enumerate(namelist):
 plt.savefig(filename+"/plot/"+'TEST_par_plot.pdf', bbox_inches='tight')
 plt.close()
 '''
+
+
+
 ##############################################################################################################3   
 
 
 
-runBifurcations('final',filename,ARAlen=50)
+#runBifurcations('final',filename,ARAlen=50)
 
 
 
