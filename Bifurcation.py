@@ -15,12 +15,12 @@ import time
 from functools import partial
 
 
-filename="ACDC_X21ind"
+filename="ACDC_X2"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 n=['final']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
@@ -532,31 +532,38 @@ pdf['homoclinic']=cbifu[:,2]
 
 
 
+#ACDC behavoiur should be hopf(hc?) / saddl-> osc / Hopf or hc -----  3(4?),2,3/4
 
 
-index=np.where(bifutr[:,25:]==2) #sadle to osc
-index2=np.where(bifutr[:,:25]==3) #hopf
+index=np.where(bifutr[:,25:]==2) #sadle to osc at end
+index2=np.where(bifutr[:,:24]==3) #hopf at begining
 
-index3=np.where(bifutr[:,:24]==1) #saddle to stable
-index4=np.where(bifutr[:,:24]==2) #saddle to osc
+index3=np.where(bifutr[:,:24]==1) #saddle to stable at begining
+index4=np.where(bifutr[:,:24]==2) #saddle to osc at begining
 
 
 #i3=np.intersect1d(index[0],index2[0])
 
 i3=np.intersect1d(index[0],index2[0])
+#i3=index[0]
 i3=np.setdiff1d(i3,index3[0])
 i3=np.setdiff1d(i3,index4[0])
 
 
-
+index=np.where(pdf['saddle']==2)
+i3=index[0]
 print(len(i3))
+
+i3=i3[0:8]
+
+print(i3)
 
 # & (bifutr[:,25:]==4))
 
 #index2=np.where(bifutr[index[0],25:]==3)
 
 pars=p[i3]
-bifurcation_Xplot(ARA,n,filename,pars,c="onlyhopf + saddle at high ARA")
+bifurcation_Xplot(ARA,n,filename,pars,c="TEST")
 
 
 
