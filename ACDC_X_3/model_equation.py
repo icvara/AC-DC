@@ -53,8 +53,8 @@ def addfixedpar(par):
     par['K_ARAY']=-4.36
     par['n_ARAX']=1.3
     par['n_ARAY']=1.3
-    par['beta/alpha_X']=1.36/0.046
-    par['beta/alpha_Y']=1.36/0.046
+    par['beta/alpha_X']=np.log10(1.36/0.046)
+    par['beta/alpha_Y']=np.log10(1.36/0.046)
     return par
 
 

@@ -15,7 +15,7 @@ import time
 from functools import partial
 
 
-filename="ACDC_X21ind"
+filename="ACDC_X_5"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 n=['final']
 #
@@ -160,10 +160,16 @@ def splitted_parplot(n,filename,parlist):
     parlist3=parlist[[0,1,6,7,8,11]]
     namelist4=namelist[[7,8,9,10,11]] #only Y par
     parlist4=parlist[[7,8,9,10,11]]
+    
+    namelist5=namelist[[0,1,6,7,8,11]] #only ARA par
+    parlist5=parlist[[0,1,6,7,8,11]]
+    
+    
     par_plot(pdf,filename,(str(n)+'ALL'),parlist,namelist)
     par_plot(pdf,filename,(str(n)+'K'),parlist2,namelist2)
     par_plot(pdf,filename,(str(n)+'B'),parlist3,namelist3)
     par_plot(pdf,filename,(str(n)+'Y'),parlist4,namelist4)
+    par_plot(pdf,filename,(str(n)+'ARA'),parlist5,namelist5)
         
 def plot_alltime(n,filename,parlist):
     namelist=[]
@@ -285,11 +291,14 @@ if __name__ == "__main__":
         os.mkdir(filename+'/plot') ## create it, the output will go there
     
     ARA=meq.ARA
-    ARA=np.logspace(-4.5,-2.,20,base=10)
+   # ARA=np.logspace(-4.5,-2.,20,base=10)
    # plot_alltime(n,filename,meq.parlist)
     namelist=[]
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
+    
+    
+    #splitted_parplot(n[0],filename,parlist)
     
     for i in n:
       p, pdf= load(i,filename,meq.parlist)
@@ -298,6 +307,7 @@ if __name__ == "__main__":
       par_plot(pdf,filename,i,meq.parlist,namelist)
 
     #bifurcation_plot('final',filename,p[1])
+    
     '''
     p, pdf= load('final',filename,meq.parlist)
     index=[]

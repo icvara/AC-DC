@@ -15,12 +15,12 @@ import time
 from functools import partial
 
 
-filename="ACDC_X2"
+filename="ACDC_X21ind"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 n=['final']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
@@ -495,7 +495,8 @@ def runBifurcation(ARA,pars, filename,n,index):
 
 
 def runBifurcations(n,filename,ARAlen=20,ncpus=40):
-    ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
+   # ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
+    ARA=np.logspace(-8.,-2.,ARAlen,base=10)
     p, pdf= load(n,filename,meq.parlist)
     max_stability=[]
     count_bifurcation=[]
@@ -513,27 +514,86 @@ def runBifurcations(n,filename,ARAlen=20,ncpus=40):
   #  np.savetxt(filename+"/"+'ALL_'+str(n)+'bifurcation_transition.out', bifurcation_transition,fmt='%s')
 
 
+def bifplot_parplot_sub(p,pdf,index,filename,n,figname):
+
+    pars=p[index]
+    df=pdf
+    df2=pdf.iloc[index]
+    
+    bifurcation_Xplot(ARA,n,filename,pars,c=figname)        
+    
+    namelist=[]
+    for i,par in enumerate(meq.parlist):
+           namelist.append(parlist[i]['name'])
+    namelist=np.array(namelist)        
+    
+    fonts=2
+    for i,par1 in enumerate(namelist):
+            for j,par2 in enumerate(namelist):
+                plt.subplot(len(namelist),len(namelist), i+j*len(namelist)+1)
+                if i == j :
+                    #plt.hist(df[par1])
+    
+                    sns.kdeplot(df[par1],bw_adjust=.8,label=1)
+                    sns.kdeplot(df2[par1],bw_adjust=.8,label=2)
+                    plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+                    plt.xticks([])
+                    plt.yticks([])
+                    plt.ylabel('')
+                    plt.xlabel('')
+                else:
+                    plt.scatter(df[par1],df[par2], c='black', s=0.001)# vmin=mindist, vmax=maxdist)
+                    plt.scatter(df2[par1],df2[par2], c='green', s=0.001)# vmin=mindist, vmax=maxdist)
+    
+                    plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
+                    plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
+                if i > 0 and j < len(namelist)-1 :
+                    plt.xticks([])
+                    plt.yticks([])
+                else:
+                    if i==0 and j!=len(namelist)-1:
+                        plt.xticks([])
+                        plt.ylabel(par2,fontsize=fonts)
+                        plt.yticks(fontsize=fonts,rotation=90)
+                    if j==len(namelist)-1 and i != 0:
+                        plt.yticks([])
+                        plt.xlabel(par1,fontsize=fonts)
+                        plt.xticks(fontsize=fonts)
+                    else:
+                        plt.ylabel(par2,fontsize=fonts)
+                        plt.xlabel(par1,fontsize=fonts)
+                        plt.xticks(fontsize=fonts)
+                        plt.yticks(fontsize=4,rotation=90)                 
+    plt.savefig(filename+"/plot/"+figname+'_par_plot.pdf', bbox_inches='tight')
+    plt.close()
+
 
 ################################BUILDING AREA
 
 
+
 n='final'
 ARAlen=50
-
 ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
+#ARA=np.logspace(-8.,-2.,ARAlen,base=10)
+
+#runBifurcations('final',filename,ARAlen=50)
+
+
 p, pdf= load('final',filename,meq.parlist)
 p=np.array(p)
-maxst,cbifu,bifutr=loadBifurcation('final',filename)
 
+maxst,cbifu,bifutr=loadBifurcation('final',filename)
+pdf=pdf.sort_values('dist',ascending=True)
 pdf['max_stability']=maxst
 pdf['saddle']=cbifu[:,0]
 pdf['hopf']=cbifu[:,1]
 pdf['homoclinic']=cbifu[:,2]
 
-
+print(pdf.iloc[60])
+print(p[60])
 
 #ACDC behavoiur should be hopf(hc?) / saddl-> osc / Hopf or hc -----  3(4?),2,3/4
-
 
 index=np.where(bifutr[:,25:]==2) #sadle to osc at end
 index2=np.where(bifutr[:,:24]==3) #hopf at begining
@@ -541,88 +601,24 @@ index2=np.where(bifutr[:,:24]==3) #hopf at begining
 index3=np.where(bifutr[:,:24]==1) #saddle to stable at begining
 index4=np.where(bifutr[:,:24]==2) #saddle to osc at begining
 
-
-#i3=np.intersect1d(index[0],index2[0])
-
 i3=np.intersect1d(index[0],index2[0])
-#i3=index[0]
 i3=np.setdiff1d(i3,index3[0])
 i3=np.setdiff1d(i3,index4[0])
 
-
-index=np.where(pdf['saddle']==2)
-i3=index[0]
-print(len(i3))
-
-i3=i3[0:8]
-
-print(i3)
-
-# & (bifutr[:,25:]==4))
-
-#index2=np.where(bifutr[index[0],25:]==3)
-
-pars=p[i3]
-bifurcation_Xplot(ARA,n,filename,pars,c="TEST")
+#maxstability
+i_3st=np.where(pdf['max_stability']==3)[0]
 
 
 
-'''
-namelist=[]
-for i,par in enumerate(meq.parlist):
-       namelist.append(parlist[i]['name'])
-namelist=np.array(namelist)
-
-df=pdf
-df2=pdf.iloc[i3]
-
-
-
-
-fonts=2
-for i,par1 in enumerate(namelist):
-        for j,par2 in enumerate(namelist):
-            plt.subplot(len(namelist),len(namelist), i+j*len(namelist)+1)
-            if i == j :
-                #plt.hist(df[par1])
-
-                sns.kdeplot(df[par1],bw_adjust=.8,label=1)
-                sns.kdeplot(df2[par1],bw_adjust=.8,label=2)
-                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-            else:
-                plt.scatter(df[par1],df[par2], c='black', s=0.001)# vmin=mindist, vmax=maxdist)
-                plt.scatter(df2[par1],df2[par2], c='green', s=0.001)# vmin=mindist, vmax=maxdist)
-
-                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-                plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
-            if i > 0 and j < len(namelist)-1 :
-                plt.xticks([])
-                plt.yticks([])
-            else:
-                if i==0 and j!=len(namelist)-1:
-                    plt.xticks([])
-                    plt.ylabel(par2,fontsize=fonts)
-                    plt.yticks(fontsize=fonts,rotation=90)
-                if j==len(namelist)-1 and i != 0:
-                    plt.yticks([])
-                    plt.xlabel(par1,fontsize=fonts)
-                    plt.xticks(fontsize=fonts)
-                else:
-                    plt.ylabel(par2,fontsize=fonts)
-                    plt.xlabel(par1,fontsize=fonts)
-                    plt.xticks(fontsize=fonts)
-                    plt.yticks(fontsize=4,rotation=90)                 
-plt.savefig(filename+"/plot/"+'TEST_par_plot.pdf', bbox_inches='tight')
-plt.close()
-'''
-
+bifplot_parplot_sub(p,pdf,i3,filename,n,'acdclike')
+bifplot_parplot_sub(p,pdf,i_3st,filename,n,'3stability')
 
 
 ##############################################################################################################3   
 
 
 
-#runBifurcations('final',filename,ARAlen=50)
+
 
 
 

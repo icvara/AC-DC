@@ -1,0 +1,425 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=2274334
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=1
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna007
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna007
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna007
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=1
+SLURM_TOPOLOGY_ADDR=core.edge1.dna007
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_bifurcation.sh
+SLURM_JOBID=2463700
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=1
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=2463700
+SLURM_LOCALID=0
+please, check homoclinic for p5
+please, check homoclinic for p6
+please, check homoclinic for p24
+please, check homoclinic for p26
+please, check homoclinic for p28
+please, check homoclinic for p32
+error in limit cycle ara = 0.000339322177189533, p40
+please, check homoclinic for p42
+please, check homoclinic for p44
+please, check homoclinic for p48
+error in limit cycle ara = 0.0005963623316594637, p50
+error in limit cycle ara = 0.0018420699693267163, p50
+error in limit cycle ara = 0.0024420530945486497, p50
+please, check homoclinic for p58
+please, check homoclinic for p59
+please, check homoclinic for p63
+please, check homoclinic for p64
+too long oscillation?? at 0.00014563484775012445 arabinose at p66
+error in limit cycle ara = 0.00025595479226995333, p66
+error in limit cycle ara = 0.0007906043210907702, p66
+please, check homoclinic for p67
+please, check homoclinic for p76
+please, check homoclinic for p77
+please, check homoclinic for p84
+error in limit cycle ara = 0.00019306977288832496, p85
+error in limit cycle ara = 0.00025595479226995333, p85
+please, check homoclinic for p85
+error in limit cycle ara = 0.00019306977288832496, p86
+error in limit cycle ara = 0.00025595479226995333, p86
+please, check homoclinic for p86
+please, check homoclinic for p88
+error in limit cycle ara = 0.0024420530945486497, p93
+please, check homoclinic for p97
+error in limit cycle ara = 0.0004498432668969444, p102
+error in limit cycle ara = 0.0007906043210907702, p102
+error in limit cycle ara = 0.004291934260128779, p102
+error in limit cycle ara = 0.005689866029018293, p102
+error in limit cycle ara = 0.0075431200633546075, p102
+error in limit cycle ara = 0.01, p102
+please, check homoclinic for p112
+error in limit cycle ara = 0.00019306977288832496, p136
+please, check homoclinic for p140
+please, check homoclinic for p144
+error in limit cycle ara = 0.0005963623316594637, p147
+error in limit cycle ara = 0.0018420699693267163, p147
+error in limit cycle ara = 0.0024420530945486497, p147
+please, check homoclinic for p152
+please, check homoclinic for p172
+error in limit cycle ara = 0.00025595479226995333, p176
+error in limit cycle ara = 0.00014563484775012445, p177
+error in limit cycle ara = 0.00019306977288832496, p177
+error in limit cycle ara = 0.0010481131341546852, p177
+error in limit cycle ara = 0.001389495494373136, p177
+error in limit cycle ara = 0.0018420699693267163, p177
+please, check homoclinic for p211
+error in limit cycle ara = 0.00025595479226995333, p215
+error in limit cycle ara = 0.0005963623316594637, p215
+error in limit cycle ara = 0.0010481131341546852, p215
+please, check homoclinic for p220
+please, check homoclinic for p221
+please, check homoclinic for p237
+please, check homoclinic for p246
+please, check homoclinic for p250
+too long oscillation?? at 0.00025595479226995333 arabinose at p251
+please, check homoclinic for p254
+please, check homoclinic for p263
+please, check homoclinic for p270
+error in limit cycle ara = 0.0007906043210907702, p281
+error in limit cycle ara = 0.0010481131341546852, p281
+please, check homoclinic for p283
+please, check homoclinic for p289
+error in limit cycle ara = 0.0004498432668969444, p308
+error in limit cycle ara = 0.0005963623316594637, p308
+error in limit cycle ara = 0.0010481131341546852, p308
+error in limit cycle ara = 0.001389495494373136, p308
+please, check homoclinic for p312
+error in limit cycle ara = 0.00019306977288832496, p319
+error in limit cycle ara = 0.0007906043210907702, p319
+please, check homoclinic for p328
+error in limit cycle ara = 0.00019306977288832496, p345
+error in limit cycle ara = 0.00025595479226995333, p345
+error in limit cycle ara = 0.000339322177189533, p345
+error in limit cycle ara = 0.0018420699693267163, p345
+please, check homoclinic for p345
+please, check homoclinic for p348
+error in limit cycle ara = 0.00019306977288832496, p351
+too long oscillation?? at 0.001389495494373136 arabinose at p378
+error in limit cycle ara = 0.0018420699693267163, p378
+error in limit cycle ara = 0.0024420530945486497, p378
+error in limit cycle ara = 0.00323745754281764, p378
+error in limit cycle ara = 0.0075431200633546075, p378
+error in limit cycle ara = 0.01, p378
+please, check homoclinic for p382
+error in limit cycle ara = 0.00019306977288832496, p403
+error in limit cycle ara = 0.00025595479226995333, p403
+error in limit cycle ara = 0.0007906043210907702, p403
+error in limit cycle ara = 0.001389495494373136, p403
+error in limit cycle ara = 0.0004498432668969444, p404
+error in limit cycle ara = 0.0005963623316594637, p404
+error in limit cycle ara = 0.0004498432668969444, p407
+error in limit cycle ara = 0.0007906043210907702, p407
+error in limit cycle ara = 0.00323745754281764, p407
+error in limit cycle ara = 0.004291934260128779, p407
+error in limit cycle ara = 0.005689866029018293, p407
+error in limit cycle ara = 0.0075431200633546075, p407
+please, check homoclinic for p409
+please, check homoclinic for p410
+error in limit cycle ara = 0.00010985411419875573, p427
+error in limit cycle ara = 0.0005963623316594637, p434
+error in limit cycle ara = 0.0007906043210907702, p434
+error in limit cycle ara = 0.0010481131341546852, p434
+please, check homoclinic for p443
+error in limit cycle ara = 0.0005963623316594637, p454
+error in limit cycle ara = 0.0007906043210907702, p454
+please, check homoclinic for p456
+please, check homoclinic for p462
+too long oscillation?? at 0.0018420699693267163 arabinose at p484
+error in limit cycle ara = 0.0024420530945486497, p484
+error in limit cycle ara = 0.004291934260128779, p484
+error in limit cycle ara = 0.005689866029018293, p484
+error in limit cycle ara = 0.0075431200633546075, p484
+error in limit cycle ara = 0.01, p484
+please, check homoclinic for p493
+please, check homoclinic for p517
+error in limit cycle ara = 0.00025595479226995333, p523
+error in limit cycle ara = 0.004291934260128779, p523
+please, check homoclinic for p526
+please, check homoclinic for p529
+error in limit cycle ara = 0.00025595479226995333, p541
+error in limit cycle ara = 0.004291934260128779, p541
+please, check homoclinic for p544
+too long oscillation?? at 0.0010481131341546852 arabinose at p548
+please, check homoclinic for p549
+error in limit cycle ara = 0.0005963623316594637, p583
+error in limit cycle ara = 0.001389495494373136, p583
+error in limit cycle ara = 0.0004498432668969444, p587
+error in limit cycle ara = 0.0010481131341546852, p587
+please, check homoclinic for p602
+please, check homoclinic for p609
+please, check homoclinic for p614
+error in limit cycle ara = 0.00014563484775012445, p618
+error in limit cycle ara = 0.00019306977288832496, p618
+error in limit cycle ara = 0.0010481131341546852, p618
+please, check homoclinic for p623
+error in limit cycle ara = 0.00025595479226995333, p631
+error in limit cycle ara = 0.000339322177189533, p631
+error in limit cycle ara = 0.0005963623316594637, p631
+error in limit cycle ara = 0.0007906043210907702, p631
+error in limit cycle ara = 0.0010481131341546852, p631
+please, check homoclinic for p686
+error in limit cycle ara = 0.00019306977288832496, p690
+error in limit cycle ara = 0.0004498432668969444, p690
+error in limit cycle ara = 0.0007906043210907702, p690
+error in limit cycle ara = 0.001389495494373136, p690
+please, check homoclinic for p715
+error in limit cycle ara = 0.0007906043210907702, p721
+error in limit cycle ara = 0.0010481131341546852, p721
+error in limit cycle ara = 0.0024420530945486497, p721
+error in limit cycle ara = 0.00323745754281764, p721
+error in limit cycle ara = 0.004291934260128779, p721
+error in limit cycle ara = 0.005689866029018293, p721
+error in limit cycle ara = 0.0075431200633546075, p721
+error in limit cycle ara = 0.01, p721
+please, check homoclinic for p721
+error in limit cycle ara = 0.0007906043210907702, p726
+error in limit cycle ara = 0.0007906043210907702, p773
+error in limit cycle ara = 0.0010481131341546852, p773
+error in limit cycle ara = 0.001389495494373136, p773
+too long oscillation?? at 0.0004498432668969444 arabinose at p791
+error in limit cycle ara = 0.000339322177189533, p818
+error in limit cycle ara = 0.0005963623316594637, p818
+please, check homoclinic for p823
+error in limit cycle ara = 0.00014563484775012445, p834
+error in limit cycle ara = 0.00025595479226995333, p834
+error in limit cycle ara = 0.000339322177189533, p834
+error in limit cycle ara = 0.001389495494373136, p834
+error in limit cycle ara = 0.00323745754281764, p834
+error in limit cycle ara = 0.004291934260128779, p834
+error in limit cycle ara = 0.005689866029018293, p834
+error in limit cycle ara = 0.0075431200633546075, p834
+error in limit cycle ara = 0.01, p834
+too long oscillation?? at 0.0005963623316594637 arabinose at p835
+error in limit cycle ara = 0.00019306977288832496, p867
+please, check homoclinic for p871
+error in limit cycle ara = 0.0004498432668969444, p898
+error in limit cycle ara = 0.0005963623316594637, p898
+error in limit cycle ara = 0.001389495494373136, p898
+error in limit cycle ara = 0.0018420699693267163, p898
+error in limit cycle ara = 0.0024420530945486497, p898
+error in limit cycle ara = 0.00019306977288832496, p900
+error in limit cycle ara = 0.00025595479226995333, p900
+error in limit cycle ara = 0.0004498432668969444, p900
+error in limit cycle ara = 0.00025595479226995333, p911
+error in limit cycle ara = 0.000339322177189533, p911
+error in limit cycle ara = 0.0018420699693267163, p911
+error in limit cycle ara = 0.0024420530945486497, p911
+error in limit cycle ara = 0.00323745754281764, p911
+please, check homoclinic for p911
+please, check homoclinic for p931
+error in limit cycle ara = 0.0010481131341546852, p973
+error in limit cycle ara = 0.0018420699693267163, p973
+please, check homoclinic for p973
+error in limit cycle ara = 0.0005963623316594637, p988
+error in limit cycle ara = 0.00323745754281764, p988
+error in limit cycle ara = 0.0010481131341546852, p989
+error in limit cycle ara = 0.001389495494373136, p989
+error in limit cycle ara = 0.0018420699693267163, p989
+error in limit cycle ara = 0.00323745754281764, p989
+error in limit cycle ara = 0.005689866029018293, p989
+please, check homoclinic for p997
+K_XY            -3.240044
+n_XY             1.552211
+K_XZ            -4.626571
+n_XZ             1.375384
+beta/alpha_X     2.826067
+K_YZ            -3.856829
+n_YZ             1.693692
+beta/alpha_Y     3.199086
+K_ZX            -7.482132
+n_ZX             1.849911
+beta/alpha_Z     2.328475
+dist             0.067912
+max_stability    2.000000
+saddle           3.000000
+hopf             1.000000
+homoclinic       0.000000
+Name: 840, dtype: float64
+{'K_XY': -3.2400438392606117, 'n_XY': 1.552210661805784, 'K_XZ': -4.626570836286762, 'n_XZ': 1.3753838671937961, 'beta/alpha_X': 2.826066967072103, 'K_YZ': -3.8568290266939425, 'n_YZ': 1.6936915162905315, 'beta/alpha_Y': 3.19908561943319, 'K_ZX': -7.482132223819678, 'n_ZX': 1.8499105375018086, 'beta/alpha_Z': 2.328474668582008}
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
