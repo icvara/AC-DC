@@ -15,7 +15,7 @@ import time
 from functools import partial
 
 
-filename="ACDC_X21ind"
+filename="ACDC_ARApar_1"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 n=['final']
 #
@@ -65,9 +65,9 @@ def loadBifurcation(number= n,filename=filename):
     count_bifurcation =np.array([])
     bifurcation_transition =np.array([])
     for i in index:
-        path1 = filename+'/' +i +'_'+ number +'max_stability.out'
-        path2 = filename+'/' +i +'_'+ number +'count_bifurcation.out'
-        path3 = filename+'/' +i +'_'+ number +'bifurcation_transition.out'
+        path1 = filename+'/bifurcation/' +i +'_'+ number +'max_stability.out'
+        path2 = filename+'/bifurcation/' +i +'_'+ number +'count_bifurcation.out'
+        path3 = filename+'/bifurcation/' +i +'_'+ number +'bifurcation_transition.out'
         output1= np.loadtxt(path1)
         output2= np.loadtxt(path2)
         output3= np.loadtxt(path3)
@@ -150,7 +150,7 @@ def bifurcation_Xplot(ARA,n,filename,pars,c):
         plt.tick_params(axis='both', which='major', labelsize=2)
         plt.yscale("log")
         plt.xscale("log")
-    plt.savefig(filename+"/"+c+'_Bifurcation.pdf', bbox_inches='tight')
+    plt.savefig(filename+"/bifurcation/"+c+'_Bifurcation.pdf', bbox_inches='tight')
     plt.close()
    # plt.show()
 
@@ -186,7 +186,7 @@ def par_plot(df,name,nb,parlist,namelist):
                     plt.xlabel(par1,fontsize=fonts)
                     plt.xticks(fontsize=fonts)
                     plt.yticks(fontsize=4,rotation=90)                 
-    plt.savefig(name+"/plot/"+nb+'_par_plot.pdf', bbox_inches='tight')
+    plt.savefig(name+"/bifurcation/"+nb+'_par_plot.pdf', bbox_inches='tight')
     plt.close()
     #plt.show()
 
@@ -482,12 +482,12 @@ def runBifurcation(ARA,pars, filename,n,index):
         plt.yscale("log")
         plt.xscale("log")
 
-    np.savetxt(filename+"/"+str(index)+'_'+str(n)+'max_stability.out', max_stability)
-    np.savetxt(filename+"/"+str(index)+'_'+str(n)+'count_bifurcation.out', count_bifurcation)
-    np.savetxt(filename+"/"+str(index)+'_'+str(n)+'bifurcation_transition.out', bifurcation_transition)
+    np.savetxt(filename+"/bifurcation/"+str(index)+'_'+str(n)+'max_stability.out', max_stability)
+    np.savetxt(filename+"/bifurcation/"+str(index)+'_'+str(n)+'count_bifurcation.out', count_bifurcation)
+    np.savetxt(filename+"/bifurcation/"+str(index)+'_'+str(n)+'bifurcation_transition.out', bifurcation_transition)
 
 
-    plt.savefig(filename+"/"+str(index)+'_'+str(n)+'XBifurcationplot.pdf', bbox_inches='tight')
+    plt.savefig(filename+"/bifurcation/"+str(index)+'_'+str(n)+'XBifurcationplot.pdf', bbox_inches='tight')
     #plt.show()
     plt.close()
     
@@ -564,20 +564,21 @@ def bifplot_parplot_sub(p,pdf,index,filename,n,figname):
                         plt.xlabel(par1,fontsize=fonts)
                         plt.xticks(fontsize=fonts)
                         plt.yticks(fontsize=4,rotation=90)                 
-    plt.savefig(filename+"/plot/"+figname+'_par_plot.pdf', bbox_inches='tight')
+    plt.savefig(filename+"/bifurcation/"+figname+'_par_plot.pdf', bbox_inches='tight')
     plt.close()
 
 
 ################################BUILDING AREA
-
+if os.path.isdir(filename+'/bifurcation') is False: ## if 'smc' folder does not exist:
+  os.mkdir(filename+'/bifurcation') ## create it, the output will go there
 
 
 n='final'
 ARAlen=50
-ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
-#ARA=np.logspace(-8.,-2.,ARAlen,base=10)
+#ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
+ARA=np.logspace(-8.,-2.,ARAlen,base=10)
 
-#runBifurcations('final',filename,ARAlen=50)
+runBifurcations('final',filename,ARAlen=50)
 
 
 p, pdf= load('final',filename,meq.parlist)
