@@ -15,7 +15,7 @@ import time
 
 
 
-version="ACDC_X_5"
+version="ACDC_ARApar_1"
 pl= None #prior_label=
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+version+'/')
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+version)
