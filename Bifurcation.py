@@ -20,7 +20,7 @@ n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16
 n=['final']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
@@ -515,7 +515,7 @@ def runBifurcations(n,filename,ARAlen=20,ncpus=40):
 
 
 def bifplot_parplot_sub(p,pdf,index,filename,n,figname):
-
+    p=np.array(p)
     pars=p[index]
     df=pdf
     df2=pdf.iloc[index]
@@ -534,8 +534,8 @@ def bifplot_parplot_sub(p,pdf,index,filename,n,figname):
                 if i == j :
                     #plt.hist(df[par1])
     
-                    sns.kdeplot(df[par1],bw_adjust=.8,label=1)
-                    sns.kdeplot(df2[par1],bw_adjust=.8,label=2)
+                    sns.kdeplot(df[par1],bw_adjust=.8,label=1,linewidth=0.3)
+                    sns.kdeplot(df2[par1],bw_adjust=.8,label=2,linewidth=0.3)
                     plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
                     plt.xticks([])
                     plt.yticks([])
@@ -567,6 +567,15 @@ def bifplot_parplot_sub(p,pdf,index,filename,n,figname):
     plt.savefig(filename+"/bifurcation/"+figname+'_par_plot.pdf', bbox_inches='tight')
     plt.close()
 
+def fulldf(n,filename):
+    p, pdf= load(n,filename,meq.parlist)
+    maxst,cbifu,bifutr=loadBifurcation('final',filename)
+    pdf=pdf.sort_values('dist',ascending=True) #to be in same order than p
+    pdf['max_stability']=maxst
+    pdf['saddle']=cbifu[:,0]
+    pdf['hopf']=cbifu[:,1]
+    pdf['homoclinic']=cbifu[:,2]
+    return pdf,bifutr
 
 ################################BUILDING AREA
 if os.path.isdir(filename+'/bifurcation') is False: ## if 'smc' folder does not exist:
@@ -578,24 +587,60 @@ ARAlen=50
 #ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
 ARA=np.logspace(-8.,-2.,ARAlen,base=10)
 
-runBifurcations('final',filename,ARAlen=50)
+#runBifurcations('final',filename,ARAlen=50)
 
 
-p, pdf= load('final',filename,meq.parlist)
-p=np.array(p)
+#p, pdf= load('final',filename,meq.parlist)
+#p=np.array(p)
 
-maxst,cbifu,bifutr=loadBifurcation('final',filename)
-pdf=pdf.sort_values('dist',ascending=True)
-pdf['max_stability']=maxst
-pdf['saddle']=cbifu[:,0]
-pdf['hopf']=cbifu[:,1]
-pdf['homoclinic']=cbifu[:,2]
+pdf,bifutr = fulldf(n,filename)
 
-print(pdf.iloc[60])
-print(p[60])
 
 #ACDC behavoiur should be hopf(hc?) / saddl-> osc / Hopf or hc -----  3(4?),2,3/4
 
+
+#select hopf bifurcation
+
+#only take index of one without any transition before
+ACDC_onlyHopf_index=[]
+ACDC_index=[]
+
+hopf_index=np.where(bifutr==3) #index of where there is hopf
+for i in np.arange(0,len(hopf_index[0])):
+    #divide after and before 1st hopf
+    sub_after=bifutr[hopf_index[0][i],hopf_index[1][i]+1:]
+    sub_before=bifutr[hopf_index[0][i],:hopf_index[1][i]]
+
+    #there is only one transition from stable to oscillation
+    if len(np.where(sub_after==2)[0])==1:
+
+        #there is a least 2 point of bistability
+        if np.any(np.where(sub_after>2)[0] - np.where(sub_after==2)[0] >2):
+
+            #if oscillation finish by hopf, it should have only one saddle node after
+            i2= np.where(sub_after==3)[0]
+            if len(i2)>0 :
+                if np.sum(sub_after[i2[0]+1:]) == 1 :    
+                    ACDC_index.append(hopf_index[0][i])
+                    if np.sum(sub_before) == 0 :
+                        ACDC_onlyHopf_index.append(hopf_index[0][i])
+            #if finish by homoclinic
+            else :
+                ACDC_index.append(hopf_index[0][i])
+                if np.sum(sub_before) == 0 :
+                        ACDC_onlyHopf_index.append(hopf_index[0][i])
+
+
+
+print(ACDC_index)
+print(ACDC_onlyHopf_index)
+
+p, pdf= load(n,filename,meq.parlist)
+
+bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclikev4')
+bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclikev4.2')
+
+'''
 index=np.where(bifutr[:,25:]==2) #sadle to osc at end
 index2=np.where(bifutr[:,:24]==3) #hopf at begining
 
@@ -607,13 +652,13 @@ i3=np.setdiff1d(i3,index3[0])
 i3=np.setdiff1d(i3,index4[0])
 
 #maxstability
-i_3st=np.where(pdf['max_stability']==3)[0]
+#i_3st=np.where(pdf['max_stability']==3)[0]
 
 
 
-bifplot_parplot_sub(p,pdf,i3,filename,n,'acdclike')
-bifplot_parplot_sub(p,pdf,i_3st,filename,n,'3stability')
-
+#bifplot_parplot_sub(p,pdf,i3,filename,n,'acdclike')
+#bifplot_parplot_sub(p,pdf,i_3st,filename,n,'3stability')
+'''
 
 ##############################################################################################################3   
 
