@@ -15,12 +15,12 @@ import time
 from functools import partial
 
 
-filename="ACDC_ARApar_1"
+filename="ACDC_ARApar_2"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 n=['final']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
@@ -587,7 +587,7 @@ ARAlen=50
 #ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
 ARA=np.logspace(-8.,-2.,ARAlen,base=10)
 
-#runBifurcations('final',filename,ARAlen=50)
+runBifurcations('final',filename,ARAlen=50)
 
 
 #p, pdf= load('final',filename,meq.parlist)
@@ -632,13 +632,11 @@ for i in np.arange(0,len(hopf_index[0])):
 
 
 
-print(ACDC_index)
-print(ACDC_onlyHopf_index)
 
 p, pdf= load(n,filename,meq.parlist)
 
-bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclikev4')
-bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclikev4.2')
+bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclike_onlyhopf')
+bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclike')
 
 '''
 index=np.where(bifutr[:,25:]==2) #sadle to osc at end

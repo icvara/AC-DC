@@ -1,5 +1,7 @@
 
-## equation for X only with one inducer model
+## equation for X only with more defined range for ara par
+## with reduced concentration where distance are checked
+## one inducer
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -7,10 +9,13 @@ import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.signal import argrelextrema
 import numpy as np
+from scipy import optimize
+from scipy.optimize import brentq
+
 
 #par for abc_smc
-initdist=40.
-finaldist=2.5
+initdist=20.
+finaldist=1.0
 priot_label=None
 dtt=0.1
 tt=120 #totaltime
@@ -20,44 +25,44 @@ node="X"
 #list for ACDC
 parlist = [ 
     #first node X param
-    {'name' : 'K_ARAX', 'lower_limit':-4.0,'upper_limit':-1.0}, 
+    {'name' : 'K_ARAX', 'lower_limit':-5.0,'upper_limit':-4.0}, 
     {'name' : 'n_ARAX','lower_limit':0.5,'upper_limit':2.0},
-    {'name' : 'K_XY','lower_limit':-4.0,'upper_limit':-1.0},
+    {'name' : 'K_XY','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_XY','lower_limit':0.5,'upper_limit':2.0},
-    {'name' : 'K_XZ','lower_limit':-4.0,'upper_limit':-1.0},
+    {'name' : 'K_XZ','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_XZ','lower_limit':0.5,'upper_limit':2.0},
     {'name' : 'beta/alpha_X','lower_limit':0.0,'upper_limit':4.0},
 
     #Seconde node Y param
-#    {'name' : 'K_ARAY', 'lower_limit':-4.0,'upper_limit':-1.0}, 
-#    {'name' : 'n_ARAY','lower_limit':0.5,'upper_limit':2.0},
-    {'name' : 'K_YZ','lower_limit':-4.0,'upper_limit':-1.0},
+   # {'name' : 'K_ARAY', 'lower_limit':-5.0,'upper_limit':-4.0}, 
+  #  {'name' : 'n_ARAY','lower_limit':0.5,'upper_limit':2.0},
+    {'name' : 'K_YZ','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_YZ','lower_limit':0.5,'upper_limit':2.0},
     {'name' : 'beta/alpha_Y','lower_limit':0.0,'upper_limit':4.0},
 
     #third node Z param
-    {'name' : 'K_ZX','lower_limit':-4.0,'upper_limit':-1.0},
+    {'name' : 'K_ZX','lower_limit':-10.0,'upper_limit':2.0},
     {'name' : 'n_ZX','lower_limit':0.5,'upper_limit':2.0},
     {'name' : 'beta/alpha_Z','lower_limit':0.0,'upper_limit':4.0},
 ]
 
 
-ARA=np.logspace(-4.5,-2.,10,base=10) 
+ARA=np.logspace(-8.,-2.,10,base=10) 
 
 
 def Flow(X,Y,Z,ARA,par):
     #simplify version with less parameter    
     flow_x= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
-    flow_x = flow_x / ( 1 + np.power((Z/10**(par['K_ZX']+par['beta/alpha_Z'])),par['n_ZX']))
+    flow_x = flow_x / ( 1 + np.power((Z/(10**par['K_ZX'])),par['n_ZX']))
     flow_x = flow_x - X
 
-  #  flow_y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
-    flow_y = 10**par['beta/alpha_Y'] # one inducer version
-    flow_y = flow_y / ( 1 + np.power(X/10**(par['K_XY']+par['beta/alpha_X']),par['n_XY']))
+   # flow_y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
+    flow_y= 10**par['beta/alpha_Y']
+    flow_y = flow_y / ( 1 + np.power(X/(10**par['K_XY']),par['n_XY']))
     flow_y = flow_y - Y
 
-    flow_z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']+par['beta/alpha_Y']),par['n_YZ']))
-    flow_z = flow_z /( 1 + np.power(X/10**(par['K_XZ']+par['beta/alpha_X']),par['n_XZ']))
+    flow_z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**par['K_YZ'],par['n_YZ']))
+    flow_z = flow_z /( 1 + np.power(X/10**par['K_XZ'],par['n_XZ']))
     flow_z = flow_z - Z
 
     return flow_x,flow_y,flow_z
@@ -85,13 +90,13 @@ def Integration(Xi,Yi,Zi, totaltime, dt, ch , pars ):
 
 def distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
 
-    X,Y,Z = model(x,pars,totaltime,dt)
+    X,Y,Z = model(x,pars,totaltime,dt) #can win time if I only calcule the point I used
     
     # transient time / dt
     transient = int(trr/dt)
  
     #range where oscillation is expected
-    oscillation_ara=[2,7]
+    oscillation_ara=[3,6]
     
     A=X #default
     if N== "X":
@@ -103,12 +108,14 @@ def distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
     d_final=0
         
     for i in range(0,len(x)):
+    
              # for local maxima
              max_list=argrelextrema(A[transient:,i], np.greater)
-             maxValues=X[transient:,i][max_list]
+             maxValues=A[transient:,i][max_list]
              # for local minima
              min_list=argrelextrema(A[transient:,i], np.less)
-             minValues=X[transient:,i][min_list]
+             minValues=A[transient:,i][min_list]
+             d=0
      
      
              if i>oscillation_ara[0] and i<oscillation_ara[1]:           
@@ -133,7 +140,7 @@ def distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
                      #this number can be tuned to help the algorythm to find good parameter....
                  #d=0 #v22 DC only
                  
-             if i<oscillation_ara[0] or i>oscillation_ara[1]:  #notice than 2 inducer concentration are not precised here. no leave some place at transition dynamics
+             if i==0 or i==9:  #notice than 2 inducer concentration are not precised here. no leave some place at transition dynamics
                  d1=  len(minValues)/(1+len(minValues)) # v14,21 with len(minValues)/(1+len(minValues)) #v15 10*len(minValues)/(1+len(minValues))
                  d2=  2*(max(A[transient:,i])-min(A[transient:,i]))/(max(A[transient:,i])+min(A[transient:,i]))
                  d= d1+d2
@@ -141,8 +148,9 @@ def distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
                 
      
                  
-             if i==oscillation_ara[0] or i==oscillation_ara[1]: 
-                 d=0
+             #if i==oscillation_ara[0] or i==oscillation_ara[1]:
+             #else: 
+                 #d=0
             # print(d)
              d_final=d_final+d
         
@@ -159,13 +167,47 @@ def distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
     return d_final
 
 
-def model(x,pars,totaltime=tt, dt=dtt, init=[0.2,0,0]):
+def model(x,pars,totaltime=tt, dt=dtt,init=[0.2,0,0]):
     Xi=np.ones(len(x))*init[0]
     Yi=np.ones(len(x))*init[1]
     Zi=np.ones(len(x))*init[2]
     X,Y,Z = Integration(Xi,Yi,Zi,totaltime,dt,x,pars)
     return X,Y,Z
+    
 
+
+def stability(ARA,par,ss=0):
+    if ss==0:
+        ss= findss(ARA,par)
+    eigens=[]
+    for i,s in enumerate(ss): 
+        A=jacobianMatrix(ARA,s[0],s[1],s[2],par)
+        eigvals, eigvecs =np.linalg.eig(A)
+        sse=eigvals.real
+       # print(sse)
+        eigens.append(sse)
+        
+    return eigens #, np.trace(A), np.linalg.det(A)
+
+def solvedfunction2(Zi,ARA,par):
+    #rewrite the system equation to have only one unknow and to be call with scipy.optimze.brentq
+    #the output give a function where when the line reach 0 are a steady states
+  #  X=np.ones((len(ARA),len(Zi)))
+  #  Y=np.ones((len(ARA),len(Zi)))
+   # Z=np.ones((len(ARA),len(Zi)))
+    Zi=np.array([Zi])
+
+    X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
+    X = X[:, None] / ( 1 + np.power((Zi/10**(par['K_ZX'])),par['n_ZX'])) 
+
+    Y = 10**par['beta/alpha_Y']
+  #  Y = np.array(Y)
+    Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
+
+    Z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
+    Z = Z /( 1 + np.power(X/10**(par['K_XZ']),par['n_XZ']))
+    func = Zi - Z
+    return func 
 
 def solvedfunction(Zi,ARA,par):
     Zi=np.array([Zi])
@@ -173,7 +215,7 @@ def solvedfunction(Zi,ARA,par):
     X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))) 
     X = X / ( 1 + np.power((Zi/10**(par['K_ZX'])),par['n_ZX'])) 
 
-    Y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA,par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))
+    Y = 10**par['beta/alpha_Y']
     Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
 
     Z = 10**par['beta/alpha_Z']/( 1 + np.power(Y/10**(par['K_YZ']),par['n_YZ']))
@@ -197,7 +239,7 @@ def findss2(ARA,par):
         #now we have the other ss
         X= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA[ai],par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA[ai],par['n_ARAX']))) 
         X = X / ( 1 + np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
-        Y = 1 + (10**par['beta/alpha_Y']-1)*( np.power(ARA[ai],par['n_ARAY'])) / ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA[ai],par['n_ARAY']))
+        Y = 10**par['beta/alpha_Y']
         Y = Y / ( 1 + np.power(X/10**(par['K_XY']),par['n_XY']))
         ss= addSSinGoodOrder(ss,np.array([X,Y,Z]),ai,0,beforeXvalues=[])
 
@@ -239,29 +281,19 @@ def addSSinGoodOrder(vector,values,ai,pos,beforeXvalues=[]):
                     vector=addSSinGoodOrder(vector,values,ai,pos,adjusted_beforeXvalues)
     return vector 
 
-def stability(ARA,par,ss=0):
-    if ss==0:
-        ss= findss(ARA,par)
-    eigens=[]
-    for i,s in enumerate(ss): 
-        A=jacobianMatrix(ARA,s[0],s[1],s[2],par)
-        eigvals, eigvecs =np.linalg.eig(A)
-        sse=eigvals.real
-       # print(sse)
-        eigens.append(sse)
-        
-    return eigens #, np.trace(A), np.linalg.det(A)
-
-
-
 def jacobianMatrix(ARA,X,Y,Z,par):
+##need to update it
     dxdx = -1
     dxdy = 0
     dxdz=-(((np.power(ARA,par['n_ARAX'])*(10**par['beta/alpha_X']-1))/ ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))+1)*par['n_ZX']*np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
     dxdz=dxdz/(Z*np.power((np.power((Z/10**(par['K_ZX'])),par['n_ZX'])+1),2))
 
-    dydx=-(((np.power(ARA,par['n_ARAY'])*(10**par['beta/alpha_Y']-1))/ ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))+1)*par['n_XY']*np.power((X/10**(par['K_XY'])),par['n_XY']))
-    dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))    
+    #dydx=-(((np.power(ARA,par['n_ARAY'])*(10**par['beta/alpha_Y']-1))/ ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))+1)*par['n_XY']*np.power((X/10**(par['K_XY'])),par['n_XY']))
+    #dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2)) 
+
+    dydx= 10**par['beta/alpha_Y']*par['n_XY']*np.power((X/10**par['K_XY']),par['n_XY'])
+    dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))
+
     dydy=-1
     dydz= 0
 
@@ -288,16 +320,11 @@ def jacobianMatrix2(ARA,ss,par):
 
     dxdx = -1 *X/X
     dxdy = 0  *X/X
-    
-    
-    dxdz=-(((np.power(ARA,par['n_ARAX'])*(10**par['beta/alpha_X']-1))/ ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))+1)*par['n_ZX']*np.power((Z/(10**par['K_ZX'])),par['n_ZX']))
-    dxdz=dxdz/(Z*np.power((np.power((Z/(10**par['K_ZX'])),par['n_ZX'])+1),2))
+    dxdz=-(((np.power(ARA,par['n_ARAX'])*(10**par['beta/alpha_X']-1))/ ( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX']))+1)*par['n_ZX']*np.power((Z/10**(par['K_ZX'])),par['n_ZX']))
+    dxdz=dxdz/(Z*np.power((np.power((Z/10**(par['K_ZX'])),par['n_ZX'])+1),2))
 
-
-
-
-    dydx=-(((np.power(ARA,par['n_ARAY'])*(10**par['beta/alpha_Y']-1))/ ( np.power(10**par['K_ARAY'],par['n_ARAY']) + np.power(ARA,par['n_ARAY']))+1)*par['n_XY']*np.power((X/10**(par['K_XY'])),par['n_XY']))
-    dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))    
+    dydx= - 10**par['beta/alpha_Y']*par['n_XY']*np.power((X/10**par['K_XY']),par['n_XY'])
+    dydx=dydx/(X*np.power((np.power((X/10**par['K_XY']),par['n_XY'])+1),2))   
     dydy=-1 *Y/Y
     dydz= 0 *Y/Y
 

@@ -15,7 +15,7 @@ import time
 from functools import partial
 
 
-filename="ACDC_ARApar_1"
+filename="ACDC_ARApar_2"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 n=['final']
 #
