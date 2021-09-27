@@ -165,6 +165,115 @@ def distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
     return d_final
 
 
+
+def select_model(N,ara,pars,totaltime,dt,init):
+
+    X,Y,Z = model(ara,pars,totaltime,dt,init)
+    A=X #default
+    if N== "X":
+        A=X
+    if N== "Y":
+        A=Y
+    if N== "Z":
+        A=Z
+    return A
+
+def stable_distance(A,transient):
+            max_list=argrelextrema(A[transient:], np.greater)
+            maxValues=A[transient:][max_list]
+            min_list=argrelextrema(A[transient:], np.less)
+            minValues=A[transient:][min_list]
+            d=0
+            d1=  len(minValues)/(1+len(minValues)) # v14,21 with len(minValues)/(1+len(minValues)) #v15 10*len(minValues)/(1+len(minValues))
+            d2=  2*(max(A[transient:])-min(A[transient:]))/(max(A[transient:])+min(A[transient:]))
+            d= d1+d2
+            return d
+
+def oscillation_distance(A,transient):
+
+        max_list=argrelextrema(A[transient:], np.greater)
+        maxValues=A[transient:][max_list]
+             # for local minima
+        min_list=argrelextrema(A[transient:], np.less)
+        minValues=A[transient:][min_list]
+        d=0
+     
+     
+                
+        if len(maxValues)>0 and len(maxValues)<2 and len(minValues)<2:
+            d= 1/len(maxValues) + 1
+                
+        if len(maxValues)>=3 and len(minValues)>=3:  #if there is more than one peak                     
+            d2=abs((maxValues[-2]-minValues[-2]) - (maxValues[-3]-minValues[-3]))/(maxValues[-2]-minValues[-2])  #maybe issue still here ? 
+            d3=2*(minValues[-2])/(minValues[-2]+maxValues[-2]) #Amplitude of oscillation
+            d= d2+d3
+     
+        else:
+            d=10 
+
+        return d
+
+def distance2(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
+
+    X,Y,Z = model(x,pars,totaltime,dt) #can win time if I only calcule the point I used
+    ss = findss2(x,pars)
+    transient = int(trr/dt)
+    delta=10e-15
+    stable_index=[0,9]
+    oscillation_index=[4]
+    bistable_index=[6]
+    
+    d_final=0
+    #stable 
+    for s in ss[stable_index[0]]:
+       # d=0
+        if np.any(np.isnan(s))==False:
+            A = select_model(N,[x[stable_index[0]]],pars,totaltime,dt,init=s+delta)
+            d= stable_distance(A,transient)
+            d_final  = d_final+d
+
+
+    for s in ss[stable_index[1]]:
+       # d=0
+        if np.any(np.isnan(s))==False:
+            A = select_model(N,[x[stable_index[1]]],pars,totaltime,dt,init=s+delta)
+            d= stable_distance(A,transient)
+            d_final = d_final+d
+ 
+    #oscillation 
+
+    for s in ss[oscillation_index]:
+       # d=0
+        if np.any(np.isnan(s))==False:
+            A = select_model(N,[x[oscillation_index]],pars,totaltime,dt,init=s+delta)
+            d= oscillation_distance(A,transient=0)
+            d_final = d_final+d
+
+    #bistability
+    lowss=[0,0,0]
+    highss=[10e4,0,0]
+
+
+    A = select_model(N,[x[bistable_index]],pars,totaltime,dt,init=lowss)
+    d= oscillation_distance(A,transient=0)
+    d_final = d_final+d
+
+
+    A = select_model(N,[x[bistable_index]],pars,totaltime,dt,init=highss)
+    d= stable_distance(A,transient)
+    d_final = d_final+d
+
+        
+    return d_final
+
+
+def getEigen(ARA,s,par):
+    A=jacobianMatrix(ARA,s[0],s[1],s[2],par)
+    eigvals, eigvecs =np.linalg.eig(A)
+    sse=eigvals.real
+    return sse
+
+
 def model(x,pars,totaltime=tt, dt=dtt,init=[0.2,0,0]):
     Xi=np.ones(len(x))*init[0]
     Yi=np.ones(len(x))*init[1]

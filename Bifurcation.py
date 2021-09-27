@@ -15,12 +15,12 @@ import time
 from functools import partial
 
 
-filename="ACDC_ARApar_2"
+filename="ACDC_ARApar_1"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 n=['final']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
@@ -153,6 +153,27 @@ def bifurcation_Xplot(ARA,n,filename,pars,c):
     plt.savefig(filename+"/bifurcation/"+c+'_Bifurcation.pdf', bbox_inches='tight')
     plt.close()
    # plt.show()
+
+
+def bifurcation_Xplot_test(ARA,n,filename,p):
+
+
+        s,eig,un,st,os,hc,M,m=calculateALL2(ARA,p,dummy=0) 
+        #plt.tight_layout()
+        for i in np.arange(0,un.shape[1]):
+            plt.plot(ARA,un[:,i,0],'--o',c='orange',linewidth=1)
+            plt.plot(ARA,st[:,i,0],'-or',linewidth=1)
+            plt.plot(ARA,os[:,i,0],'--ob',linewidth=1)
+            plt.plot(ARA,hc[:,i,0],'--og',linewidth=1)
+            plt.plot(ARA,M[:,i,0],'-ob',linewidth=1)
+            plt.plot(ARA,m[:,i,0],'-ob',linewidth=1)
+            plt.fill_between(ARA,M[:,i,0],m[:,i,0],alpha=0.2,facecolor='blue')
+        plt.tick_params(axis='both', which='major')
+        plt.yscale("log")
+        plt.xscale("log")
+ #   plt.savefig(filename+"/bifurcation/"+c+'_Bifurcation.pdf', bbox_inches='tight')
+ #   plt.close()
+        plt.show()
 
 
 def par_plot(df,name,nb,parlist,namelist):
@@ -577,6 +598,40 @@ def fulldf(n,filename):
     pdf['homoclinic']=cbifu[:,2]
     return pdf,bifutr
 
+
+
+def ACDC_select(bifutr):
+    ACDC_onlyHopf_index=[]
+    ACDC_index=[]
+
+    hopf_index=np.where(bifutr==3) #index of where there is hopf
+    for i in np.arange(0,len(hopf_index[0])):
+        #divide after and before 1st hopf
+        sub_after=bifutr[hopf_index[0][i],hopf_index[1][i]+1:]
+        sub_before=bifutr[hopf_index[0][i],:hopf_index[1][i]]
+
+        #there is only one transition from stable to oscillation
+        if len(np.where(sub_after==2)[0])==1:
+
+            #there is a least 2 point of bistability
+            if np.any(np.where(sub_after>2)[0] - np.where(sub_after==2)[0] >2):
+
+                #if oscillation finish by hopf, it should have only one saddle node after
+                i2= np.where(sub_after==3)[0]
+                if len(i2)>0 :
+                    if np.sum(sub_after[i2[0]+1:]) == 1 :    
+                        ACDC_index.append(hopf_index[0][i])
+                        if np.sum(sub_before) == 0 :
+                            ACDC_onlyHopf_index.append(hopf_index[0][i])
+                #if finish by homoclinic
+                else :
+                    ACDC_index.append(hopf_index[0][i])
+                    if np.sum(sub_before) == 0 :
+                            ACDC_onlyHopf_index.append(hopf_index[0][i])
+    return   ACDC_onlyHopf_index, ACDC_index
+
+
+
 ################################BUILDING AREA
 if os.path.isdir(filename+'/bifurcation') is False: ## if 'smc' folder does not exist:
   os.mkdir(filename+'/bifurcation') ## create it, the output will go there
@@ -584,59 +639,32 @@ if os.path.isdir(filename+'/bifurcation') is False: ## if 'smc' folder does not 
 
 n='final'
 ARAlen=50
+ARAlen=10
+
 #ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
 ARA=np.logspace(-8.,-2.,ARAlen,base=10)
 
-runBifurcations('final',filename,ARAlen=50)
+#runBifurcations('final',filename,ARAlen=50)
 
-
-#p, pdf= load('final',filename,meq.parlist)
-#p=np.array(p)
+#n="2"
 
 pdf,bifutr = fulldf(n,filename)
-
-
-#ACDC behavoiur should be hopf(hc?) / saddl-> osc / Hopf or hc -----  3(4?),2,3/4
-
-
-#select hopf bifurcation
-
-#only take index of one without any transition before
-ACDC_onlyHopf_index=[]
-ACDC_index=[]
-
-hopf_index=np.where(bifutr==3) #index of where there is hopf
-for i in np.arange(0,len(hopf_index[0])):
-    #divide after and before 1st hopf
-    sub_after=bifutr[hopf_index[0][i],hopf_index[1][i]+1:]
-    sub_before=bifutr[hopf_index[0][i],:hopf_index[1][i]]
-
-    #there is only one transition from stable to oscillation
-    if len(np.where(sub_after==2)[0])==1:
-
-        #there is a least 2 point of bistability
-        if np.any(np.where(sub_after>2)[0] - np.where(sub_after==2)[0] >2):
-
-            #if oscillation finish by hopf, it should have only one saddle node after
-            i2= np.where(sub_after==3)[0]
-            if len(i2)>0 :
-                if np.sum(sub_after[i2[0]+1:]) == 1 :    
-                    ACDC_index.append(hopf_index[0][i])
-                    if np.sum(sub_before) == 0 :
-                        ACDC_onlyHopf_index.append(hopf_index[0][i])
-            #if finish by homoclinic
-            else :
-                ACDC_index.append(hopf_index[0][i])
-                if np.sum(sub_before) == 0 :
-                        ACDC_onlyHopf_index.append(hopf_index[0][i])
-
-
-
-
+ACDC_onlyHopf_index, ACDC_index = ACDC_select(bifutr)
 p, pdf= load(n,filename,meq.parlist)
+i=107
+d1=meq.distance(ARA,p[i],totaltime=500)
+d2=meq.distance2(ARA,p[i],totaltime=500,trr=400)
 
-bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclike_onlyhopf')
-bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclike')
+#print(ACDC_onlyHopf_index)
+print(d1,d2)
+
+ARA=np.logspace(-8.,-2.,10,base=10)
+
+bifurcation_Xplot_test(ARA,n,filename,p[i])
+
+#bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclike_onlyhopf')
+#bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclike')
+
 
 '''
 index=np.where(bifutr[:,25:]==2) #sadle to osc at end
