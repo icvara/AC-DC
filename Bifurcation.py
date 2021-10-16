@@ -15,12 +15,12 @@ import time
 from functools import partial
 
 
-filename="ACDC_ARApar_1"
+filename="ACDC_X_2ind_bist"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
-n=['final']
+n=['7']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
@@ -637,33 +637,29 @@ if os.path.isdir(filename+'/bifurcation') is False: ## if 'smc' folder does not 
   os.mkdir(filename+'/bifurcation') ## create it, the output will go there
 
 
-n='final'
+n=n[0]
 ARAlen=50
-ARAlen=10
+#ARAlen=10
 
 #ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
 ARA=np.logspace(-8.,-2.,ARAlen,base=10)
 
-#runBifurcations('final',filename,ARAlen=50)
+runBifurcations(n,filename,ARAlen=50)
 
-#n="2"
+
 
 pdf,bifutr = fulldf(n,filename)
 ACDC_onlyHopf_index, ACDC_index = ACDC_select(bifutr)
 p, pdf= load(n,filename,meq.parlist)
-i=107
-d1=meq.distance(ARA,p[i],totaltime=500)
-d2=meq.distance2(ARA,p[i],totaltime=500,trr=400)
 
-#print(ACDC_onlyHopf_index)
-print(d1,d2)
 
-ARA=np.logspace(-8.,-2.,10,base=10)
 
-bifurcation_Xplot_test(ARA,n,filename,p[i])
 
-#bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclike_onlyhopf')
-#bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclike')
+
+#bifurcation_Xplot_test(ARA,n,filename,p[i])
+
+bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclike_onlyhopf')
+bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclike')
 
 
 '''

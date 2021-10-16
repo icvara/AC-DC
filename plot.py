@@ -15,9 +15,9 @@ import time
 from functools import partial
 
 
-filename="ACDC_ARApar_2"
+filename="ACDC_X_2ind_bist"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
-n=['final']
+n=['7']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)

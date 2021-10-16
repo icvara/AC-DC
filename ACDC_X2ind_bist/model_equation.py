@@ -1,6 +1,7 @@
 
 ## equation for X only with more defined range for ara par
 ## with reduced concentration where distance are checked
+## with new distance equation with bistability asked
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -13,7 +14,7 @@ from scipy.optimize import brentq
 
 
 #par for abc_smc
-initdist=20.
+initdist=10.
 finaldist=1.0
 priot_label=None
 dtt=0.1
@@ -86,84 +87,6 @@ def Integration(Xi,Yi,Zi, totaltime, dt, ch , pars ):
     return X,Y,Z
 
 
-def distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
-
-    X,Y,Z = model(x,pars,totaltime,dt) #can win time if I only calcule the point I used
-    
-    # transient time / dt
-    transient = int(trr/dt)
- 
-    #range where oscillation is expected
-    oscillation_ara=[3,6]
-    
-    A=X #default
-    if N== "X":
-      A=X
-    if N== "Y":
-      A=Y
-    if N== "Z":
-      A=Z    
-    d_final=0
-        
-    for i in range(0,len(x)):
-    
-             # for local maxima
-             max_list=argrelextrema(A[transient:,i], np.greater)
-             maxValues=A[transient:,i][max_list]
-             # for local minima
-             min_list=argrelextrema(A[transient:,i], np.less)
-             minValues=A[transient:,i][min_list]
-             d=0
-     
-     
-             if i>oscillation_ara[0] and i<oscillation_ara[1]:           
-                
-                 if len(maxValues)>0 and len(maxValues)<2 and len(minValues)<2:
-                     d= 1/len(maxValues) + 1
-                
-                 if len(maxValues)>=3 and len(minValues)>=3:  #if there is more than one peak
-                    # print("max: " + str(len(maxValues)) + "   min:" + str(len(minValues)))
-     
-                     #here the distance is only calculated on the last two peaks
-                     #d2=abs((maxValues[-1]-minValues[-1]) - (maxValues[-2]-minValues[-2]))/(maxValues[-2]-minValues[-2])  #maybe issue still here ? 
-                     #d3=2*(minValues[-1])/(minValues[-1]+maxValues[-1]) #Amplitude of oscillation
-                     
-                     d2=abs((maxValues[-2]-minValues[-2]) - (maxValues[-3]-minValues[-3]))/(maxValues[-2]-minValues[-2])  #maybe issue still here ? 
-                     d3=2*(minValues[-2])/(minValues[-2]+maxValues[-2]) #Amplitude of oscillation
-                     d= d2+d3
-     
-                 else:
-                     d=10 # excluded all the one without oscillation 
-                     #d=abs(max(X[transient:,i])-max(X[transient:,(i+1)]))/max(X[transient:,i])
-                     #this number can be tuned to help the algorythm to find good parameter....
-                 #d=0 #v22 DC only
-                 
-             if i==0 or i==9:  #notice than 2 inducer concentration are not precised here. no leave some place at transition dynamics
-                 d1=  len(minValues)/(1+len(minValues)) # v14,21 with len(minValues)/(1+len(minValues)) #v15 10*len(minValues)/(1+len(minValues))
-                 d2=  2*(max(A[transient:,i])-min(A[transient:,i]))/(max(A[transient:,i])+min(A[transient:,i]))
-                 d= d1+d2
-                 #d= 0 #v20 try to have repressilator
-                
-     
-                 
-             #if i==oscillation_ara[0] or i==oscillation_ara[1]:
-             #else: 
-                 #d=0
-            # print(d)
-             d_final=d_final+d
-        
-    
-   # d= 10*A[-1,0]/(A[-1,-1]+A[-1,0]) #try to valorise increase behaviour compare to dead one
-   # print("diff   ", d)
-    d_final=d_final+d
-    
-    if N=="ALL":
-      dy=distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N="Y")
-      dz=distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N="Z")
-      d_final=d_final+dy+dz
-        
-    return d_final
-
 
 
 def select_model(N,ara,pars,totaltime,dt,init):
@@ -213,7 +136,7 @@ def oscillation_distance(A,transient):
 
         return d
 
-def distance2(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
+def distance(x,pars,totaltime=tt, dt=dtt,trr=tr,N=node):
 
     X,Y,Z = model(x,pars,totaltime,dt) #can win time if I only calcule the point I used
     ss = findss2(x,pars)

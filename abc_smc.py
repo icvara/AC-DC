@@ -15,8 +15,8 @@ import time
 
 
 
-version="ACDC_ARApar_2"
-pl= None #prior_label=
+version="ACDC_X_1ind_bist"
+pl= 9 #prior_label=
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+version+'/')
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+version)
 import model_equation

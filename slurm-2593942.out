@@ -1,0 +1,50 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=2869555
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=1
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna003
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna003
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna003
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=1
+SLURM_TOPOLOGY_ADDR=core.edge1.dna003
+SLURM_WORKING_CLUSTER=curnagl:admin1:6817:9216:109
+SLURM_JOB_NAME=sbatch_bifurcation.sh
+SLURM_JOBID=2593942
+SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-normal
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=1
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=login.curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=2593942
+SLURM_LOCALID=0
+no limit cycle: probably encounter stable point at 0.00019306977288832496 arabinose at p3
+Traceback (most recent call last):
+  File "Bifurcation.py", line 651, in <module>
+    pdf,bifutr = fulldf(n,filename)
+  File "Bifurcation.py", line 593, in fulldf
+    maxst,cbifu,bifutr=loadBifurcation('final',filename)
+  File "Bifurcation.py", line 71, in loadBifurcation
+    output1= np.loadtxt(path1)
+  File "/users/ibarbier/myfirstvenv/lib64/python3.6/site-packages/numpy/lib/npyio.py", line 961, in loadtxt
+    fh = np.lib._datasource.open(fname, 'rt', encoding=encoding)
+  File "/users/ibarbier/myfirstvenv/lib64/python3.6/site-packages/numpy/lib/_datasource.py", line 195, in open
+    return ds.open(path, mode, encoding=encoding, newline=newline)
+  File "/users/ibarbier/myfirstvenv/lib64/python3.6/site-packages/numpy/lib/_datasource.py", line 535, in open
+    raise IOError("%s not found." % path)
+OSError: ACDC_X2ind_bist/bifurcation/0_finalmax_stability.out not found.
