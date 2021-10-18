@@ -161,12 +161,12 @@ def bifurcation_Xplot_test(ARA,n,filename,p,c):
         s,eig,un,st,os,hc,M,m=calculateALL2(ARA,p,dummy=0) 
         #plt.tight_layout()
         for i in np.arange(0,un.shape[1]):
-            plt.plot(ARA,un[:,i,0],'--',c='orange',linewidth=2)
-            plt.plot(ARA,st[:,i,0],'-r',linewidth=2)
-            plt.plot(ARA,os[:,i,0],'--b',linewidth=2)
-            plt.plot(ARA,hc[:,i,0],'--g',linewidth=2)
-            plt.plot(ARA,M[:,i,0],'-b',linewidth=2)
-            plt.plot(ARA,m[:,i,0],'-b',linewidth=2)
+            plt.plot(ARA,un[:,i,0],'--o',c='orange',linewidth=2)
+            plt.plot(ARA,st[:,i,0],'-or',linewidth=2)
+            plt.plot(ARA,os[:,i,0],'--ob',linewidth=2)
+            plt.plot(ARA,hc[:,i,0],'--og',linewidth=2)
+            plt.plot(ARA,M[:,i,0],'-ob',linewidth=2)
+            plt.plot(ARA,m[:,i,0],'-ob',linewidth=2)
             plt.fill_between(ARA,M[:,i,0],m[:,i,0],alpha=0.2,facecolor='blue')
         plt.tick_params(axis='both', which='major')
         plt.yscale("log")
@@ -650,18 +650,42 @@ ARA=np.logspace(-8.,-2.,ARAlen,base=10)
 #runBifurcations(n,filename,ARAlen=50)
 
 
-
 pdf,bifutr = fulldf(n,filename)
 ACDC_onlyHopf_index, ACDC_index = ACDC_select(bifutr)
 p, pdf= load(n,filename,meq.parlist)
 
 
-i=0
+par=p[ACDC_onlyHopf_index[29]]
+ai=20
+delta=10e-10 #perturbation from ss
+#ss=meq.findss2(ARA[ai],pars_to_dict(par)) 
+#print(ss)
+X,Y,Z = meq.model(ARA,par,totaltime=120,init=[0.2,0,0])
 
-for i in [0,250,500,750,999]:
-    bifurcation_Xplot_test(ARA,n,filename,p[i],str(i))
 
-bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclike_onlyhopf')
+for ai in np.arange(0,len(ARA)):
+
+    maxP,minP = getpeaks(X[:,ai],20)
+    if len(maxP)>3:
+        i1= np.argwhere(X[:,ai]==maxP[-2])
+        i2= np.argwhere(X[:,ai]==maxP[-1])
+        periode=i2-i1
+        print(ai,periode)
+
+plt.plot(X[200:,14])
+plt.xlabel("time")
+plt.show()
+
+plt.plot(X[200:,28])
+plt.xlabel("time")
+plt.show()
+
+#for i in [0,250,500,750,999]:
+#bifurcation_Xplot_test(ARA,n,filename,p[314],'test')
+
+
+
+#bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclike_onlyhopf')
 #bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclike')
 
 
