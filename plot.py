@@ -15,14 +15,17 @@ import time
 from functools import partial
 
 
-filename="ACDC_X_2ind_bist"
-n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
-n=['7']
+filename="ACDC_ARApar_1"
+filename2="ACDC_ARApar_2"
+
+n=['final','1','2','3','4','5','6','7','8','9','10','11','12']
+#n=['7']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
-  
+sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename2)
+import model_equation as meq2 
 parlist=meq.parlist
 
 
@@ -34,7 +37,7 @@ def load(number= n,filename=filename,parlist=parlist):
     namelist=[]
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
-        
+    
     path = filename+'/smc/pars_' + number + '.out'
     dist_path = filename+'/smc/distances_' + number + '.out'
 
@@ -51,14 +54,16 @@ def load(number= n,filename=filename,parlist=parlist):
         p0=[]
         for n in namelist:
           p0.append(p_0[n].tolist()[0])
-   
-        p0=pars_to_dict(p0)
+        p0=pars_to_dict(p0,parlist)
         p.append(p0)
 
     
     return p, df 
 
-def pars_to_dict(pars):
+
+
+
+def pars_to_dict(pars,parlist):
 ### This function is not necessary, but it makes the code a bit easier to read,
 ### it transforms an array of pars e.g. p[0],p[1],p[2] into a
 ### named dictionary e.g. p['k0'],p['B'],p['n'],p['x0']
@@ -82,13 +87,21 @@ def plot(ARA,p,name,nb,tt=120):
 
         plt.subplot(len(p),3,(1+i*3))
         sns.heatmap(df_X, cmap="Reds", norm=LogNorm())
+        plt.xticks([])
+        plt.ylabel('time')
         plt.subplot(len(p),3,(2+i*3))
         sns.heatmap(df_Y, cmap ='Blues', norm=LogNorm())
+        plt.xticks([])
+        plt.yticks([])
         plt.subplot(len(p),3,(3+i*3))
         sns.heatmap(df_Z, cmap ='Greens', norm=LogNorm())
+        plt.xticks([])
+        plt.yticks([])
 
-    plt.savefig(name+"/plot/"+nb+'_heatmap'+'.pdf', bbox_inches='tight')
-    #plt.savefig(name+"/plot/"+nb+'_heatmap'+'.png', bbox_inches='tight')
+
+
+    #plt.savefig(name+"/plot/"+nb+'_heatmap'+'.pdf', bbox_inches='tight')
+    plt.savefig(name+"/plot/heatmap/"+nb+'_heatmap'+'.png', bbox_inches='tight')
     #plt.show()
     plt.close()
 
@@ -113,7 +126,7 @@ def plotALLX(ARA,p,name,nb):
 
 def par_plot(df,name,nb,parlist,namelist):
     #plt.plot(df['K_ARAX'],df['K_ARAY'],'ro')
-    fonts=2
+    fonts=5
  
     for i,par1 in enumerate(namelist):
         for j,par2 in enumerate(namelist):
@@ -122,7 +135,7 @@ def par_plot(df,name,nb,parlist,namelist):
                 plt.hist(df[par1])
                 plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
             else:
-                plt.scatter(df[par1],df[par2], c=df['dist'], s=0.001, cmap='viridis')# vmin=mindist, vmax=maxdist)
+                plt.scatter(df[par1],df[par2], c=df['dist'], s=0.1, cmap='viridis')# vmin=mindist, vmax=maxdist)
                 plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
                 plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
             if i > 0 and j < len(namelist)-1 :
@@ -137,12 +150,14 @@ def par_plot(df,name,nb,parlist,namelist):
                     plt.yticks([])
                     plt.xlabel(par1,fontsize=fonts)
                     plt.xticks(fontsize=fonts)
-                else:
+                if i==0 and j==len(namelist)-1:
                     plt.ylabel(par2,fontsize=fonts)
                     plt.xlabel(par1,fontsize=fonts)
                     plt.xticks(fontsize=fonts)
-                    plt.yticks(fontsize=4,rotation=90)                 
-    plt.savefig(name+"/plot/"+nb+'_par_plot.pdf', bbox_inches='tight')
+                    plt.yticks(fontsize=fonts,rotation=90)                 
+  #  plt.savefig(name+"/plot/"+nb+'_par_plot.pdf', bbox_inches='tight')
+    plt.savefig(name+"/plot/par/"+nb+'_par_plot.png', bbox_inches='tight', dpi=300)
+
     plt.close()
     #plt.show()
     
@@ -195,16 +210,8 @@ def plot_alltime(n,filename,parlist):
 
 
 def par_plot2(df,df2,name,nb,parlist,namelist):
-    a = df2[df2['up']>0]
-    a=a[a['down']==0]
-    b = df2[df2['down']>0 ]
-    b=b[b['up']==0]
-    c = df2[df2['idk']>0]
-    d = df2[df2['down']>0 ]
-    d=d[d['up']>0]
-    #plot the parameter with the slected parameter on top of it
-    #plt.plot(df['K_ARAX'],df['K_ARAY'],'ro')
-    fonts=2
+
+    fonts=6
     
     for i,par1 in enumerate(namelist):
         for j,par2 in enumerate(namelist):
@@ -213,16 +220,16 @@ def par_plot2(df,df2,name,nb,parlist,namelist):
                 sns.kdeplot(df[par1],color='black',bw_adjust=.8,linewidth=0.5)
                 #sns.kdeplot(c[par1],color='gray',bw_adjust=.8,linewidth=0.5)
                 #sns.kdeplot(a[par1],color='green', bw_adjust=.8,linewidth=0.5)
-                sns.kdeplot(b[par1],color='red',bw_adjust=.8,linewidth=0.5)
+                sns.kdeplot(df2[par1],color='red',bw_adjust=.8,linewidth=0.5)
                 #sns.kdeplot(d[par1],color='orange',bw_adjust=.8,linewidth=0.5)
                 plt.ylabel("")
                 plt.xlabel("")
                 plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
             else:
-                plt.scatter(df[par1],df[par2], c='black', s=0.0001)# vmin=mindist, vmax=maxdist)
+                plt.scatter(df[par1],df[par2], c='black', s=0.01)# vmin=mindist, vmax=maxdist)
                # plt.scatter(c[par1],c[par2], color='black', s=0.0001)
                # plt.scatter(a[par1],a[par2], color='green', s=0.0001)
-                plt.scatter(b[par1],b[par2], color='red', s=0.0001)                
+                plt.scatter(df2[par1],df2[par2], color='red', s=0.01)                
                 #plt.scatter(d[par1],d[par2], color='orange', s=0.0001)
                 #plt.scatter(df2[par1],df2[par2], c='blue', s=0.001)
                 plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
@@ -244,7 +251,7 @@ def par_plot2(df,df2,name,nb,parlist,namelist):
                     plt.xlabel(par1,fontsize=fonts)
                     plt.xticks(fontsize=fonts)
                     plt.yticks(fontsize=4,rotation=90)                 
-    plt.savefig(name+"/"+nb+'_selected_par_plot.pdf', bbox_inches='tight')
+    plt.savefig(name+"/"+nb+'_compar_plot.png', bbox_inches='tight',dpi=300)
     plt.close()
     #plt.show()
 
@@ -291,15 +298,40 @@ if __name__ == "__main__":
         os.mkdir(filename+'/plot') ## create it, the output will go there
     
     ARA=meq.ARA
-   # ARA=np.logspace(-4.5,-2.,20,base=10)
+    ARA=np.logspace(-8,-2.,200,base=10)
+
+
    # plot_alltime(n,filename,meq.parlist)
+    parlist=meq2.parlist
+
     namelist=[]
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
     
+
+    parlist=np.array(parlist)
+    parlist2=parlist[[0,1,2,3,4,5,6,9,10,11,12,13,14]]
+    
     
     #splitted_parplot(n[0],filename,parlist)
-    
+    n=['final']
+    p, pdf= load(n[0],filename,meq.parlist)
+    df=pdf
+
+
+
+    plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,"moretime",tt=500)
+    '''
+    p, pdf= load(n[0],filename2,parlist2)
+    df2=pdf
+    namelist=[]
+    for i,par in enumerate(parlist2):
+        namelist.append(parlist2[i]['name'])
+
+    par_plot2(df,df2,filename,n[0],parlist2,namelist)
+    '''
+    '''
+   # ARA=ARA[[0,4,5,9]]
     for i in n:
       p, pdf= load(i,filename,meq.parlist)
     
@@ -307,7 +339,7 @@ if __name__ == "__main__":
       par_plot(pdf,filename,i,meq.parlist,namelist)
 
     #bifurcation_plot('final',filename,p[1])
-    
+    '''
     '''
     p, pdf= load('final',filename,meq.parlist)
     index=[]

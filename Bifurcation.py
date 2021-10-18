@@ -15,12 +15,12 @@ import time
 from functools import partial
 
 
-filename="ACDC_X_2ind_bist"
+filename="ACDC_ARApar_2"
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
-n=['7']
+n=['final']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
-#sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
+sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
@@ -155,25 +155,26 @@ def bifurcation_Xplot(ARA,n,filename,pars,c):
    # plt.show()
 
 
-def bifurcation_Xplot_test(ARA,n,filename,p):
+def bifurcation_Xplot_test(ARA,n,filename,p,c):
 
 
         s,eig,un,st,os,hc,M,m=calculateALL2(ARA,p,dummy=0) 
         #plt.tight_layout()
         for i in np.arange(0,un.shape[1]):
-            plt.plot(ARA,un[:,i,0],'--o',c='orange',linewidth=1)
-            plt.plot(ARA,st[:,i,0],'-or',linewidth=1)
-            plt.plot(ARA,os[:,i,0],'--ob',linewidth=1)
-            plt.plot(ARA,hc[:,i,0],'--og',linewidth=1)
-            plt.plot(ARA,M[:,i,0],'-ob',linewidth=1)
-            plt.plot(ARA,m[:,i,0],'-ob',linewidth=1)
+            plt.plot(ARA,un[:,i,0],'--',c='orange',linewidth=2)
+            plt.plot(ARA,st[:,i,0],'-r',linewidth=2)
+            plt.plot(ARA,os[:,i,0],'--b',linewidth=2)
+            plt.plot(ARA,hc[:,i,0],'--g',linewidth=2)
+            plt.plot(ARA,M[:,i,0],'-b',linewidth=2)
+            plt.plot(ARA,m[:,i,0],'-b',linewidth=2)
             plt.fill_between(ARA,M[:,i,0],m[:,i,0],alpha=0.2,facecolor='blue')
         plt.tick_params(axis='both', which='major')
         plt.yscale("log")
         plt.xscale("log")
- #   plt.savefig(filename+"/bifurcation/"+c+'_Bifurcation.pdf', bbox_inches='tight')
- #   plt.close()
-        plt.show()
+        plt.xlabel("ARA")
+        plt.savefig(filename+"/bifurcation/"+c+'_Bifurcation.png', bbox_inches='tight')
+        plt.close()
+   #     plt.show()
 
 
 def par_plot(df,name,nb,parlist,namelist):
@@ -541,30 +542,30 @@ def bifplot_parplot_sub(p,pdf,index,filename,n,figname):
     df=pdf
     df2=pdf.iloc[index]
     
-    bifurcation_Xplot(ARA,n,filename,pars,c=figname)        
+   # bifurcation_Xplot(ARA,n,filename,pars,c=figname)        
     
     namelist=[]
     for i,par in enumerate(meq.parlist):
            namelist.append(parlist[i]['name'])
     namelist=np.array(namelist)        
     
-    fonts=2
+    fonts=5
     for i,par1 in enumerate(namelist):
             for j,par2 in enumerate(namelist):
                 plt.subplot(len(namelist),len(namelist), i+j*len(namelist)+1)
                 if i == j :
                     #plt.hist(df[par1])
     
-                    sns.kdeplot(df[par1],bw_adjust=.8,label=1,linewidth=0.3)
-                    sns.kdeplot(df2[par1],bw_adjust=.8,label=2,linewidth=0.3)
+                    sns.kdeplot(df[par1],bw_adjust=.8,label=1,linewidth=0.3,c='black')
+                    sns.kdeplot(df2[par1],bw_adjust=.8,label=2,linewidth=0.3,c='green')
                     plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
                     plt.xticks([])
                     plt.yticks([])
                     plt.ylabel('')
                     plt.xlabel('')
                 else:
-                    plt.scatter(df[par1],df[par2], c='black', s=0.001)# vmin=mindist, vmax=maxdist)
-                    plt.scatter(df2[par1],df2[par2], c='green', s=0.001)# vmin=mindist, vmax=maxdist)
+                    plt.scatter(df[par1],df[par2], c='black', s=0.1)# vmin=mindist, vmax=maxdist)
+                    plt.scatter(df2[par1],df2[par2], c='green', s=0.1)# vmin=mindist, vmax=maxdist)
     
                     plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
                     plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
@@ -585,7 +586,9 @@ def bifplot_parplot_sub(p,pdf,index,filename,n,figname):
                         plt.xlabel(par1,fontsize=fonts)
                         plt.xticks(fontsize=fonts)
                         plt.yticks(fontsize=4,rotation=90)                 
-    plt.savefig(filename+"/bifurcation/"+figname+'_par_plot.pdf', bbox_inches='tight')
+    #plt.savefig(filename+"/bifurcation/"+figname+'_par_plot.pdf', bbox_inches='tight')
+    plt.savefig(filename+"/bifurcation/"+figname+'_par_plot.png', bbox_inches='tight',dpi=300)
+
     plt.close()
 
 def fulldf(n,filename):
@@ -644,7 +647,7 @@ ARAlen=50
 #ARA=np.logspace(-4.5,-2.,ARAlen,base=10)
 ARA=np.logspace(-8.,-2.,ARAlen,base=10)
 
-runBifurcations(n,filename,ARAlen=50)
+#runBifurcations(n,filename,ARAlen=50)
 
 
 
@@ -653,13 +656,13 @@ ACDC_onlyHopf_index, ACDC_index = ACDC_select(bifutr)
 p, pdf= load(n,filename,meq.parlist)
 
 
+i=0
 
-
-
-#bifurcation_Xplot_test(ARA,n,filename,p[i])
+for i in [0,250,500,750,999]:
+    bifurcation_Xplot_test(ARA,n,filename,p[i],str(i))
 
 bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclike_onlyhopf')
-bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclike')
+#bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclike')
 
 
 '''
