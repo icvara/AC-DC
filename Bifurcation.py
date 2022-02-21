@@ -660,8 +660,19 @@ ai=20
 delta=10e-10 #perturbation from ss
 #ss=meq.findss2(ARA[ai],pars_to_dict(par)) 
 #print(ss)
-X,Y,Z = meq.model(ARA,par,totaltime=120,init=[0.2,0,0])
+X,Y,Z = meq.model(ARA,par,totaltime=50,init=[0.2,0,0])
+ai=20
+X2,Y2,Z2 = meq.model(ARA,par,totaltime=30,init=[X[-2,ai],Y[-2,ai],Z[-2,ai]])
+ai=14
+X3,Y3,Z3 = meq.model(ARA,par,totaltime=30,init=[X2[-2,ai],Y2[-2,ai],Z2[-2,ai]])
+ai=20
+X4,Y4,Z4 = meq.model(ARA,par,totaltime=30,init=[X3[-2,ai],Y3[-2,ai],Z3[-2,ai]])
 
+values=X[200:,20].tolist() + X2[:,14].tolist() +X3[:,20].tolist()+X4[:,14].tolist()
+
+print(len(values))
+plt.plot(values)
+plt.show()
 
 for ai in np.arange(0,len(ARA)):
 
