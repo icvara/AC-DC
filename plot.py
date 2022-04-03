@@ -15,10 +15,10 @@ import time
 from functools import partial
 
 
-filename="ACDC_ARApar_1"
+filename="ACDC_X2_Kara2"
 filename2="ACDC_ARApar_2"
 
-n=['final','1','2','3','4','5','6','7','8','9','10','11','12']
+n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18']
 #n=['7']
 #
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
@@ -302,25 +302,26 @@ if __name__ == "__main__":
 
 
    # plot_alltime(n,filename,meq.parlist)
-    parlist=meq2.parlist
+    
+    parlist=meq.parlist
 
     namelist=[]
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
     
-
+    '''
     parlist=np.array(parlist)
-    parlist2=parlist[[0,1,2,3,4,5,6,9,10,11,12,13,14]]
+#    parlist2=parlist[[0,1,2,3,4,5,6,9,10,11,12,13,14]]
     
     
     #splitted_parplot(n[0],filename,parlist)
-    n=['final']
-    p, pdf= load(n[0],filename,meq.parlist)
-    df=pdf
+    #n=['final']
+    #p, pdf= load(n[0],filename,meq.parlist)
+    #df=pdf
 
+    '''
 
-
-    plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,"moretime",tt=500)
+    #plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,"moretime",tt=500)
     '''
     p, pdf= load(n[0],filename2,parlist2)
     df2=pdf
@@ -330,16 +331,15 @@ if __name__ == "__main__":
 
     par_plot2(df,df2,filename,n[0],parlist2,namelist)
     '''
-    '''
+    
    # ARA=ARA[[0,4,5,9]]
     for i in n:
-      p, pdf= load(i,filename,meq.parlist)
-    
+      p, pdf= load(i,filename,meq.parlist)    
       plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,i)
       par_plot(pdf,filename,i,meq.parlist,namelist)
 
     #bifurcation_plot('final',filename,p[1])
-    '''
+    
     '''
     p, pdf= load('final',filename,meq.parlist)
     index=[]
