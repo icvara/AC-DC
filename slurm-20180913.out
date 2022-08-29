@@ -1,0 +1,73 @@
+SLURM_MEM_PER_CPU=8192
+SLURM_NODEID=0
+SLURM_TASK_PID=3327843
+SLURM_PRIO_PROCESS=0
+SLURM_SUBMIT_DIR=/users/ibarbier/AC-DC
+SLURM_CPUS_PER_TASK=40
+SLURM_PROCID=0
+SLURM_JOB_GID=11000
+SLURMD_NODENAME=dna080
+SLURM_TASKS_PER_NODE=1
+SLURM_NNODES=1
+SLURM_JOB_NODELIST=dna080
+SLURM_CLUSTER_NAME=curnagl
+SLURM_NODELIST=dna080
+SLURM_NTASKS=1
+SLURM_JOB_CPUS_PER_NODE=40
+SLURM_TOPOLOGY_ADDR=core.edge4.dna080
+SLURM_WORKING_CLUSTER=curnagl:dcsr-cct-admin01:6817:9728:109
+SLURM_JOB_NAME=sbatch_icvara.sh
+SLURM_JOBID=20180913
+SLURM_CONF=/var/spool/slurm/d/conf-cache/slurm.conf
+SLURM_NODE_ALIASES=(null)
+SLURM_JOB_QOS=cpu-long
+SLURM_TOPOLOGY_ADDR_PATTERN=switch.switch.node
+SLURM_CPUS_ON_NODE=40
+SLURM_JOB_NUM_NODES=1
+SLURM_JOB_UID=69294
+SLURM_JOB_PARTITION=cpu
+SLURM_SCRIPT_CONTEXT=prolog_task
+SLURM_JOB_USER=ibarbier
+SLURM_NPROCS=1
+SLURM_SUBMIT_HOST=curnagl
+SLURM_JOB_ACCOUNT=yschaerl_snsf_2017
+SLURM_GTIDS=0
+SLURM_JOB_ID=20180913
+SLURM_LOCALID=0
+SMC step with target distance: 40.0
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib64/python3.6/multiprocessing/pool.py", line 119, in worker
+    result = (True, func(*args, **kwds))
+  File "/usr/lib64/python3.6/multiprocessing/pool.py", line 44, in mapstar
+    return list(map(*args))
+  File "abc_smc.py", line 97, in GeneratePar
+    d = model_equation.distance(x_data,p)
+  File "/users/ibarbier/AC-DC/ACDC_X_1ind_new/model_equation.py", line 90, in distance
+    X,Y,Z = model(x,pars,totaltime,dt)
+  File "/users/ibarbier/AC-DC/ACDC_X_1ind_new/model_equation.py", line 168, in model
+    X,Y,Z = Integration(Xi,Yi,Zi,totaltime,dt,x,pars)
+  File "/users/ibarbier/AC-DC/ACDC_X_1ind_new/model_equation.py", line 74, in Integration
+    flow_x,flow_y,flow_z = Flow(Xi,Yi,Zi,ch,pars)
+  File "/users/ibarbier/AC-DC/ACDC_X_1ind_new/model_equation.py", line 53, in Flow
+    flow_x= 1 + (10**par['beta/alpha_X']-1)*(np.power(ARA,par['n_ARAX'])/( np.power(10**par['K_ARAX'],par['n_ARAX']) + np.power(ARA,par['n_ARAX'])))
+KeyError: 'beta/alpha_X'
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "abc_smc.py", line 247, in <module>
+    main(sys.argv[1:])
+  File "abc_smc.py", line 244, in main
+    Sequential_ABC(x_data, ncpus=40,initial_dist = initdist, final_dist =finaldist,prior_label = pl,Npars=5000, adaptative_kernel = False)
+  File "abc_smc.py", line 215, in Sequential_ABC
+    Npars = Npars, kernelfactor = kernelfactor)
+  File "abc_smc.py", line 150, in GeneratePars
+    iterable=range(Npars), chunksize=10)
+  File "/usr/lib64/python3.6/multiprocessing/pool.py", line 266, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+  File "/usr/lib64/python3.6/multiprocessing/pool.py", line 644, in get
+    raise self._value
+KeyError: 'beta/alpha_X'

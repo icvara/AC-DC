@@ -14,23 +14,27 @@ import multiprocessing
 import time
 from functools import partial
 
-
-filename="ACDC_ARApar_2"
-n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
+'''
+filename="ACDC_X21ind"
+#n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 n=['final']
+'''
 #
-sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
+#sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
+
+'''
+filename="ACDC_X2"
 sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
   
 parlist=meq.parlist
-
+'''
 
 ######################################################################33
 #########################################################################
 ###########################################################################
-
-def load(number= n,filename=filename,parlist=parlist):
+'''
+def load(number,filename,parlist):
     namelist=[]
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
@@ -57,9 +61,9 @@ def load(number= n,filename=filename,parlist=parlist):
 
     
     return p, df
-
-
-def loadBifurcation(number= n,filename=filename):
+'''
+'''
+def loadBifurcation(number,filename):
     index=['0','250','500','750']
     max_stability =np.array([])
     count_bifurcation =np.array([])
@@ -101,35 +105,6 @@ def pars_to_dict(pars):
      
 
 
-def bifurcation_plot(n,filename,pars):
-   # p,df= load(n,filename,parlist)
-    ARA=np.logspace(-4.5,-2.,200,base=10)
-    #ARA=np.logspace(-4.5,-2.,10,base=10)
-
-    for pi,p in enumerate(pars):
-        un,st,osc=calculateSS(ARA,p)
-        M,m=getlimitcycle(ARA,osc,p)
-        for i,col in enumerate(['r','b','g']):
-            plt.subplot(len(pars),3,i+1+3*pi)
-            plt.plot(ARA,un[:,:,i],'--'+col)
-            plt.plot(ARA,st[:,:,i],'-'+col)
-            plt.plot(ARA,osc[:,:,i],'--', c='black')
-
-            plt.plot(ARA,M[:,0,i],'-'+col,linewidth=1)
-            plt.plot(ARA,M[:,1,i],'-'+col,linewidth=1)
-            plt.plot(ARA,M[:,2,i],'-'+col,linewidth=1)
-            plt.plot(ARA,m[:,0,i],'-'+col,linewidth=1)
-            plt.plot(ARA,m[:,1,i],'-'+col,linewidth=1)
-            plt.plot(ARA,m[:,2,i],'-'+col,linewidth=1)
-            plt.fill_between(ARA,M[:,0,i],m[:,0,i],alpha=0.2,facecolor=col)
-            plt.fill_between(ARA,M[:,1,i],m[:,1,i],alpha=0.2,facecolor=col)
-            plt.fill_between(ARA,M[:,2,i],m[:,2,i],alpha=0.2,facecolor=col)
-            plt.yscale("log")
-            plt.xscale("log")
-    plt.show()
-    #plt.savefig(filename+"/plot/"+n+'_Bifurcation.pdf', bbox_inches='tight')
-    plt.close()
-
 def bifurcation_Xplot(ARA,n,filename,pars,c):
     sizex=round(np.sqrt(len(pars)))
     sizey=round(np.sqrt(len(pars))+0.5)
@@ -150,9 +125,9 @@ def bifurcation_Xplot(ARA,n,filename,pars,c):
         plt.tick_params(axis='both', which='major', labelsize=2)
         plt.yscale("log")
         plt.xscale("log")
-    plt.savefig(filename+"/bifurcation/"+c+'_Bifurcation.pdf', bbox_inches='tight')
-    plt.close()
-   # plt.show()
+    #plt.savefig(filename+"/bifurcation/"+c+'_Bifurcation.pdf', bbox_inches='tight')
+    #plt.close()
+    plt.show()
 
 
 def bifurcation_Xplot_test(ARA,n,filename,p,c):
@@ -211,9 +186,23 @@ def par_plot(df,name,nb,parlist,namelist):
     plt.savefig(name+"/bifurcation/"+nb+'_par_plot.pdf', bbox_inches='tight')
     plt.close()
     #plt.show()
+'''
 
 ##############################################3Bifurcation part 
 ################################################################################
+def getStability(e):
+    st= -1
+    if np.all(e.real!=0):
+        st=3
+        if np.all(e.real<0): #stable
+                st=1
+
+        if np.any(e.real>0): #unstable
+                   #check complex conjugate
+          if len(e.real) != len(set(e.real)):
+             if np.any(e.imag==0) and len(e.imag) != len(set(np.abs(e.imag))):
+                st=2
+    return st
 
 def getminmax(X,Y,Z,transient):
     M=np.ones(3)*np.nan
@@ -235,7 +224,7 @@ def getpeaks(X,transient):
 
     return maxValues, minValues
 
-def reachss(ssa,X,par,a):
+def reachss(ssa,X,par,a,meq):
     thr= 0.001
     out=False
 
@@ -251,7 +240,8 @@ def reachss(ssa,X,par,a):
     return out
 
 
-def limitcycle(ai,ss,ARA,init,par,dummy,X=[],Y=[],Z=[],transient=500,count=0):
+def limitcycle(ai,ss,ARA,init,par,dummy,meq,X=[],Y=[],Z=[],transient=500,count=0):
+
     threshold=0.01
     tt=200
     c=count
@@ -262,25 +252,25 @@ def limitcycle(ai,ss,ARA,init,par,dummy,X=[],Y=[],Z=[],transient=500,count=0):
     Y=np.append(Y,y)
     Z=np.append(Z,z)
 
-    M = m = np.nan
+    M = m = np.ones(3)*np.nan
 
     maxValues, minValues = getpeaks(X,transient)
 
     if len(minValues)>4 and len(maxValues)>4:
         maximaStability = abs((maxValues[-2]-minValues[-2])-(maxValues[-3]-minValues[-3]))/(maxValues[-3]-minValues[-3]) #didn't take -1 and -2 because, i feel like -1 is buggy sometimes...
         if maximaStability > threshold:
-            if reachss(ssa,X,par,ARA[ai])==False:
+            if reachss(ssa,X,par,ARA[ai],meq)==False:
                 #if we didn't reach the stability repeat the same for another 100 time until we reach it
-                initt=[X[-2],Y[-2],Z[-2]] #take the -2 instead of -1 because sometimes the -1 is 0 because of some badly scripted part somewhere
+                initt=[X[-3],Y[-3],Z[-3]] #take the -3 instead of -1 because sometimes the -1 is 0 because of some badly scripted part somewhere
                 c=c+1
                 if c<10:
                # if reachsteadystate(a,initt,par) == False:
-                    M,m = limitcycle(ai,ss,ARA,initt,par,dummy,X,Y,Z,count=c)            
+                    M,m = limitcycle(ai,ss,ARA,initt,par,dummy,meq,X,Y,Z,count=c)            
                 if c==10:
                         #here the issue comes probably from 1) strange peak 2)very long oscillation
                         #here I try to get rid of strange peak , with multiple maxima and minima by peak. for this I take the local maximun and min of each..
                         #the issue here is to create artefact bc in the condition doesn't specify this kind of behaviour
-
+                        print("some issue at {} ara")
                         maxValues2 = getpeaks(maxValues,0)[0]  
                         minValues2 = getpeaks(minValues,0)[1]
                         if len(minValues2)>4 and len(maxValues2)>4:
@@ -303,12 +293,12 @@ def limitcycle(ai,ss,ARA,init,par,dummy,X=[],Y=[],Z=[],transient=500,count=0):
          
     else:
        # print("no enough oscillation: " + str(len(minValues)))
-        if reachss(ssa,X,par,ARA[ai])==False:
+        if reachss(ssa,X,par,ARA[ai],meq)==False:
             #print("homoclinic")
             initt=[X[-2],Y[-2],Z[-2]]
             c=c+1
             if c<10:
-                M,m = limitcycle(ai,ss,ARA,initt,par,dummy,X,Y,Z,count=c)  
+                M,m = limitcycle(ai,ss,ARA,initt,par,dummy,meq,X,Y,Z,count=c)  
             if c==10: 
                 #very long oscillation?          
                 print("error in limit cycle ara = {}, p{}".format(ARA[ai],dummy))
@@ -320,6 +310,158 @@ def limitcycle(ai,ss,ARA,init,par,dummy,X=[],Y=[],Z=[],transient=500,count=0):
 
 
     return M,m
+
+def getIDstab(k):
+    st=-1
+    kstate=k[k>0]
+    if len(kstate)==1:
+        st=kstate
+
+    if len(kstate)>1:
+        if np.any(kstate==2):
+            st=5
+        else:
+            st=4
+    if len(kstate)>3:
+        st=12
+    return st
+
+
+
+def getBehaviorIndex(par,ARA,filename,meq):
+
+    '''
+    ACDC behavior is  stable state, hopf, oscil , homoclinic or hopf, stable state in aRA gardient
+
+    1: stable
+    2: oscil
+    3: unsatble
+
+    4:stable+stable
+    5:oscil + stable
+    12:tristability
+
+    #transition
+    stable(1) to bistable(4) , saddle : 3
+    stable(1) to oscilation(2) : hopf :1
+    stable(1) to osc+stable (5) : homoclinic :4     #will probably only happens is resolution is low
+    osc(2) to bistable(4) : hopf: 2  #possible went to homclinic before
+    osc (2) to osc+stavle(5) : saddle/homoclinic/ruben :  3 
+    osc+stable(5) to bistable (4) :  hopf?:  1 
+    '''
+    fk_oscil=[]
+    tri=[]
+    #homcl=[]
+    bi_low=[]
+    bi_high=[]
+    bi_both=[]
+    bi_cross=[]
+
+    other=[]
+    for i in np.arange(len(par)):
+        isOther=True
+        p=par[i]
+        ss=meq.findss2(ARA,p) 
+        A=meq.jacobianMatrix2(ARA,ss,p)
+        J=np.nan_to_num(A)
+        eigvals, eigvecs =np.linalg.eig(J)
+        stability_array=np.apply_along_axis(getStability, 2, eigvals)
+        stateID=np.apply_along_axis(getIDstab,1,stability_array)
+        bifuID= np.abs(stateID[0:-1]-stateID[1:])
+
+       # acdc=[]
+
+        if len(stateID[stateID==2])<1 and len(stateID[stateID==5])<1  and len(stateID[stateID==12])<1:
+            #print(len(stateID[stateID==2]))
+            isOther=False
+            fk_oscil.append(i)
+
+        if np.any(stateID==12):
+            isOther=False
+
+            tri.append(i)
+
+        if np.any(stateID==5):
+            isOther=False
+
+            c=0
+            isbist=False
+            bist=[]
+            #check limit cycle
+            idx=np.where(stability_array==2)
+            idx5=np.argwhere(stateID==5)
+
+            for li,ll in enumerate(idx5):
+                aidx = ll[0]
+                sidx = idx[1][idx[0]==aidx]
+                ss=meq.findss2(ARA,p) 
+                sso=ss[aidx,sidx][0]
+                init=sso+1e-10
+                l,h = limitcycle(aidx,ss,ARA,init,p,i,meq)
+                if np.any(np.isnan(l)==False):
+                    bist.append(aidx)
+                    isbist=True
+            if isbist:
+                if min(bist)< len(ARA)/2 and len(ARA)/2> max(bist):
+                    bi_low.append(i)
+
+                elif max(bist)> len(ARA)/2 and len(ARA)/2 < min(bist):
+                    bi_high.append(i)
+                elif max(bist)> len(ARA)/2 and len(ARA)/2 > min(bist):
+                    bi_both.append(i)
+                else:
+                    bi_cross.append(i)
+            else:
+                other.append(i)
+
+
+        if isOther:
+                other.append(i)
+
+    if os.path.isdir(filename+"/bifurcation/" ) is False: 
+        os.mkdir(filename+"/bifurcation/") 
+
+    np.savetxt(filename+"/bifurcation/"+'fake_oscilation.out', fk_oscil)
+    np.savetxt(filename+"/bifurcation/"+'bistability_low.out', bi_low)
+    np.savetxt(filename+"/bifurcation/"+'bistability_high.out', bi_high)
+    np.savetxt(filename+"/bifurcation/"+'bistability_both.out', bi_both)
+    np.savetxt(filename+"/bifurcation/"+'bistability_cross.out', bi_cross)
+    np.savetxt(filename+"/bifurcation/"+'tristability.out', tri)
+    np.savetxt(filename+"/bifurcation/"+'other.out', other)
+
+    
+    return fk_oscil,bi_low,bi_high,bi_both,bi_cross,tri,other
+
+
+
+def loadBifurcation(filename):
+    f = l = h = b = c = t = o = 0
+
+    f= np.loadtxt(filename+'/bifurcation/' + 'fake_oscilation.out')
+    l= np.loadtxt(filename+'/bifurcation/' + 'bistability_low.out')
+    h= np.loadtxt(filename+'/bifurcation/' + 'bistability_high.out')
+    b= np.loadtxt(filename+'/bifurcation/' + 'bistability_both.out')
+    c= np.loadtxt(filename+'/bifurcation/' + 'bistability_cross.out')
+    t= np.loadtxt(filename+'/bifurcation/' + 'tristability.out')
+    o= np.loadtxt(filename+'/bifurcation/' + 'other.out')
+
+
+    return f,l,h,b,c,t,o
+
+
+
+
+
+
+
+
+
+
+
+
+
+##########################
+#############################
 
 def getEigen(ARA,par,s):
     A=meq.jacobianMatrix(ARA,s[0],s[1],s[2],par)
@@ -636,6 +778,7 @@ def ACDC_select(bifutr):
 
 
 ################################BUILDING AREA
+'''
 if os.path.isdir(filename+'/bifurcation') is False: ## if 'smc' folder does not exist:
   os.mkdir(filename+'/bifurcation') ## create it, the output will go there
 
@@ -655,71 +798,15 @@ ACDC_onlyHopf_index, ACDC_index = ACDC_select(bifutr)
 p, pdf= load(n,filename,meq.parlist)
 
 
-par=p[ACDC_onlyHopf_index[29]]
-ai=20
-delta=10e-10 #perturbation from ss
-#ss=meq.findss2(ARA[ai],pars_to_dict(par)) 
-#print(ss)
-X,Y,Z = meq.model(ARA,par,totaltime=50,init=[0.2,0,0])
-ai=20
-X2,Y2,Z2 = meq.model(ARA,par,totaltime=30,init=[X[-2,ai],Y[-2,ai],Z[-2,ai]])
-ai=14
-X3,Y3,Z3 = meq.model(ARA,par,totaltime=30,init=[X2[-2,ai],Y2[-2,ai],Z2[-2,ai]])
-ai=20
-X4,Y4,Z4 = meq.model(ARA,par,totaltime=30,init=[X3[-2,ai],Y3[-2,ai],Z3[-2,ai]])
-
-values=X[200:,20].tolist() + X2[:,14].tolist() +X3[:,20].tolist()+X4[:,14].tolist()
-
-print(len(values))
-plt.plot(values)
-plt.show()
-
-for ai in np.arange(0,len(ARA)):
-
-    maxP,minP = getpeaks(X[:,ai],20)
-    if len(maxP)>3:
-        i1= np.argwhere(X[:,ai]==maxP[-2])
-        i2= np.argwhere(X[:,ai]==maxP[-1])
-        periode=i2-i1
-        print(ai,periode)
-
-plt.plot(X[200:,14])
-plt.xlabel("time")
-plt.show()
-
-plt.plot(X[200:,28])
-plt.xlabel("time")
-plt.show()
-
-#for i in [0,250,500,750,999]:
-#bifurcation_Xplot_test(ARA,n,filename,p[314],'test')
+#bifurcation_Xplot_test(ARA,n,filename,p[0],'test')
 
 
 
-#bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'acdclike_onlyhopf')
-#bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'acdclike')
+#bifplot_parplot_sub(p,pdf,ACDC_onlyHopf_index,filename,n,'2acdclike_onlyhopf')
+#bifplot_parplot_sub(p,pdf,ACDC_index,filename,n,'2acdclike')
 
 
 '''
-index=np.where(bifutr[:,25:]==2) #sadle to osc at end
-index2=np.where(bifutr[:,:24]==3) #hopf at begining
-
-index3=np.where(bifutr[:,:24]==1) #saddle to stable at begining
-index4=np.where(bifutr[:,:24]==2) #saddle to osc at begining
-
-i3=np.intersect1d(index[0],index2[0])
-i3=np.setdiff1d(i3,index3[0])
-i3=np.setdiff1d(i3,index4[0])
-
-#maxstability
-#i_3st=np.where(pdf['max_stability']==3)[0]
-
-
-
-#bifplot_parplot_sub(p,pdf,i3,filename,n,'acdclike')
-#bifplot_parplot_sub(p,pdf,i_3st,filename,n,'3stability')
-'''
-
 ##############################################################################################################3   
 
 

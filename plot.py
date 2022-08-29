@@ -13,27 +13,35 @@ from matplotlib.colors import LogNorm, Normalize
 import multiprocessing
 import time
 from functools import partial
+from scipy.stats import gaussian_kde
+from matplotlib import colors
+from Bifurcation import *
 
 
-filename="ACDC_X2_Kara2"
-filename2="ACDC_ARApar_2"
+
+color=sns.color_palette("colorblind")
+colorGREEN=color[2]
+colorBLUE=color[0]
+colorRED=color[3]
+colorPurple=color[4]
+
+'''
+filename="ACDC_X21ind"
 
 n=['final','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18']
 #n=['7']
-#
-sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
+
+#sys.path.insert(0, '/users/ibarbier/AC-DC/'+filename)
 sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename)
 import model_equation as meq
-sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+filename2)
-import model_equation as meq2 
 parlist=meq.parlist
-
+'''
 
 ######################################################################33
 #########################################################################
 ###########################################################################
 
-def load(number= n,filename=filename,parlist=parlist):
+def load(number, filename,parlist):
     namelist=[]
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
@@ -45,9 +53,16 @@ def load(number= n,filename=filename,parlist=parlist):
     dist_output= np.loadtxt(dist_path)
     df = pd.DataFrame(raw_output, columns = namelist)
     df['dist']=dist_output
+    idx=np.argsort(df['dist'])
     df=df.sort_values('dist',ascending=False)
-    distlist= sorted(df['dist'])
     p=[]
+
+    for i in idx:
+        p0=df.loc[i].tolist()
+        p.append(pars_to_dict(p0,parlist))
+
+
+    '''
     for dist in distlist:
         
         p_0=df[df['dist']==dist]
@@ -56,7 +71,7 @@ def load(number= n,filename=filename,parlist=parlist):
           p0.append(p_0[n].tolist()[0])
         p0=pars_to_dict(p0,parlist)
         p.append(p0)
-
+    '''
     
     return p, df 
 
@@ -73,6 +88,7 @@ def pars_to_dict(pars,parlist):
         dict_pars[par['name']] = pars[ipar] 
     return dict_pars
 ##plotting part
+
 
 def plot(ARA,p,name,nb,tt=120):
     #ARA=np.logspace(-4.5,-2.,1000,base=10)
@@ -106,189 +122,256 @@ def plot(ARA,p,name,nb,tt=120):
     plt.close()
 
 
-def plotALLX(ARA,p,name,nb):
-    #ARA=np.logspace(-4.5,-2.,1000,base=10)
-    sizex=np.sqrt(len(p))
-    sizey=np.sqrt(len(p))
-    for i,par in enumerate(p):        
-        X,Y,Z = meq.model(ARA,par)
-        df_X=pd.DataFrame(X,columns=ARA)
-        #df_Y=pd.DataFrame(Y,columns=ARA)
-        #df_Z=pd.DataFrame(Z,columns=ARA)
-        plt.subplot(sizex,sizey,i+1)
-        sns.heatmap(df_X, cmap="Reds", norm=LogNorm())
 
-   # plt.savefig(name+"/plot/"+nb+'ALLALL_heatmap'+'.pdf', bbox_inches='tight')
-    #plt.savefig(name+"/plot/"+nb+'_heatmap'+'.png', bbox_inches='tight')
-    plt.show()
-    plt.close()
+def par_plot(df_par,parlist):
+    fig, axs = plt.subplots(len(parlist),len(parlist))#, constrained_layout=True, figsize=(10/inch_cm,10/inch_cm))
+
+    for x in np.arange(len(parlist)):
+        for y in np.arange(len(parlist)):
+
+            px=parlist[x]['name']
+            py=parlist[y]['name']
+
+            if x==y:
+                #axs[x,y] = sns.distplot(df_par[px])
+                axs[x,y].hist(df_par[px],bins=15, density=True)
 
 
-def par_plot(df,name,nb,parlist,namelist):
-    #plt.plot(df['K_ARAX'],df['K_ARAY'],'ro')
-    fonts=5
- 
-    for i,par1 in enumerate(namelist):
-        for j,par2 in enumerate(namelist):
-            plt.subplot(len(namelist),len(namelist), i+j*len(namelist)+1)
-            if i == j :
-                plt.hist(df[par1])
-                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-            else:
-                plt.scatter(df[par1],df[par2], c=df['dist'], s=0.1, cmap='viridis')# vmin=mindist, vmax=maxdist)
-                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-                plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
-            if i > 0 and j < len(namelist)-1 :
-                plt.xticks([])
-                plt.yticks([])
-            else:
-                if i==0 and j!=len(namelist)-1:
-                    plt.xticks([])
-                    plt.ylabel(par2,fontsize=fonts)
-                    plt.yticks(fontsize=fonts,rotation=90)
-                if j==len(namelist)-1 and i != 0:
-                    plt.yticks([])
-                    plt.xlabel(par1,fontsize=fonts)
-                    plt.xticks(fontsize=fonts)
-                if i==0 and j==len(namelist)-1:
-                    plt.ylabel(par2,fontsize=fonts)
-                    plt.xlabel(par1,fontsize=fonts)
-                    plt.xticks(fontsize=fonts)
-                    plt.yticks(fontsize=fonts,rotation=90)                 
-  #  plt.savefig(name+"/plot/"+nb+'_par_plot.pdf', bbox_inches='tight')
-    plt.savefig(name+"/plot/par/"+nb+'_par_plot.png', bbox_inches='tight', dpi=300)
+                axs[x,y].set_xlim(parlist[x]['lower_limit'],parlist[x]['upper_limit'])
+                #sns.kdeplot(ax=axs[x, y],x=df_par[px])
 
-    plt.close()
-    #plt.show()
+            elif y>x:
+                txt=df_par[px][0]
+                corr=np.corrcoef(df_par[px],df_par[py])[0, 1] #pearson correlation
+                corr_r=np.round(corr,2)
+                axs[x,y].imshow([[corr],[corr]], vmin=-1, vmax=1, cmap="bwr",aspect="auto")
+                axs[x,y].text(0,0.5,corr_r,fontsize=8,ha='center', va='center')
+
+            elif y<x:
+                #z = gaussian_kde(df_par[px])(df_par[py])
+                #idx = z.argsort()
+                #xx, yy, z = df_par[px][idx], df_par[py][idx], z[idx]
+                #axs[x,y].scatter(xx,yy,c=z, s=0.1, cmap='viridis')# vmin=mindist, vmax=maxdist)
+                axs[x,y].hist2d(df_par[py],df_par[px],bins=15, norm = colors.LogNorm())
+
+                axs[x,y].set_xlim(parlist[y]['lower_limit'],parlist[y]['upper_limit'])
+                axs[x,y].set_ylim(parlist[x]['lower_limit'],parlist[x]['upper_limit'])
+
+
+            
+            niceaxis(axs,x,y,px,py,parlist,parlist,6)
+
+    plt.subplots_adjust(wspace=None, hspace=None)
+
+    return axs
     
-def splitted_parplot(n,filename,parlist):
-    namelist=[]
-    for i,par in enumerate(parlist):
-       namelist.append(parlist[i]['name'])
-    namelist=np.array(namelist) 
-    parlist=np.array(parlist)   
-    p, pdf= load(n,filename,parlist)
 
-    namelist2=namelist[[2,4,9,12]] #only K par
-    parlist2=parlist[[2,4,9,12]]
-    namelist3=namelist[[0,1,6,7,8,11]] #only B and activation
-    parlist3=parlist[[0,1,6,7,8,11]]
-    namelist4=namelist[[7,8,9,10,11]] #only Y par
-    parlist4=parlist[[7,8,9,10,11]]
-    
-    namelist5=namelist[[0,1,6,7,8,11]] #only ARA par
-    parlist5=parlist[[0,1,6,7,8,11]]
-    
-    
-    par_plot(pdf,filename,(str(n)+'ALL'),parlist,namelist)
-    par_plot(pdf,filename,(str(n)+'K'),parlist2,namelist2)
-    par_plot(pdf,filename,(str(n)+'B'),parlist3,namelist3)
-    par_plot(pdf,filename,(str(n)+'Y'),parlist4,namelist4)
-    par_plot(pdf,filename,(str(n)+'ARA'),parlist5,namelist5)
+
+def niceaxis(axs,x,y,px,py,kx,ky,size):
+        #axs[x,y].set_ylim(-0.1,1.1)
+        #if x==0:
+        #    axs[x,y].set_title(py,fontsize=size)
         
-def plot_alltime(n,filename,parlist):
+        if y==0:
+            axs[x,y].set_ylabel(px,fontsize=size,rotation=45,ha='right')
+            axs[x,y].tick_params(axis='y', labelsize=size-2)
+
+            if x!=len(kx)-1:
+                    axs[x,y].set_xticks([])
+                    axs[x,y].set_xticklabels([])
+            #axs[x,y].set_yticks([])
+
+        if x==len(kx)-1:
+            axs[x,y].set_xlabel(py,fontsize=size,rotation=45)
+            axs[x,y].tick_params(axis='x', labelsize=size-2)
+
+            if y!=0:
+                    axs[x,y].set_yticks([])
+                    axs[x,y].set_yticklabels([])
+
+        if y!=0 and x!=len(kx)-1:
+            axs[x,y].set_xticks([])
+            axs[x,y].set_yticks([])
+            axs[x,y].set_xticklabels([])
+            axs[x,y].set_yticklabels([])
+        #if x==len(kx)-1:
+        #   axs[x,y].set_xlabel('AHL')
+        return axs
+
+
+def heatmap_allroound(ARA,filename,parlist,n,meq):
+
+
+    fig,axs=plt.subplots(3,len(n),constrained_layout=True, figsize=(len(n),3))
+    for i,ni in enumerate(n):
+        p, df= load(ni,filename,meq.parlist)
+        for j,jj in enumerate(np.array([-1,500,0])):
+            X,Y,Z = meq.model(ARA,p[jj],totaltime=120)
+       # print(X.shape)
+
+            axs[j,i].imshow(np.log10(X), aspect="auto", cmap="Reds")
+           
+            d=np.round(meq.distance(ARA,p[jj]),2)
+            axs[j,i].set_title(('d = ' + str(d)), fontsize=6)
+            axs[j,i].tick_params(axis='y', labelsize=6)
+            axs[j,i].tick_params(axis='x', labelsize=6)
+            axs[j,i].set_xlabel("S",fontsize=6)
+            axs[j,i].set_ylabel("time",fontsize=6)
+
+
+
+
+def barplot(df,parlist):
     namelist=[]
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
-    parl = np.append(namelist,'dist')
-    index=1
-    size=round(np.sqrt(len(parl)))
-    for i,name in enumerate(parl):
-        plt.subplot(size,size,index)
-        plt.tight_layout()
-        for ni,nmbr in enumerate(n):
-            p,df= load(nmbr,filename,parlist)
-            sns.kdeplot(df[name],bw_adjust=.8,label=nmbr)
-        #plt.ylim(0,1)
-        if i < (len(parl)-2):
-            plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-        if index==size:       
-          plt.legend(bbox_to_anchor=(1.05, 1))
-        index=index+1
-    plt.savefig(filename+"/plot/"+'ALLround_plot.pdf', bbox_inches='tight')
-    plt.close()
+    mean=np.array(df.mean().tolist()[:-1])
+    sd=np.array(df.std().tolist()[:-1])
+    median=np.array(df.median().tolist()[:-1])
+    x_pos = np.arange(len(parlist))
 
 
-def par_plot2(df,df2,name,nb,parlist,namelist):
+   # mean=sd/mean
+    namelist=np.array(namelist)
+    #idx=np.argsort(np.abs(sd))
+    #idx=np.argsort(np.abs(sd/mean))
+    idx=np.argsort(x_pos)
 
-    fonts=6
+    plt.bar(x_pos,mean[idx],color='black')
+    plt.errorbar(x_pos,mean[idx],yerr=sd[idx], ecolor='k', linestyle='')
+
+
+    #plt.plot(x_pos,median[:-1],'ro')
+    plt.xticks(x_pos, namelist[idx], rotation=45, fontsize=8)
+    plt.ylabel("parameter mean")# fontsize=8)
+
+
+
+def bifuplot(ARA,filename,p,meq,dummy):
+
+    ss=meq.findss2(ARA,p) 
+    A=meq.jacobianMatrix2(ARA,ss,p)
+    J=np.nan_to_num(A)
+
+    eigvals, eigvecs =np.linalg.eig(J)
+    stability_array=np.apply_along_axis(getStability, 2, eigvals)
+
+    idx=np.where(stability_array==2)
+
+    m=np.copy(stability_array)
+    m[m!=1]=0
+    stable_matrix = m*ss[:,:,0]
+    stable_matrix[stable_matrix ==0]=np.nan
+
+    m=np.copy(stability_array)
+    m[m!=2]=0
+    oscil_matrix = m/2*ss[:,:,0]
+    oscil_matrix[oscil_matrix ==0]=np.nan
+  
+    low=[]
+    high=[]
+    idx = np.argwhere(stability_array==2)
     
-    for i,par1 in enumerate(namelist):
-        for j,par2 in enumerate(namelist):
-            plt.subplot(len(namelist),len(namelist), i+j*len(namelist)+1)
-            if i == j :
-                sns.kdeplot(df[par1],color='black',bw_adjust=.8,linewidth=0.5)
-                #sns.kdeplot(c[par1],color='gray',bw_adjust=.8,linewidth=0.5)
-                #sns.kdeplot(a[par1],color='green', bw_adjust=.8,linewidth=0.5)
-                sns.kdeplot(df2[par1],color='red',bw_adjust=.8,linewidth=0.5)
-                #sns.kdeplot(d[par1],color='orange',bw_adjust=.8,linewidth=0.5)
-                plt.ylabel("")
-                plt.xlabel("")
-                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-            else:
-                plt.scatter(df[par1],df[par2], c='black', s=0.01)# vmin=mindist, vmax=maxdist)
-               # plt.scatter(c[par1],c[par2], color='black', s=0.0001)
-               # plt.scatter(a[par1],a[par2], color='green', s=0.0001)
-                plt.scatter(df2[par1],df2[par2], color='red', s=0.01)                
-                #plt.scatter(d[par1],d[par2], color='orange', s=0.0001)
-                #plt.scatter(df2[par1],df2[par2], c='blue', s=0.001)
-                plt.xlim((parlist[i]['lower_limit'],parlist[i]['upper_limit']))
-                plt.ylim((parlist[j]['lower_limit'],parlist[j]['upper_limit']))
-            if i > 0 and j < len(namelist)-1 :
-                plt.xticks([])
-                plt.yticks([])
-            else:
-                if i==0 and j!=len(namelist)-1:
-                    plt.xticks([])
-                    plt.ylabel(par2,fontsize=fonts)
-                    plt.yticks(fontsize=fonts,rotation=90)
-                if j==len(namelist)-1 and i != 0:
-                    plt.yticks([])
-                    plt.xlabel(par1,fontsize=fonts)
-                    plt.xticks(fontsize=fonts)
-                else:
-                    plt.ylabel(par2,fontsize=fonts)
-                    plt.xlabel(par1,fontsize=fonts)
-                    plt.xticks(fontsize=fonts)
-                    plt.yticks(fontsize=4,rotation=90)                 
-    plt.savefig(name+"/"+nb+'_compar_plot.png', bbox_inches='tight',dpi=300)
-    plt.close()
-    #plt.show()
+    c=0
+    for ai,a in enumerate(ARA):
+        l=np.nan
+        h=np.nan
+        if ai == idx[c][0]:
+            init=ss[idx[c][0],idx[c][1]]+1e-10
+            l,h = limitcycle(ai,ss,ARA,init,p,dummy,meq)
+            l=l[0]
+            h=h[0]
+            if c!=len(idx)-1:
+                c+=1
+        low.append(l)
+        high.append(h)
+
+    m=np.copy(stability_array)
+    m[m!=3]=0
+    unstable_matrix = m/3*ss[:,:,0]
+    unstable_matrix[unstable_matrix ==0]=np.nan
+
+    plt.plot(ARA,stable_matrix,'-', c=colorRED)
+    plt.plot(ARA,unstable_matrix,'--', c=colorRED)
+    plt.fill_between(ARA,low,high,alpha=0.5,facecolor=colorBLUE)
+    plt.plot(ARA,oscil_matrix,'--', c=colorBLUE)
+    plt.plot(ARA,low,'-',c=colorBLUE)
+    plt.plot(ARA,high,'-',c=colorBLUE)
+
+    '''
+    plt.plot(ARA,M[:,i,0],'-b',linewidth=1)
+    plt.plot(ARA,m[:,i,0],'-b',linewidth=1)
+    plt.fill_between(ARA,M[:,i,0],m[:,i,0],alpha=0.2,facecolor='blue')
+    '''
+    plt.yscale('log')
+    plt.xscale('log')
 
 
-def plotselectedparoverall(n,filename,parlist):
-     selected_index = np.loadtxt(filename+'/ACDC_par_index.out')
-     criteria = np.loadtxt(filename +'/criteria.out')
-     selected_index =[int(x) for x in selected_index]      
-     ARA=np.logspace(-4.5,-2.,20,base=10)
-     p, pdf= load(n,filename,parlist)
-     pdf2=pdf.iloc[selected_index]
-     p_selected =  np.take(p,selected_index) 
-     pdf2['up']=criteria[:,0]
-     pdf2['down']=criteria[:,1]
-     pdf2['idk']=criteria[:,2]
-         
-     namelist=[]
-     for i,par in enumerate(meq.parlist):
-       namelist.append(parlist[i]['name'])
-     namelist=np.array(namelist)
+def bifuplot_grid(axs,i,j,ARA,filename,p,meq,dummy):
 
-     namelist2=namelist[[2,4,9,12]] #only K par
-     parlist2=parlist[[2,4,9,12]] 
-     namelist3=namelist[[0,1,6,7,8,11]] #only B and activation
-     parlist3=parlist[[0,1,6,7,8,11]]
-     namelist4=namelist[[7,8,9,10,11]] #only Y par
-     parlist4=parlist[[7,8,9,10,11]]
-     
-     par_plot2(pdf,pdf2,filename,n,parlist,namelist)
-     par_plot2(pdf,pdf2,filename,'K',parlist2,namelist2)
-     par_plot2(pdf,pdf2,filename,'B',parlist3,namelist3)
-     par_plot2(pdf,pdf2,filename,'Y',parlist4,namelist4)
-     
+    ss=meq.findss2(ARA,p) 
+    A=meq.jacobianMatrix2(ARA,ss,p)
+    J=np.nan_to_num(A)
+    eigvals, eigvecs =np.linalg.eig(J)
+    stability_array=np.apply_along_axis(getStability, 2, eigvals)
+
+    idx=np.where(stability_array==2)
+
+    m=np.copy(stability_array)
+    m[m!=1]=0
+    stable_matrix = m*ss[:,:,0]
+    stable_matrix[stable_matrix ==0]=np.nan
+
+    m=np.copy(stability_array)
+    m[m!=2]=0
+    oscil_matrix = m/2*ss[:,:,0]
+    oscil_matrix[oscil_matrix ==0]=np.nan
+  
+    low=[]
+    high=[]
+    idx = np.argwhere(stability_array==2)
+    if len(idx)>0:
+        c=0
+        for ai,a in enumerate(ARA):
+            l=np.nan
+            h=np.nan
+
+            if ai == idx[c][0]:
+                init=ss[idx[c][0],idx[c][1]]+1e-10
+                l,h = limitcycle(ai,ss,ARA,init,p,dummy,meq)
+                l=l[0]
+                h=h[0]
+                if c!=len(idx)-1:
+                    c+=1
+            low.append(l)
+            high.append(h)
+    else:
+        low=np.ones(len(ARA))*np.nan
+        high=np.ones(len(ARA))*np.nan
 
 
+    m=np.copy(stability_array)
+    m[m!=3]=0
+    unstable_matrix = m/3*ss[:,:,0]
+    unstable_matrix[unstable_matrix ==0]=np.nan
+
+    axs[i,j].plot(ARA,stable_matrix,'-', c=colorRED)
+    axs[i,j].plot(ARA,unstable_matrix,'--', c=colorRED)
+    axs[i,j].fill_between(ARA,low,high,alpha=0.5,facecolor=colorBLUE)
+    axs[i,j].plot(ARA,oscil_matrix,'--', c=colorBLUE)
+    axs[i,j].plot(ARA,low,'-',c=colorBLUE)
+    axs[i,j].plot(ARA,high,'-',c=colorBLUE)
+
+    '''
+    plt.plot(ARA,M[:,i,0],'-b',linewidth=1)
+    plt.plot(ARA,m[:,i,0],'-b',linewidth=1)
+    plt.fill_between(ARA,M[:,i,0],m[:,i,0],alpha=0.2,facecolor='blue')
+    '''
+    axs[i,j].set_yscale('log')
+    axs[i,j].set_xscale('log')
 
 
+    return axs
 
 ##############################################################################################################3   
 
@@ -300,58 +383,25 @@ if __name__ == "__main__":
     ARA=meq.ARA
     ARA=np.logspace(-8,-2.,200,base=10)
 
-
-   # plot_alltime(n,filename,meq.parlist)
-    
-    parlist=meq.parlist
-
     namelist=[]
     for i,par in enumerate(parlist):
         namelist.append(parlist[i]['name'])
     
-    '''
-    parlist=np.array(parlist)
-#    parlist2=parlist[[0,1,2,3,4,5,6,9,10,11,12,13,14]]
-    
-    
-    #splitted_parplot(n[0],filename,parlist)
-    #n=['final']
-    #p, pdf= load(n[0],filename,meq.parlist)
-    #df=pdf
+
+    n=['final']
+    p, pdf= load(n[0],filename,meq.parlist)
+    df=pdf
+
+    plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,"moretime",tt=500)
 
     '''
-
-    #plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,"moretime",tt=500)
-    '''
-    p, pdf= load(n[0],filename2,parlist2)
-    df2=pdf
-    namelist=[]
-    for i,par in enumerate(parlist2):
-        namelist.append(parlist2[i]['name'])
-
-    par_plot2(df,df2,filename,n[0],parlist2,namelist)
-    '''
-    
    # ARA=ARA[[0,4,5,9]]
     for i in n:
-      p, pdf= load(i,filename,meq.parlist)    
+      p, pdf= load(i,filename,meq.parlist)
+    
       plot(ARA,[p[0],p[250],p[500],p[750],p[999]],filename,i)
       par_plot(pdf,filename,i,meq.parlist,namelist)
 
-    #bifurcation_plot('final',filename,p[1])
-    
-    '''
-    p, pdf= load('final',filename,meq.parlist)
-    index=[]
-    for j in np.arange(0,9):
-      acdc_p=[]     
-      bifurcation_Xplot(ARA,'final',filename,p[(0+100*j):(99+100*j)],c=j)
-      for i,pi in enumerate(p[(0+100*j):(99+100*j)]):
-          ss,eig,un,st,osc,M,m=calculateALL(ARA,pi)
-          if isoscillationandstability(ARA,M,st):
-               acdc_p.append(pi)
-               index.append(int(i+j*100)) 
-          np.savetxt(str(j)+'_'+filename +'_selectedpar.out',index)
     '''
  
 

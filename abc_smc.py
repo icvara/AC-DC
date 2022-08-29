@@ -15,7 +15,7 @@ import time
 
 
 
-version="ACDC_X2_Kara2" #name of folder
+version="ACDC_X_1ind_new" #name of folder
 pl= None #prior_label
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+version+'/')
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+version)
@@ -241,7 +241,7 @@ def main(argv):
     if os.path.isdir(version +'/smc') is False: ## if 'smc' folder does not exist:
         os.mkdir(version +'/smc') ## create it, the output will go there
         
-    Sequential_ABC(x_data, ncpus=40,initial_dist = initdist, final_dist =finaldist,prior_label = pl,Npars=1000, adaptative_kernel = False)
+    Sequential_ABC(x_data, ncpus=40,initial_dist = initdist, final_dist =finaldist,prior_label = pl,Npars=5000, adaptative_kernel = False)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
