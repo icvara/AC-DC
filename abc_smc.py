@@ -15,7 +15,7 @@ import time
 
 
 
-version="ACDC_X_1ind_new" #name of folder
+version="ACDC_X_2ind_new_inithigh" #name of folder
 pl= None #prior_label
 sys.path.insert(0, '/users/ibarbier/AC-DC/'+version+'/')
 #sys.path.insert(0, 'C:/Users/Administrator/Desktop/Modeling/AC-DC/'+version)
